@@ -1,0 +1,32 @@
+{
+  "name": "desafio-aceito-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node --env-file=.env dist/api/src/main.js",
+    "start:dev": "node --import tsx --env-file=.env src/main.ts",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "migrate": "node --import tsx --env-file=.env src/migrate.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.0",
+    "@nestjs/core": "^11.1.0",
+    "@nestjs/platform-express": "^11.1.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "pg": "^8.16.3",
+    "helmet": "^8.1.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/express": "^5.0.0",
+    "@types/pg": "^8.15.5",
+    "typescript": "^5.9.3",
+    "tsx": "^4.20.5",
+    "@electric-sql/pglite": "^0.3.14",
+    "supertest": "^7.1.4",
+    "@types/supertest": "^6.0.3"
+  }
+}

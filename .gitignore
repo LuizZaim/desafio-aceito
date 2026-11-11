@@ -39,3 +39,13 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+.env
+.env.*
+!.env.example
+api/node_modules/
+api/dist/
+api/.env
+outputs/
+
+.openai/
