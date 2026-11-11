@@ -89,6 +89,18 @@ npm test
 
 A suíte de integração usa PostgreSQL embutido PGlite, instala a migração e testa a API por HTTP local: cadastro, autenticação, erros, isolamento entre contas, persistência, conflito de versão, prevenção de SQL injection e revogação de sessão. Não substitui teste de carga, teste em PostgreSQL de produção ou homologação em aparelho físico.
 
+## Clonar o histórico local
+
+O ZIP inclui `repositorio.bundle`, com branches e commits desta entrega. Depois de extraí-lo, você pode restaurar o repositório sem servidor Git:
+
+```sh
+git clone repositorio.bundle desafio-aceito
+cd desafio-aceito
+npm ci
+```
+
+O projeto ainda não foi publicado em um repositório remoto.
+
 ## Estrutura
 
 ```text
