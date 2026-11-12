@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   initialState,
+  freshState,
   transition,
   dateAfter,
   fields,
@@ -137,7 +138,7 @@ test("campos obrigatórios e equipe desconhecida são validados", () => {
         category: "x",
         level: "x",
       }),
-    /3 caracteres/,
+    /3 a 80 caracteres/,
   );
   assert.throws(
     () => run(initialState(), { type: "interest", id: "not-a-team" }),
@@ -170,4 +171,45 @@ test("cancelamento sem caução não aplica penalidade", () => {
   s = run(s, { type: "cancel", id, reason: "Sem jogadores suficientes" });
   assert.equal(s.games[0].fee, 0);
   assert.equal(s.games[0].payment, "Não cobrada");
+});
+
+const newTeam = {
+  type: "registerTeam", name: "Tatuapé FC", district: "Tatuapé",
+  city: "São Paulo", state: "SP", category: "Masculino", level: "Amador",
+  bio: "Amistosos aos domingos",
+};
+test("equipe nova começa sem dados demonstrativos e precisa de cadastro", () => {
+  const s = freshState();
+  assert.equal(s.teamRegistered, false);
+  assert.equal(s.profile.name, "");
+  assert.deepEqual(s.matches, []);
+  assert.deepEqual(s.games, []);
+  assert.deepEqual(s.messages, {});
+  assert.deepEqual(s.notifications, []);
+  assert.throws(() => run(s, { type: "interest", id: "vila" }), /Cadastre/);
+  assert.throws(() => run(s, proposal), /Cadastre/);
+  assert.throws(() => run(s, { ...newTeam, type: "profile" }), /Cadastre/);
+});
+test("cadastro valida localização e campos, registra sem criar histórico, permite edição", () => {
+  const s = freshState();
+  for (const invalid of [
+    { name: " A " }, { name: "A".repeat(81) }, { name: {} },
+    { district: " " }, { category: "Qualquer" }, { level: "Inválido" },
+    { city: "" }, { state: "XX" }, { bio: "a".repeat(501) },
+  ]) {
+    assert.throws(() => run(s, { ...newTeam, ...invalid }));
+    assert.equal(s.teamRegistered, false);
+  }
+  const registered = run(s, { ...newTeam, name: "  Tatuapé FC  " });
+  assert.equal(registered.teamRegistered, true);
+  assert.equal(registered.profile.name, "Tatuapé FC");
+  assert.equal(registered.profile.city, "São Paulo");
+  assert.deepEqual(registered.games, []);
+  assert.deepEqual(registered.matches, []);
+  assert.throws(() => run(registered, newTeam), /já possui/);
+  const edited = run(registered, { ...newTeam, type: "profile", name: "Novo FC" });
+  assert.equal(edited.profile.name, "Novo FC");
+  assert.equal(edited.teamRegistered, true);
+  assert.equal(run(edited, { type: "interest", id: "vila" }).matches[0], "vila");
+  assert.throws(() => transition(s, null), /inválida/);
 });

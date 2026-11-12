@@ -13,11 +13,11 @@ import { Redirect, router } from "expo-router";
 import { useStore } from "../core/store";
 import { FieldArt, Button, Input } from "../components/ui";
 export default function Login() {
-  const { mode, demo, login } = useStore();
+  const { mode, demo, local, login, state } = useStore();
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false);
-  if (mode !== "none") return <Redirect href="/(tabs)/descobrir" />;
+  if (mode !== "none") return <Redirect href={state.teamRegistered === false ? "/editar" : "/(tabs)/descobrir"} />;
   async function submit() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8) {
       Alert.alert(
@@ -119,8 +119,20 @@ export default function Login() {
             Bora entrar em campo?
           </Text>
           <Text style={{ color: "#82907d", fontSize: 12, marginBottom: 25 }}>
-            Entre na sua conta ou conheça o app na demonstração.
+            Cadastre seu time neste aparelho ou entre na sua conta.
           </Text>
+          <Button
+            title="Cadastrar ou abrir meu time neste aparelho"
+            icon="shield-outline"
+            disabled={busy}
+            onPress={async () => {
+              setBusy(true);
+              try { await local(); }
+              catch { Alert.alert("Não foi possível abrir seu time", "Tente novamente."); }
+              finally { setBusy(false); }
+            }}
+          />
+          <Text style={{ color: "#82907d", fontSize: 11, marginVertical: 18, lineHeight: 18 }}>Seu cadastro fica salvo no celular, sem precisar criar uma conta. Para sincronizar pela conta, use o acesso abaixo quando o serviço estiver disponível.</Text>
           <Input
             label="E-mail"
             placeholder="voce@email.com"
@@ -172,7 +184,13 @@ export default function Login() {
           <Button
             title="Explorar demonstração"
             secondary
-            onPress={demo}
+            disabled={busy}
+            onPress={async () => {
+              setBusy(true);
+              try { await demo(); }
+              catch { Alert.alert("Não foi possível abrir a demonstração"); }
+              finally { setBusy(false); }
+            }}
             icon="football-outline"
           />
           <Text

@@ -11,7 +11,7 @@ import {
   timingSafeEqual,
 } from "node:crypto";
 import { promisify } from "node:util";
-import { initialState, transition } from "../../src/core/domain";
+import { freshState, transition } from "../../src/core/domain";
 import type { Database } from "./db";
 const scrypt = promisify(_scrypt);
 const digest = (x: string) => createHash("sha256").update(x).digest("hex");
@@ -104,7 +104,7 @@ export class Service {
   async getState(user: string) {
     await this.db.query(
       "INSERT INTO workspaces(user_id,data) VALUES($1,$2) ON CONFLICT(user_id) DO NOTHING",
-      [user, JSON.stringify(initialState())],
+      [user, JSON.stringify(freshState())],
     );
     const result = await this.db.query(
       "SELECT data, version FROM workspaces WHERE user_id=$1",

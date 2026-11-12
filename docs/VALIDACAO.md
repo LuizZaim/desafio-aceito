@@ -1,4 +1,18 @@
-# Evidências de validação — 11/11/2026
+# Evidências de validação
+
+## Cadastro da própria equipe — 12/11/2026
+
+| Verificação executada | Resultado |
+|---|---|
+| TypeScript e lint do aplicativo | Passaram. |
+| `npm test` | 17 testes passaram: 15 de domínio e 2 dos adaptadores de persistência. |
+| Persistência local | Adaptadores nativo e web testados: cadastro, reabertura, edição, sessão e separação da demonstração. O adaptador nativo executou seu SQL contra SQLite do Node; a ponte Expo não foi executada em aparelho. |
+| API: compilação e integração HTTP/PGlite | Passaram, incluindo criação da equipe, rejeição de dados inválidos e cadastro duplicado, persistência após novo login e isolamento entre contas. |
+| Exportação Android/Hermes | Passou: 1.208 módulos e bundle de cerca de 2,8 MB. Não gera APK. |
+
+Esta atualização não teve homologação visual em aparelho/emulador, instalação de APK ou publicação de servidor. Os critérios de aceite e o roteiro manual estão em `CADASTRO_EQUIPE.md`.
+
+## Validação anterior — 11/11/2026
 
 | Verificação executada | Resultado |
 |---|---|

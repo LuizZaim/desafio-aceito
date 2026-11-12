@@ -3,10 +3,10 @@
 | Requisito do PDF | Implementação entregue | Limitação |
 |---|---|---|
 | RF01 login | Tela `/` e API `/auth/login` | Depende de API configurada. |
-| RF02 cadastro | `/cadastro`, `/auth/register` | Conta online abre espaço demonstrativo. |
+| RF02 cadastro | `/cadastro`, `/auth/register` | Conta online exige API configurada e inicia sem equipe; o cadastro da equipe vem em seguida. |
 | RF03 recuperação | `/recuperar` | Envio de e-mail pendente, informado na tela. |
-| RF04 cadastrar equipe | Perfil inicial criado com a demonstração; `/editar` | Onboarding dedicado de equipe ainda pendente. |
-| RF05 editar equipe | `/editar`, ação profile | Nome, bairro, categoria, nível e descrição. |
+| RF04 cadastrar equipe | `/editar` em modo de cadastro e ação `registerTeam` | Cadastro próprio com nome, bairro, cidade, UF, categoria, nível e descrição; salvamento local ou na conta da API. Ainda não publica a equipe para outros usuários. |
+| RF05 editar equipe | `/editar`, ação profile | Campos do perfil validados; mantém o estado da equipe já cadastrada. |
 | RF06 proximidade | Descoberta por bairro/raio | Distâncias estáticas de teste. |
 | RF07 raio | `/filtros` | 5, 10, 15, 25 e 50 km demonstrativos. |
 | RF08 nível | `/filtros` | Amador, Várzea, Base, Semiprofissional. |

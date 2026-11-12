@@ -6,17 +6,18 @@ import React, {
   useRef,
 } from "react";
 import { Alert } from "react-native";
-import { loadState, saveState } from "../storage/database";
-import { initialState, transition, type State } from "./domain";
+import { loadState, saveState, getLocalSession, setLocalSession, hasLocalTeam } from "../storage/database";
+import { initialState, freshState, transition, type State } from "./domain";
 import { getToken, setToken, request, ApiError } from "./api";
 interface Store {
   state: State;
   ready: boolean;
   error: string;
   busy: boolean;
-  mode: "none" | "demo" | "online";
+  mode: "none" | "demo" | "online" | "local";
   dispatch: (action: any) => Promise<boolean>;
-  demo: () => void;
+  demo: () => Promise<void>;
+  local: () => Promise<void>;
   login: (email: string, password: string, name?: string) => Promise<void>;
   logout: () => Promise<void>;
   reload: () => Promise<void>;
@@ -39,7 +40,11 @@ export function Provider({ children }: { children: React.ReactNode }) {
         setState(data.state);
         version.current = data.version;
         setMode("online");
-      } else setState(await loadState());
+      } else {
+        const isLocal = await getLocalSession();
+        setState(await loadState(isLocal ? "team-local-v1" : "demo-v1"));
+        setMode(isLocal ? "local" : "none");
+      }
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) {
         await setToken(null);
@@ -62,7 +67,8 @@ export function Provider({ children }: { children: React.ReactNode }) {
           else throw e;
         }
       }
-      return { state: await loadState(), version: 0, mode: "none" as const };
+      const isLocal = await getLocalSession();
+      return { state: await loadState(isLocal ? "team-local-v1" : "demo-v1"), version: 0, mode: isLocal ? "local" as const : "none" as const };
     }
     initialize()
       .then((data) => {
@@ -97,8 +103,9 @@ export function Provider({ children }: { children: React.ReactNode }) {
         version.current = data.version;
         return true;
       }
+      if (mode === "none") throw Error("Abra sua equipe ou entre na demonstração para continuar.");
       const next = transition(state, action);
-      await saveState(next.state);
+      await saveState(next.state, mode === "local" ? "team-local-v1" : "demo-v1");
       setState(next.state);
       return true;
     } catch (e) {
@@ -123,6 +130,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
       const data = await request("/state");
       setState(data.state);
       version.current = data.version;
+      await setLocalSession(false);
       setMode("online");
     } catch (e) {
       await setToken(null);
@@ -139,8 +147,22 @@ export function Provider({ children }: { children: React.ReactNode }) {
         await setToken(null);
       }
     }
+    await setLocalSession(false);
     setMode("none");
     setState(await loadState());
+  }
+  async function local() {
+    const next = await hasLocalTeam() ? await loadState("team-local-v1") : freshState();
+    await saveState(next, "team-local-v1");
+    await setLocalSession(true);
+    setState(next);
+    setMode("local");
+  }
+  async function demo() {
+    const next = await loadState();
+    await setLocalSession(false);
+    setState(next);
+    setMode("demo");
   }
   return (
     <Context.Provider
@@ -151,7 +173,8 @@ export function Provider({ children }: { children: React.ReactNode }) {
         busy,
         mode,
         dispatch,
-        demo: () => setMode("demo"),
+        demo,
+        local,
         login,
         logout,
         reload,

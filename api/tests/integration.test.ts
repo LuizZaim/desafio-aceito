@@ -53,14 +53,40 @@ test("API: cadastro, login, isolamento, match, persistência e exceções", asyn
     const auth = { Authorization: `Bearer ${token}` };
     const initial = await request(http).get("/state").set(auth).expect(200);
     assert.equal(initial.body.version, 0);
+    assert.equal(initial.body.state.teamRegistered, false);
+    assert.equal(initial.body.state.profile.name, "");
+    assert.deepEqual(initial.body.state.games, []);
+    assert.deepEqual(initial.body.state.matches, []);
+    await request(http).post("/state").set(auth)
+      .send({ version: 0, action: { type: "interest", id: "vila" } }).expect(400);
+    const team = {
+      type: "registerTeam", name: "Tatuapé FC", district: "Tatuapé",
+      city: "São Paulo", state: "SP", category: "Masculino", level: "Amador",
+      bio: "Futebol aos domingos",
+    };
+    await request(http).post("/state").set(auth)
+      .send({ version: 0, action: { ...team, state: "XX" } }).expect(400);
+    await request(http).post("/state").set(auth)
+      .send({ version: 0, action: team }).expect(200);
+    const registered = await request(http).get("/state").set(auth).expect(200);
+    assert.equal(registered.body.state.teamRegistered, true);
+    assert.equal(registered.body.state.profile.name, "Tatuapé FC");
+    assert.equal(registered.body.state.profile.city, "São Paulo");
+    assert.deepEqual(registered.body.state.games, []);
+    await request(http).post("/state").set(auth)
+      .send({ version: 1, action: team }).expect(400);
+    const reloggedState = await request(http).get("/state")
+      .set("Authorization", `Bearer ${login.body.token}`).expect(200);
+    assert.deepEqual(reloggedState.body.state, registered.body.state);
+
     await request(http)
       .post("/state")
       .set(auth)
-      .send({ version: 0, action: { type: "interest", id: "vila" } })
+      .send({ version: 1, action: { type: "interest", id: "vila" } })
       .expect(200);
     const saved = await request(http).get("/state").set(auth).expect(200);
     assert.ok(saved.body.state.matches.includes("vila"));
-    assert.equal(saved.body.version, 1);
+    assert.equal(saved.body.version, 2);
     await request(http)
       .post("/state")
       .set(auth)
@@ -70,7 +96,7 @@ test("API: cadastro, login, isolamento, match, persistência e exceções", asyn
       .post("/state")
       .set(auth)
       .send({
-        version: 1,
+        version: 2,
         action: { type: "send", id: "leste", text: "sem match" },
       })
       .expect(400);
@@ -86,7 +112,15 @@ test("API: cadastro, login, isolamento, match, persistência e exceções", asyn
       .get("/state")
       .set("Authorization", `Bearer ${another.body.token}`)
       .expect(200);
-    assert.ok(!other.body.state.matches.includes("vila"));
+    assert.deepEqual(other.body.state.matches, []);
+    assert.deepEqual(other.body.state.games, []);
+    assert.equal(other.body.state.profile.name, "");
+    assert.equal(other.body.state.teamRegistered, false);
+    await request(http).post("/state").set(auth)
+      .send({ version: 2, action: { ...team, type: "profile", name: "Tatuapé Unido" } })
+      .expect(200);
+    const edited = await request(http).get("/state").set(auth).expect(200);
+    assert.equal(edited.body.state.profile.name, "Tatuapé Unido");
     const hashes = await pg.query<any>("SELECT password_hash FROM users");
     assert.ok(
       hashes.rows.every((r) => !r.password_hash.includes("senha-de-teste")),

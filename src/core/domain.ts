@@ -33,7 +33,10 @@ export type Game = {
   reason?: string;
 };
 export type State = {
+  teamRegistered?: boolean;
   profile: {
+    city?: string;
+    state?: string;
     name: string;
     district: string;
     category: string;
@@ -162,6 +165,7 @@ export function dateAfter(days: number) {
 }
 export function initialState(): State {
   return {
+    teamRegistered: true,
     profile: {
       name: "FutTech FC",
       district: "Liberdade",
@@ -224,6 +228,27 @@ export function initialState(): State {
     reports: [],
   };
 }
+/** Empty workspace for a real account or a team registered on this device. */
+export function freshState(): State {
+  const state = initialState();
+  return {
+    ...state,
+    teamRegistered: false,
+    profile: {
+      name: "", district: "", city: "", state: "", category: "", level: "",
+      bio: "", role: "organizador", available: true,
+    },
+    interests: [], skipped: [], matches: [], messages: {}, games: [],
+    notifications: [], reports: [],
+  };
+}
+export const teamCategories = ["Masculino", "Feminino", "Sub-15", "Veteranos"];
+export const teamLevels = ["Amador", "Várzea", "Base", "Semiprofissional"];
+export const brazilianStates = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS",
+  "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC",
+  "SP", "SE", "TO",
+];
 function need(condition: any, message: string): asserts condition {
   if (!condition) throw Error(message);
 }
@@ -236,6 +261,7 @@ export function transition(
   input: State,
   action: any,
 ): { state: State; message: string } {
+  need(action && typeof action === "object" && !Array.isArray(action), "Ação inválida.");
   const s: State = structuredClone(input);
   let message = "Alterações salvas.";
   const id = clean(action.id, 100);
@@ -250,6 +276,7 @@ export function transition(
   );
   switch (action.type) {
     case "interest":
+      need(s.teamRegistered !== false, "Cadastre sua equipe antes de buscar adversários.");
       need(
         s.profile.role === "organizador",
         "A descoberta é exclusiva do organizador.",
@@ -290,6 +317,7 @@ export function transition(
       message = "Mensagem salva nesta demonstração.";
       break;
     case "schedule": {
+      need(s.teamRegistered !== false, "Cadastre sua equipe antes de agendar.");
       need(
         s.profile.role === "organizador",
         "Somente o organizador pode agendar.",
@@ -314,7 +342,7 @@ export function transition(
       );
       need(fields.includes(field), "Selecione um local válido.");
       need(
-        ["FutTech FC", s.profile.name, team?.name].includes(action.home),
+        [s.profile.name, team?.name].includes(action.home),
         "Selecione o mando de campo.",
       );
       need(
@@ -456,30 +484,34 @@ export function transition(
       delete s.messages[id];
       message = "Match encerrado.";
       break;
+    case "registerTeam":
     case "profile": {
+      const creating = action.type === "registerTeam";
       need(
-        clean(action.name, 80).length >= 3,
-        "O nome precisa ter pelo menos 3 caracteres.",
+        creating ? s.teamRegistered === false : s.teamRegistered !== false,
+        creating ? "Você já possui uma equipe cadastrada. Edite seu perfil." : "Cadastre sua equipe primeiro.",
       );
-      need(
-        ["Masculino", "Feminino", "Sub-15", "Veteranos"].includes(
-          action.category,
-        ),
-        "Categoria inválida.",
-      );
-      need(
-        ["Amador", "Várzea", "Base", "Semiprofissional"].includes(action.level),
-        "Nível inválido.",
-      );
-      need(clean(action.district, 80), "Informe o bairro.");
+      const validText = (value: unknown, min: number, max: number) =>
+        typeof value === "string" && value.trim().length >= min && value.trim().length <= max;
+      need(validText(action.name, 3, 80), "O nome precisa ter de 3 a 80 caracteres.");
+      need(teamCategories.includes(action.category), "Categoria inválida.");
+      need(teamLevels.includes(action.level), "Nível inválido.");
+      need(validText(action.district, 2, 80), "Informe o bairro com 2 a 80 caracteres.");
+      const city = action.city ?? s.profile.city ?? "";
+      const region = action.state ?? s.profile.state ?? "";
+      if (creating || city || region) {
+        need(validText(city, 2, 80), "Informe a cidade com 2 a 80 caracteres.");
+        need(typeof region === "string" && brazilianStates.includes(region), "Selecione uma UF válida.");
+      }
+      need(action.bio === undefined || (typeof action.bio === "string" && action.bio.trim().length <= 500), "A descrição deve ter no máximo 500 caracteres.");
       s.profile = {
         ...s.profile,
-        name: clean(action.name, 80),
-        district: clean(action.district, 80),
-        category: action.category,
-        level: action.level,
-        bio: clean(action.bio, 500),
+        name: clean(action.name, 80), district: clean(action.district, 80),
+        city: clean(city, 80), state: region,
+        category: action.category, level: action.level, bio: clean(action.bio, 500),
       };
+      s.teamRegistered = true;
+      message = creating ? "Equipe cadastrada com sucesso." : "Equipe atualizada.";
       break;
     }
     case "role":

@@ -21,7 +21,7 @@ import {
 } from "./ui";
 import { GameCard } from "./game-card";
 export function TeamProfile({ id }: { id?: string }) {
-  const { state: s, dispatch, busy } = useStore();
+  const { state: s, dispatch, busy, mode } = useStore();
   const c = useColors();
   const [report, R] = useState(false),
     [reason, S] = useState("");
@@ -34,8 +34,8 @@ export function TeamProfile({ id }: { id?: string }) {
         text="Volte à descoberta para escolher um adversário."
       />
     );
-  const name = own ? s.profile.name : t!.name,
-    district = own ? s.profile.district : t!.district;
+  const location = own ? [s.profile.district, s.profile.city, s.profile.state].filter(Boolean).join(", ") : `${t!.district}, São Paulo`;
+  const name = own ? s.profile.name : t!.name;
   return (
     <Screen>
       <Section
@@ -68,7 +68,7 @@ export function TeamProfile({ id }: { id?: string }) {
                 {name}
               </Txt>
               <Txt style={{ fontSize: 9, color: c.muted, marginTop: 5 }}>
-                {district}, São Paulo
+                {location}
               </Txt>
             </View>
           </Row>
@@ -93,7 +93,7 @@ export function TeamProfile({ id }: { id?: string }) {
                 secondary
                 onPress={() =>
                   Share.share({
-                    message: `Conheça ${s.profile.name} no Desafio Aceito! ${s.profile.category} · ${s.profile.level} · ${s.profile.district}, São Paulo. Perfil de demonstração.`,
+                    message: `Conheça ${s.profile.name} no Desafio Aceito! ${s.profile.category} · ${s.profile.level} · ${location}.`,
                   }).catch(() => Alert.alert("Compartilhamento não concluído"))
                 }
               />
@@ -214,9 +214,7 @@ export function TeamProfile({ id }: { id?: string }) {
         </View>
       )}
       <Note>
-        Os dados das equipes e os históricos desta versão são demonstrativos. O
-        compartilhamento envia um resumo textual do perfil. Perfis públicos
-        ainda não estão publicados.
+        {own && mode !== "demo" ? `Seu cadastro está salvo ${mode === "local" ? "neste aparelho" : "na sua conta"}. Os adversários e as partidas desta versão são demonstrativos.` : "Os dados das equipes e os históricos desta versão são demonstrativos."} O compartilhamento envia um resumo textual. Perfis públicos ainda não estão publicados.
       </Note>
     </Screen>
   );

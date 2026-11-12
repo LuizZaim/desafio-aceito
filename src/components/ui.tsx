@@ -141,7 +141,7 @@ export function Chip({
         paddingVertical: 9,
         paddingHorizontal: 14,
         borderRadius: 9,
-        minHeight: 38,
+        minHeight: 44,
         justifyContent: "center",
       }}
     >
@@ -159,6 +159,8 @@ export function Chip({
   );
 }
 export function Crest({ team, size = 65 }: { team?: Team; size?: number }) {
+  const ownName = useStore().state.profile.name;
+  const initials = ownName.trim().split(/\s+/).slice(0, 2).map(x => x[0]).join("").toUpperCase();
   return (
     <View
       style={{
@@ -184,7 +186,7 @@ export function Crest({ team, size = 65 }: { team?: Team; size?: number }) {
           letterSpacing: -1,
         }}
       >
-        {team?.short || "FT"}
+        {team?.short || initials || "DA"}
       </Text>
       <Text
         style={{ fontSize: size * 0.075, color: "#fff3cc", letterSpacing: 1 }}

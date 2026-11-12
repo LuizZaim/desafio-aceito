@@ -18,6 +18,14 @@ npx expo start
 
 A demonstração salva os registros em SQLite no aparelho, inclusive ao fechar e reabrir. O projeto entregue é código-fonte executável: **o pacote ZIP não é um APK**. A compilação do JavaScript para Android foi verificada; instalação em aparelho e compilação de APK assinado ainda precisam ser realizadas.
 
+## Cadastrar sua própria equipe
+
+Na tela inicial, toque em **Cadastrar ou abrir meu time neste aparelho**. Preencha nome, bairro, cidade, UF, categoria e nível técnico; a descrição é opcional. Toque em **Cadastrar meu time**. Após a confirmação **Seu time está cadastrado!**, escolha **Ver minha equipe**. A nova equipe começa sem matches ou partidas anteriores.
+
+O cadastro local funciona sem servidor e salva os dados no aparelho; ele não cria uma conta online nem publica o time para outras pessoas. Ao reabrir o app, a equipe local é retomada. A demonstração mantém seus próprios dados fictícios, separados da equipe cadastrada. Para editar depois, abra o perfil da equipe.
+
+Para usar uma conta online, configure a API conforme as instruções abaixo e crie uma conta de organizador. Depois conclua o mesmo cadastro de equipe; os dados ficam associados à conta autenticada. Consulte [os critérios de aceite e o roteiro de cadastro](docs/CADASTRO_EQUIPE.md).
+
 ## O que está implementado
 
 - Descoberta, filtros por raio, bairro, nível e categoria, cartões de equipes e perfis.
@@ -25,6 +33,7 @@ A demonstração salva os registros em SQLite no aparelho, inclusive ao fechar e
 - Agendamento com validação de data, horário, local, mando e conflito de agenda.
 - Caução simulada, estados da partida, cancelamento com penalidade ilustrativa e acordo climático.
 - Histórico, registro de placar depois do início do jogo, avaliação única e ranking.
+- Cadastro dedicado da própria equipe, persistência local separada da demonstração e persistência por conta na API.
 - Perfil da equipe, edição, compartilhamento textual, denúncias e desativação com proteção de partidas ativas.
 - Perfil de árbitro, disponibilidade e aceite/recusa de convites da demonstração.
 - Notificações internas, configurações e modo escuro.

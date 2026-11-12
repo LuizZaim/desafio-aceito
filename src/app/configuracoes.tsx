@@ -75,7 +75,7 @@ export default function Settings() {
           Acesso atual:{" "}
           {mode === "demo"
             ? "demonstração offline · dados neste aparelho"
-            : "API conectada · dados por conta"}
+            : mode === "local" ? "meu time · salvo neste aparelho" : "conta conectada · dados por conta"}
         </Txt>
         <Txt style={{ fontSize: 11, color: c.muted }}>
           Perfil: {s.profile.role === "organizador" ? "Organizador" : "Árbitro"}

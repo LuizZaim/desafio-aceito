@@ -6,6 +6,7 @@ export default function Layout() {
   const { mode, state } = useStore();
   const c = useColors();
   if (mode === "none") return <Redirect href="/" />;
+  if (state.teamRegistered === false) return <Redirect href="/editar" />;
   return (
     <Tabs
       screenOptions={{

@@ -26,7 +26,7 @@ export default function Cadastro() {
     B(true);
     try {
       await login(email.trim(), pass, name.trim());
-      router.replace("/(tabs)/descobrir");
+      router.replace("/editar");
     } catch (e) {
       Alert.alert(
         "Cadastro não concluído",
@@ -41,7 +41,7 @@ export default function Cadastro() {
       <Section
         eyebrow="FAÇA PARTE DA RESENHA"
         title="Seu time tem lugar aqui."
-        text="Crie sua conta de organizador e personalize o perfil da equipe."
+        text="Etapa 1 de 2: crie sua conta de organizador. Depois, cadastre sua equipe."
       />
       <Input
         label="Seu nome"
@@ -78,11 +78,7 @@ export default function Cadastro() {
         disabled={busy}
         icon="arrow-forward"
       />
-      <Note>
-        O cadastro usa a API do projeto quando configurada. Para experimentar
-        sem servidor, volte e escolha Explorar demonstração. Cada conta online
-        também possui seu próprio espaço demonstrativo.
-      </Note>
+      <Note>Se o serviço de contas estiver indisponível, volte e escolha Cadastrar ou abrir meu time neste aparelho. Seu cadastro de equipe poderá ser feito sem uma conta.</Note>
     </Screen>
   );
 }
