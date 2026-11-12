@@ -39,6 +39,16 @@
     "scheme": "desafioaceito",
     "experiments": {
       "typedRoutes": false
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "696573dc-edc2-49fd-94f6-6dae4566dddd"
+      }
     }
   }
 }
