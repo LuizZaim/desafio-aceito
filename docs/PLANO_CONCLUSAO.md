@@ -1,40 +1,31 @@
-# Plano de conclusão — PDF e auditoria
+# Aceite do código — auditoria 29–50
 
-Linha-base: documentação técnica revisada do Desafio Aceito e auditoria de 11/11/2026. Revisão do planejamento: 13/11/2026. Um APK de teste já foi gerado na etapa anterior; isso não comprova instalação, servidor publicado nem conclusão do produto.
+Referências: PDF técnico e auditoria de 11/11/2026. A documentação acadêmica original permanece como fonte; este arquivo acompanha apenas implementação, evidências e entrega do app.
 
-O objetivo de aceite do produto é permitir que dois organizadores independentes cadastrem equipes, encontrem adversários compatíveis, registrem interesse mútuo, conversem, acordem uma partida, recebam a confirmação financeira válida e avaliem o jogo concluído. O árbitro usa uma conta habilitada própria. O cadastro salvo apenas no aparelho e a demonstração continuam separados do serviço online.
+**Objetivo final:** demonstrar o aplicativo da faculdade e atender aos critérios de código 29–50, incluindo contas e dados persistidos em API/banco hospedados e acesso HTTPS comprovado. A simulação financeira é intencional: nenhum cartão, gateway ou dinheiro real é necessário para a atividade. O modo local sem servidor é uma alternativa de teste com adversários fictícios, não substitui a evidência de hospedagem e persistência compartilhada solicitada.
 
-## Incremento implementado em 13/11/2026
+| Critérios | Aceite para fechar | Evidência / pendência |
+|---|---|---|
+| 29–33 — Interface | Navegação do sitemap, telas/formulários, loading/sucesso/erro/vazio, validação e uso no celular. | Rotas e regras implementadas; registrar instalação, teclado/Voltar, fonte/legibilidade e matriz de tamanhos. A comparação com o Figma não deve usar prints inventados. |
+| 34–37 — API | Controllers/serviços separados, status semânticos, erros seguros e configuração fora do código. | Testes HTTP e revisão, API Railway publicada e fluxo entre contas verificado sem expor segredos. |
+| 38–41 — Banco | Migrações relacionais, PK/FK/restrições e consultas parametrizadas para entidades do fluxo do PDF. | Entidades do DER lógico mapeadas, migrações 001–006 testadas e verificadas no Neon, fluxo compartilhado aprovado. Localização sem informação e transação externa simulada permanecem NULL. |
+| 42–44 — Git/setup | Histórico organizado, ignore funcional e README reproduzível com código disponibilizado na entrega. | Repositório local/bundle preservam o histórico. O usuário quer GitHub para compartilhar o APK posteriormente; não publicar remoto/release nesta etapa. |
+| 45–47 — Publicação | API e banco realmente disponíveis, HTTPS/certificado verificados; navegação/links nativos homologados. | API Railway/banco Neon, `/health` 200/1.2.0, fluxo compartilhado e HTTP→HTTPS 301 verificados. Novo APK e links nativos ainda precisam de homologação. Critério SPA adaptado à entrega nativa. |
+| 48–50 — Validação final | Testes das regras e exceções passam; integrantes explicam o código e executam o fluxo no APK com dados consistentes. | Resultados executados em `VALIDACAO.md`; APK atualizado, teste físico e ensaio final continuam necessários. Bundle Android não é instalação. |
 
-As etapas 1 e 2 abaixo já possuem base implementada e testes locais: cadastro/publicação de equipe na API, reciprocidade real, conversa privada, proposta com resposta do adversário, agenda compartilhada e conflito interno de equipes/local. Migrações promovem cadastros antigos válidos e preservam incompletos como rascunho. A avaliação da demonstração passou a exigir os quatro critérios do PDF.
+## Roteiro mínimo da entrega
 
-A etapa 2 ainda depende de disponibilidade/reserva externa do campo, e ambas dependem da publicação/instalação para homologação entre aparelhos. A proposta aceita fica aguardando caução; não existe confirmação financeira de produção nesta revisão. Os testes e seus limites estão em `VALIDACAO.md`.
+1. Cadastrar a própria equipe, validar campos, editar e recuperar os dados após fechar/reabrir.
+2. No modo conectado à API hospedada, usar duas contas: descobrir equipes, registrar reciprocidade, conversar e enviar proposta; somente adversário responde.
+3. Simular caução com rótulo explícito e sem cobrança; demonstrar cancelamento comum/climático, proteção contra duplicidade e acesso de terceiro.
+4. Após o horário de início, registrar resultado, avaliar nível técnico/fair play/pontualidade/organização e consultar histórico/ranking compartilhados. Para ensaio, agendar alguns minutos à frente, respeitando a regra de horário.
+5. Mostrar o fluxo de arbitragem disponível e registrar suas limitações conforme a matriz; confirmar estados e persistência no banco.
+6. Testar também o modo local: equipe própria sem matches/partidas antigos, adversários e finanças fictícios identificados, histórico salvo separado da demonstração pronta.
+7. Gerar APK atualizado, instalar e repetir o roteiro escolhido para apresentação. Registrar versão, ambiente, resultado e eventuais falhas; disponibilização pelo GitHub fica para etapa posterior.
 
-## Ordem de execução e critérios de saída
+## Regras de encerramento
 
-| Prioridade / etapa | Entrega | Rastreabilidade | Critério de aceite verificável | Evidência necessária |
-|---|---|---|---|---|
-| P0 — 1 | Equipes online e relação entre duas contas | RF01/02/04/05/06/08/09/10/11/22/23/28; RA02–04/11; auditoria 29/32–41/48 | A e B criam contas e equipes próprias; uma aparece para a outra; um interesse isolado não libera chat; reciprocidade cria um único match; mensagens chegam à outra conta; C não consulta nem envia nessa conversa. Perfil editado reaparece na descoberta. | Integração HTTP/banco implementada e testada. Falta homologação do app conectado entre dois aparelhos. |
-| P0 — 2 | Propostas e agenda compartilhadas | RF12/13/21/27/29/30; RA05/06; auditoria 35/38/39/48 | Proponente cria partida em **Proposta**; somente o adversário pode aceitar/recusar. Aceite válido passa a **Pendente** e não a Confirmada. Banco impede conflito das duas equipes e do campo; encerramento do match não apaga partida ativa. Alterações ficam visíveis aos dois participantes. | Testes de autorização, concorrência, conflitos, estados e reabertura da agenda nos dois dispositivos. |
-| P0 — 3 | Caução e cancelamento conciliados | RF16/17/18; RA07/08; RNF09/12/20/23; auditoria 35/38–41/45/46/48 | Estado Confirmada só vem de confirmação autenticada do gateway; repetição e webhook duplicado não duplicam cobrança. Falha mantém pendência; estorno é rastreável. Clima exige concordância de quem não solicitou. Taxa no dia é maior que taxa padrão, com valores aprovados pelo grupo. | Sandbox do provedor, testes de assinatura/idempotência, falha e estorno; política financeira definida. Simular pagamento continua restrito à demonstração. |
-| P0 — 4 | Publicação segura e novo APK conectado | RF01/02 e fluxo completo; RNF01/04/07/11/13/14/16; auditoria 31/45/46/47/50 | API e banco disponíveis por HTTPS, migrações aplicadas, segredos fora do cliente, backup/restauração e erros observáveis. APK aponta para essa API. Duas instalações completam cadastro → match → chat → proposta e retomam os dados após reiniciar. | URL HTTPS validada, logs sem segredos, restauração testada, build Android assinado e roteiro manual executado. O APK anterior não incorpora mudanças posteriores. |
-| P1 — 5 | Pós-jogo e reputação entre contas | RF14/15/27/29; UC-R02–R06; RA10; auditoria 33/38/39/48 | Participante registra resultado conforme regra de conciliação definida; somente jogo concluído aceita avaliação, uma por equipe/partida. Formulário inclui **pontualidade, fair play, organização e nível técnico**, exigidos nos casos de uso do PDF. Ranking consolida somente dados reais da base online. | Testes de duplicidade, não participante, notas inválidas e cálculo do ranking; homologação da tela. |
-| P1 — 6 | Recuperação e manutenção de conta | RF03; UC-L02/L04/E05; RNF07/08/10; auditoria 29/33/35/36/48 | E-mail de recuperação entregue com token de uso único e expiração; resposta não revela cadastro. Troca de e-mail/senha verifica identidade e revoga sessões conforme política. Google valida identidade no servidor e preserva titularidade da equipe. | Provedor de e-mail/OAuth configurado; testes de token expirado, reutilizado, troca e falha de autorização. |
-| P1 — 7 | Busca geográfica e campos reais | RF06/07/21/28; RNF19; auditoria 38/39/48 | Coordenadas e raio em km produzem distâncias verificáveis; app pede permissão antes de localização e permite região manual. Campo cadastrado possui agenda e disponibilidade centralizadas; bairro não é apresentado como distância medida. | Dados geográficos conhecidos, consultas/testes de limite de raio e homologação de permissão negada. |
-| P1 — 8 | Perfil e contratação real de arbitragem | RF19/20; RA09; RNF21; auditoria 29/35/38/39/48 | Conta de árbitro é habilitada no servidor; organizador não obtém papel por uma troca local. Profissional informa perfil/disponibilidade; convite só pode ser respondido por ele e não cria sobreposição de horário. | Matriz de autorização, integridade PARTIDA_ARBITRO e teste com conta profissional separada. |
-| P1 — 9 | Entrega de notificações e atualização | RF22/23; RA11; RNF17/18; auditoria 32/45/48 | Mensagem recebida e match ficam observáveis entre sessões; erro de atualização permite tentar novamente. Push respeita preferências e registra falhas/reenvios. Tempo real, quando adotado, exige conexão autenticada. | Testes em segundo plano, token inválido, preferências desligadas e reconexão; confirmação em dois aparelhos. |
-| P1 — 10 | Governança, compartilhamento e exclusão | RF24/25/26; RA12; RNF10/21/22/23; auditoria 35/38/39/48 | Perfil público compartilhável não expõe credenciais; denúncia chega à moderação autorizada; política define desativação/exclusão e retenção de mensagens/finanças. Partidas ativas impedem exclusão indevida; histórico dos adversários é preservado. | Testes de acesso e política aprovada; fluxo de moderação e exclusão homologado. |
-| P2 — 11 | Complementos do sitemap e configurações | UC-C02/C03/C04; auditoria 29/30 | Cartões são tokenizados no gateway; nenhum número sensível entra no banco/log. Assinaturas exibem planos/estado reais após definição comercial. Recursos indisponíveis são informados claramente. | Contrato do provedor e planos definidos, telas e testes do fluxo de pagamento. |
-| Transversal | Qualidade, documentação e entrega acadêmica | RNF02/04/05/06/15; auditoria 3/5/25/27/30/31/43/49/50 | Contraste, fonte ampliada, teclado, navegação/voltar, loading/erro/vazio e deep links passam na matriz de aparelhos. Links e capturas autênticas do sitemap/Figma/CASE completam documentação; DFD separa contexto/nível 0/nível 1. Integrantes executam e explicam o fluxo final. | Evidência manual datada, testes de carga proporcionais, histórico Git, capturas reais e ensaio do grupo. |
-
-## Regras para considerar uma etapa pronta
-
-1. Código implementado e compilável, sem alterar a demonstração em fluxo online por engano.
-2. Testes significativos dos caminhos principal, de exceção e de acesso indevido passam; registrar comandos/resultados efetivamente executados em `VALIDACAO.md`.
-3. `REQUISITOS.md` e `AUDITORIA.md` refletem o escopo entregue, distinguindo teste de API, teste de tela e teste físico.
-4. Migração, configuração e instruções permitem reproduzir a etapa; novo APK é necessário para distribuir as alterações móveis quando não houver atualização compatível configurada.
-5. A etapa só libera o próximo marco após suas dependências: publicar equipes não resolve sozinho aceite de partida, gateway ou disponibilidade real.
-
-## Dependências externas que ainda precisam existir
-
-Não se deve fabricar evidências ou marcar o app como concluído por haver telas. Produção depende de ambiente de API/banco com HTTPS, serviços de e-mail/OAuth, provedor financeiro e política de caução, recursos de localização/push, habilitação de árbitros e operação de moderação. Links/capturas de Figma e Miro e o ensaio de cada integrante são evidências documentais separadas da implementação. O quadro `AUDITORIA.md` continua sendo a referência do que foi comprovado.
+- Marcar como atendido somente o que possui evidência: testes locais, configuração, deploy e teste físico são evidências distintas.
+- Os critérios 45/46 possuem evidência de API/banco publicados e HTTPS; isso não comprova novo APK instalado ou links nativos homologados. Não substituir essas evidências entre si.
+- Não exigir serviços comerciais de pagamentos para uma simulação acadêmica; declarar esse recorte nos requisitos e na auditoria.
+- Não reescrever o PDF acadêmico, inventar capturas de Figma/CASE ou declarar 100% por existir código/telas. A auditoria de implementação é `AUDITORIA.md`; testes são `VALIDACAO.md`.

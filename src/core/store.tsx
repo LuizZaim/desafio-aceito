@@ -17,11 +17,13 @@ import {
 import { initialState, freshState, transition, teams as demoTeams, type State, type Team } from "./domain";
 import { getToken, setToken, request, ApiError } from "./api";
 import { WorkspaceSession, type WorkspaceSnapshot } from "./workspace-session";
+import type { ArbitrationState } from "./arbitration";
 
 type Mode = "none" | "demo" | "online" | "local";
 interface Store {
   state: State;
   teams: Team[];
+  arbitration: ArbitrationState;
   currentTeamId: string | null;
   ready: boolean;
   error: string;
@@ -44,6 +46,7 @@ const errorText = (error: unknown) =>
 export function Provider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState(initialState),
     [onlineTeams, setOnlineTeams] = useState<Team[]>([]),
+    [arbitration, setArbitration] = useState<ArbitrationState>({ profile: null, professionals: [], invites: [] }),
     [currentTeamId, setCurrentTeamId] = useState<string | null>(null),
     [ready, setReady] = useState(false),
     [mode, setMode] = useState<Mode>("none"),
@@ -63,6 +66,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
       stateRef.current = data.state;
       setState(data.state);
       setOnlineTeams(data.teams);
+      setArbitration(data.arbitration);
       setCurrentTeamId(data.currentTeamId);
       setLastSyncedAt(Date.now());
       setSyncError("");
@@ -79,6 +83,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
     invalidateEpoch();
     online.current!.reset();
     setOnlineTeams([]);
+    setArbitration({ profile: null, professionals: [], invites: [] });
     setCurrentTeamId(null);
     setLastSyncedAt(null);
     setSyncError("");
@@ -206,8 +211,6 @@ export function Provider({ children }: { children: React.ReactNode }) {
       }
       if (modeRef.current === "none")
         throw Error("Abra sua equipe ou entre na demonstração para continuar.");
-      if (modeRef.current === "local" && ["interest", "skip", "report", "send", "schedule"].includes(action?.type))
-        throw Error("Para interagir com outros times, entre em uma conta conectada. Os times fictícios ficam na demonstração.");
       const next = transition(stateRef.current, action);
       await saveState(next.state, modeRef.current === "local" ? "team-local-v1" : "demo-v1");
       if (epoch !== sessionEpoch.current) return false;
@@ -324,7 +327,8 @@ export function Provider({ children }: { children: React.ReactNode }) {
   return (
     <Context.Provider value={{
       state,
-      teams: mode === "demo" ? demoTeams : mode === "online" ? onlineTeams : [],
+      teams: mode === "demo" || mode === "local" ? demoTeams : mode === "online" ? onlineTeams : [],
+      arbitration,
       currentTeamId,
       ready,
       error,

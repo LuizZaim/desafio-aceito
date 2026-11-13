@@ -109,7 +109,7 @@ export default function Settings() {
           da FECAP. Versão {Constants.expoConfig?.version || "não informada"}.
         </Txt>
         <Txt style={{ fontSize: 11, color: c.muted, lineHeight: 20 }}>
-          {mode === "online" ? "Equipes cadastradas, interesses mútuos e mensagens são compartilhados entre contas conectadas ao mesmo servidor. Propostas compartilhadas exigem aceite do adversário e ficam aguardando caução. As cobranças ainda estão em preparação." : mode === "local" ? "Seu cadastro permanece neste aparelho e não é publicado para outros usuários. A demonstração separada permite experimentar o fluxo com equipes fictícias." : "Os adversários, as respostas mútuas e as cauções desta demonstração são fictícios."} Google, recuperação por e-mail, geolocalização e push ainda dependem de integrações.
+          {mode === "online" ? "Equipes cadastradas, interesses mútuos e mensagens são compartilhados entre contas conectadas ao mesmo servidor. Propostas compartilhadas exigem aceite do adversário. A caução simulada confirma o jogo; depois do horário de início, é possível registrar o placar e avaliar o adversário. Todas as cobranças são fictícias, para apresentação acadêmica." : mode === "local" ? "Seu time permanece neste aparelho. Os adversários, interesses recebidos e respostas de conversa são fictícios; você pode demonstrar matches, agenda, caução, resultado e avaliação sem internet. Nenhuma equipe real recebe seus dados." : "Os adversários, as respostas mútuas e as cauções desta demonstração são fictícios."} Google, recuperação por e-mail, geolocalização e push ainda dependem de integrações.
         </Txt>
       </Card>
       <View style={{ marginTop: 22 }}>

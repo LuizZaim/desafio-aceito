@@ -20,20 +20,9 @@ export default function Schedule() {
   const [id, I] = useState(params.id || s.matches[0]),
     [date, D] = useState(dateAfter(5).split("-").reverse().join("/")),
     [time, T] = useState("10:00"),
-    [field, F] = useState(mode === "demo" ? fields[0] : ""),
+    [field, F] = useState(mode !== "online" ? fields[0] : ""),
     [home, H] = useState(mode === "online" ? currentTeamId || "" : s.profile.name);
   const team = teams.find((t) => t.id === id);
-  if (mode === "local")
-    return (
-      <Screen>
-        <Empty
-          title="Seu time está salvo neste aparelho"
-          text="Para propor jogos a outros organizadores, entre com uma conta conectada ao servidor. A demonstração permite conhecer o fluxo com equipes fictícias."
-        >
-          <Button title="Voltar" secondary onPress={() => router.back()} />
-        </Empty>
-      </Screen>
-    );
   if (!s.matches.length)
     return (
       <Screen>
@@ -71,7 +60,7 @@ export default function Schedule() {
     ) {
       Alert.alert(
         "Proposta criada",
-        mode === "online" ? "A outra equipe precisa aceitar a proposta na agenda. O amistoso só será confirmado depois da caução, cuja integração ainda está em preparação." : "Simule a caução para confirmar seu amistoso.",
+        mode === "online" ? "A outra equipe precisa aceitar a proposta na agenda. Depois, simule a caução para confirmar o amistoso na apresentação. Nenhum valor será cobrado." : "Simule a caução para confirmar seu amistoso.",
       );
       router.replace("/(tabs)/agenda");
     }
@@ -166,7 +155,7 @@ export default function Schedule() {
         onPress={submit}
       />
       <Note>
-        {mode === "online" ? "A agenda verifica sobreposição de 2 horas das duas equipes e do local informado entre as propostas deste aplicativo. Isso não reserva o campo junto ao estabelecimento. Após o aceite adversário, a partida aguarda a integração de caução e permanece sem confirmação." : "A agenda bloqueia conflitos com intervalo de 2 horas entre seus jogos. A disponibilidade do campo e a confirmação adversária são demonstrativas nesta versão."}
+        {mode === "online" ? "A agenda verifica sobreposição de 2 horas das duas equipes e do local informado entre as propostas deste aplicativo. Isso não reserva o campo junto ao estabelecimento. Após o aceite adversário, simule a caução para confirmar a partida no aplicativo. Nenhum valor será cobrado." : "A agenda bloqueia conflitos com intervalo de 2 horas entre seus jogos. A disponibilidade do campo e a confirmação adversária são demonstrativas nesta versão."}
       </Note>
     </Screen>
   );

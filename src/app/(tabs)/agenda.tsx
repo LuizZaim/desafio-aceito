@@ -29,10 +29,10 @@ export default function Agenda() {
         text="Acompanhe propostas, amistosos e seu histórico em campo."
       />
       <Button
-        title={mode === "local" ? "Sobre o agendamento" : "Agendar amistoso"}
+        title="Agendar amistoso"
         icon="add"
         onPress={() =>
-          mode === "local" || s.matches.length
+          s.matches.length
             ? router.push({
                 pathname: "/agendar",
                 params: { id: s.matches[0] },
@@ -54,11 +54,11 @@ export default function Agenda() {
       ) : (
         <Empty
           title="Nenhuma partida por aqui"
-          text={mode === "local" ? "Seu cadastro está salvo no aparelho. Uma conta conectada permite enviar propostas às equipes com match." : "As propostas enviadas e recebidas, as partidas e os cancelamentos aparecerão nesta área."}
+          text={mode === "online" ? "As propostas enviadas e recebidas, as partidas e os cancelamentos aparecerão nesta área." : "Demonstre interesse por uma equipe fictícia para obter um match e agendar seu primeiro amistoso simulado."}
         />
       )}
       <Note>
-        {mode === "online" ? "Propostas exigem aceite adversário e continuam aguardando caução. O gateway de pagamento ainda não está disponível; nenhuma cobrança, estorno ou confirmação financeira é processada." : "A caução e as taxas de cancelamento da demonstração são simuladas. Nenhum pagamento ou estorno real é processado."}
+        {mode === "online" ? "Propostas exigem aceite adversário. A caução e as taxas são simuladas para a apresentação acadêmica: nenhuma cobrança ou estorno real é processado." : "A caução e as taxas de cancelamento da demonstração são simuladas. Nenhum pagamento ou estorno real é processado."}
       </Note>
     </Screen>
   );

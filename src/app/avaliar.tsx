@@ -13,10 +13,11 @@ import {
   Crest,
   Empty,
   useColors,
+  DemoLabel,
 } from "../components/ui";
 export default function Review() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { state: s, dispatch, busy, teams } = useStore();
+  const { state: s, dispatch, busy, teams, mode } = useStore();
   const c = useColors();
   const [skill, S] = useState(5),
     [fair, F] = useState(5),
@@ -35,6 +36,7 @@ export default function Review() {
   const t = teams.find((t) => t.id === g.team);
   return (
     <Screen>
+      <DemoLabel />
       <Section
         eyebrow="O RESPEITO TAMBÉM VALE PONTO"
         title="Como foi o jogo?"
@@ -86,7 +88,7 @@ export default function Review() {
           if (await dispatch({ type: "review", id, skill, fair, punctuality, organization })) {
             Alert.alert(
               "Avaliação registrada",
-              "Sua nota foi incluída no histórico e no ranking da demonstração.",
+              mode === "online" ? "Sua avaliação foi salva para esta partida e compõe o ranking da equipe adversária." : "Sua nota foi incluída no histórico e no ranking da demonstração.",
             );
             router.back();
           }

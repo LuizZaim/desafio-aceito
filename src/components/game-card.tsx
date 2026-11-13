@@ -19,7 +19,7 @@ export const formatDate = (d: string) =>
     month: "short",
   });
 export function GameCard({ game: g }: { game: Game }) {
-  const { state: s, teams, mode } = useStore();
+  const { state: s, teams } = useStore();
   const c = useColors();
   const t = teams.find((t) => t.id === g.team);
   return (
@@ -30,6 +30,7 @@ export function GameCard({ game: g }: { game: Game }) {
           {g.payment === "Simulada" ? "Caução simulada" : g.payment}
         </Txt>
       </Row>
+      {g.simulated && <Txt style={{ fontSize: 10, color: c.muted, marginTop: 10 }}>Pós-jogo simulado para apresentação</Txt>}
       <Row style={{ justifyContent: "space-around", paddingVertical: 24 }}>
         <View style={{ alignItems: "center", gap: 9, width: "40%" }}>
           <Crest size={45} />
@@ -86,7 +87,7 @@ export function GameCard({ game: g }: { game: Game }) {
         <Button
           title={
             g.status === "Aguardando caução"
-              ? mode === "demo" ? "Confirmar caução simulada" : "Ver pendência da caução"
+              ? "Simular caução"
               : g.status === "Aguardando adversário" ? g.canRespond ? "Responder proposta" : "Acompanhar proposta" : "Ver partida"
           }
           secondary={g.status !== "Aguardando caução"}

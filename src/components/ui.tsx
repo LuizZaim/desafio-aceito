@@ -517,9 +517,9 @@ export function DemoLabel() {
   const c = useColors();
   const { mode, syncing, syncError, lastSyncedAt, reload } = useStore();
   const text = mode === "online"
-    ? "Conta conectada · equipes e conversas entre contas"
+    ? "Conta conectada · apresentação acadêmica · caução simulada"
     : mode === "local"
-      ? "Meu time · salvo somente neste aparelho"
+      ? "Meu time local · adversários e respostas fictícios · caução simulada"
       : "Demonstração · equipes fictícias · sem cobranças reais";
   return (
     <View style={{ marginBottom: 20, gap: 9 }}>

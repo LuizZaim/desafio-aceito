@@ -19,6 +19,7 @@ export type Team = {
   bio: string;
   reciprocal?: boolean;
   active?: boolean;
+  reviewCount?: number;
 };
 export type Game = {
   id: string;
@@ -33,6 +34,14 @@ export type Game = {
   proposerId?: string;
   canRespond?: boolean;
   canWeatherAgree?: boolean;
+  simulated?: boolean;
+  refereeAssignments?: {
+    id: string;
+    refereeId: string;
+    name: string;
+    role: "arbitro" | "bandeirinha1" | "bandeirinha2";
+    status: "Pendente" | "Aceito" | "Recusado" | "Cancelado";
+  }[];
   score?: string;
   review?: {
     skill: number;
@@ -454,11 +463,12 @@ export function transition(
       message = "Acordo adversário simulado. Cancelamento sem penalidade.";
       break;
     }
+    case "simulateResult":
     case "result": {
       const g = s.games.find((g) => g.id === id);
       need(g && g.status === "Confirmada", "Partida precisa estar confirmada.");
       need(
-        new Date(`${g.date}T${g.time}:00-03:00`).getTime() < Date.now(),
+        action.type === "simulateResult" || new Date(`${g.date}T${g.time}:00-03:00`).getTime() < Date.now(),
         "O resultado só pode ser registrado após o início da partida.",
       );
       need(
@@ -472,7 +482,10 @@ export function transition(
       );
       g.score = `${+action.a} × ${+action.b}`;
       g.status = "Concluída";
-      message = "Resultado registrado. A avaliação está liberada.";
+      if (action.type === "simulateResult") g.simulated = true;
+      message = action.type === "simulateResult"
+        ? "Jogo simulado para apresentação. A avaliação está liberada."
+        : "Resultado registrado. A avaliação está liberada.";
       break;
     }
     case "review": {

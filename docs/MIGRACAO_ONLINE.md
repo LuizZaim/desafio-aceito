@@ -2,6 +2,8 @@
 
 A rede entre equipes usa a API e o PostgreSQL. O armazenamento local do aparelho e a demonstração não são publicados nem enviados ao banco por esta migração.
 
+Essa rede pode executar em servidor local para testes; a entrega final do checklist 29–50 também exige sua publicação/HTTPS comprovados. O modo local do APK é uma alternativa que funciona sem API. Cauções, penalidades e estornos desta versão são simulados mesmo no banco compartilhado; não há cartão, gateway ou movimentação financeira.
+
 ## Aplicação das migrações
 
 O comando `cd api && npm run migrate` aplica os arquivos numerados de `api/migrations` em ordem, registra os nomes em `schema_migrations` e executa a migração em transação. O processo usa trava do PostgreSQL para evitar dois aplicadores simultâneos. Não editar uma migração já aplicada para alterar a base existente; mudanças posteriores devem entrar em um novo arquivo numerado.
@@ -29,9 +31,13 @@ No fluxo Docker, o serviço da API executa a migração antes de iniciar. Isso p
 | MATCH | `team_matches` | Par ordenado único e estado ativo; acesso depende da participação. Encerrar oculta a conversa sem apagá-la; novo interesse mútuo do mesmo par reativa a relação/histórico. |
 | MENSAGEM | `messages` | FK de match/remetente e texto limitado; validação do remetente é responsabilidade do serviço autenticado. |
 | Notificação / denúncia | `notifications` e `team_reports` | Registro interno persistente não comprova entrega de push ou operação de moderação. |
-| PARTIDA / CAMPO | `games` e `fields`, migração `003_shared_proposals.sql` | Proposta, aceite adversário e cancelamento compartilhados. Conflitos de 2 h verificados para ambas as equipes e local informado. Campo é deduplicado por texto, sem agenda do gestor ou coordenadas; a proposta aceita ainda aguarda caução. |
-| CAUCAO / AVALIACAO / PARTIDA_ARBITRO | Evolução separada ainda necessária | Pagamentos, resultados, avaliações e arbitragem não estão liberados no servidor online. O DER e o ciclo completo da partida não estão concluídos. |
+| PARTIDA / CAMPO | `games` e `fields`, migrações 003/004/006 | Proposta, resposta adversária, caução simulada, cancelamento e resultado. Conflito de 2 h para ambas as equipes/local informado, sem reserva externa. Endereço e latitude/longitude opcionais adicionados na 006; par de coordenadas validado quando informado, legado permanece NULL. Placar só após início e por participante. |
+| CAUCAO | `simulated_deposits`, migrações 004/006 | PK própria `id` e `game_id` único, valor ilustrativo do servidor, estados/penalidades simulados. Campo opcional único `external_transaction_id` mapeia o DER, mas permanece NULL nas simulações. Não há processamento financeiro. |
+| AVALIACAO | `game_reviews`, migrações 004/006 | PK própria `id` e par partida/avaliador único; FK de equipes e quatro notas inteiras de 1–5. Serviço verifica conclusão/participação e define adversário; catálogo consolida médias recebidas. |
+| ARBITRO / PARTIDA_ARBITRO | `referees` e `game_referees`, migração `005_referee_assignments.sql` | Perfil por usuário, disponibilidade/região/tipo; convite privado por partida/vaga/profissional, aceite/recusa e histórico. FK e índices únicos impedem duas alocações ativas na mesma vaga ou do mesmo profissional na partida. Serviço exige participante/convocado e evita conflito de 2 h. Perfil é autodeclarado para a atividade, sem verificação externa. |
 
-O workspace JSONB guarda preferências, equipes puladas e rascunho quando necessário; não concede propriedade, match ou conversa e não é evidência de conclusão das entidades relacionais pendentes. A auditoria 38/39 permanece parcial enquanto o fluxo completo e suas integridades não forem implementados e testados.
+O workspace JSONB guarda preferências, equipes puladas e rascunho quando necessário; não concede propriedade, match ou conversa. A Figura 18 (página física 36/impressa 35 do PDF) foi inspecionada visualmente. A migração `006_der_entity_identifiers.sql` cobre os atributos de campo e identificadores próprios de caução/avaliação nela representados, preservando unicidade e dados anteriores. A figura não explicita marcadores de cardinalidade; não foram inferidos requisitos a partir de conectores sem marcação. Campos opcionais sem informação real permanecem NULL.
+
+Na base hospedada do Neon foram verificados `schema_migrations` com 001–006, colunas de endereço/coordenadas, PKs próprias e restrições únicas de cauções/avaliações. A API Railway voltou a responder `/health` com versão 1.2.0 após a atualização. O teste de fumaça completo anterior foi preservado; após a migração aditiva foram verificadas implantação, saúde e estrutura, sem repetir desnecessariamente todas as mutações.
 
 Os resultados efetivamente executados de migração e integração são registrados em `VALIDACAO.md`. Este documento descreve o desenho e a operação; não comprova execução em banco de produção.

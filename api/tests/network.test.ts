@@ -45,7 +45,7 @@ test("rede real: duas contas, reciprocidade, chat privado, notificações, denú
     await alice.act({type:"interest",id:"vila"},404);
     await alice.act({type:"interest",id:a},400);
     await alice.act({type:"role",role:"arbitro"},403);
-    await alice.act({type:"pay",id:b},409);
+    await alice.act({type:"pay",id:b},404);
     const first = await alice.act({type:"interest",id:b});
     assert.deepEqual(first.state.matches,[]);
     assert.deepEqual((await bob.state()).state.matches,[]);

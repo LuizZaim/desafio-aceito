@@ -218,7 +218,7 @@ export function TeamProfile({ id }: { id?: string }) {
         </View>
       )}
       <Note>
-        {mode === "online" ? "Seu time pode ser encontrado por outras contas conectadas. As conversas exigem interesse mútuo. Propostas de amistoso exigem aceite da outra equipe. A integração de pagamentos ainda está em preparação." : mode === "local" ? "Seu cadastro está salvo somente neste aparelho. Entre com uma conta para publicar uma equipe quando o servidor estiver disponível." : "Os dados das equipes e os históricos desta demonstração são fictícios."} O compartilhamento envia um resumo textual.
+        {mode === "online" ? "Seu time pode ser encontrado por outras contas conectadas. As conversas exigem interesse mútuo. Propostas de amistoso exigem aceite da outra equipe. A caução é simulada para a apresentação acadêmica, sem cobranças reais." : mode === "local" ? "Seu time está salvo neste aparelho. Os adversários, os interesses recebidos e as respostas de conversa deste modo são fictícios, para apresentar o fluxo sem internet. Nenhuma equipe real recebe seus dados." : "Os dados das equipes e os históricos desta demonstração são fictícios."} O compartilhamento envia um resumo textual.
       </Note>
     </Screen>
   );

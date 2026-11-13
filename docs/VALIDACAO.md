@@ -1,6 +1,30 @@
 # Evidências de validação
 
-## Rede de equipes e propostas compartilhadas — 13/11/2026
+## Fluxo acadêmico completo — 13/11/2026
+
+Código-fonte **1.2.0**. Esta seção atualiza o comportamento da etapa anterior: caução, penalidade e estorno passaram a ser simulados também no modo conectado, permitindo concluir o fluxo esportivo sem gateway. Nenhum dinheiro real é cobrado. A API/banco hospedados foram verificados pelos testes de fumaça abaixo; instalação em aparelho e novo APK ainda não estão comprovados.
+
+| Verificação executada | Resultado |
+|---|---|
+| `npm test` no aplicativo | 29 testes passaram: 17 de domínio, 1 de fluxo acadêmico offline, 2 de persistência e 9 de sessão/transporte. Incluem cadastro próprio e dados separados da demonstração pronta. |
+| `npm run typecheck` e `npm run lint` | Passaram após as telas e o estado de arbitragem conectada, sem erros/avisos. |
+| Exportação Android/Hermes | Passou: 1.212 módulos, bundle de aproximadamente 2,8 MB. Não é APK instalável. |
+| Persistência local | Adaptadores nativo (SQL executado contra SQLite de teste) e web verificam cadastro próprio → adversário fictício → match → conversa → partida → caução simulada, reabertura e isolamento da demonstração. Não executa a ponte Expo em um celular real. |
+| `cd api && npm test` | 8 cenários passaram: os 5 da etapa abaixo, fluxo acadêmico, arbitragem e preservação/alinhamento de entidades na migração 006. Incluem validação conjunta de coordenadas opcionais, novas PKs/uniques, dados anteriores e ausência de localização/transação externa inventadas. |
+| `cd api && npm run build` | Passou após as migrações 001–006 e os fluxos acadêmico/arbitragem. |
+| Caução/cancelamento | Participante simula após aceite bilateral e antes do horário do jogo; duplicidade e acesso de terceiro recusados. Valor controlado pelo servidor. Cancelamento usa penalidade ilustrativa de R$ 10/R$ 30; clima requer o outro organizador e registra estorno simulado sem penalidade. |
+| Resultado/avaliação | Resultado somente após início e por participante; placar apresentado na perspectiva de cada equipe. Uma avaliação por participante/partida, com quatro notas inteiras 1–5; médias recebidas consolidadas no servidor. |
+| Arbitragem | Cenário com seis contas verifica perfil/edição, disponibilidade, dados públicos sem credenciais, convite privado, resposta só do designado, tipo/vaga corretos, conflito de 2 h, recusa/novo convite, impossibilidade de apitar a própria equipe e cancelamento das alocações quando o jogo é cancelado. Perfil autodeclarado, sem certificação externa. |
+| Deploy API/banco | API Railway com PostgreSQL Neon; `GET https://desafio-aceito-api-production.up.railway.app/health` respondeu 200, versão 1.2.0. 16 tabelas e aplicação das migrações 001–006 verificadas na base hospedada. Nenhum repositório GitHub foi publicado. |
+| HTTPS | Requisição HTTPS concluída e acesso HTTP redirecionado para HTTPS com status 301. Isso comprova o endpoint verificado, não um ensaio de segurança/carga completo. |
+| Teste de fumaça no ambiente hospedado | Fluxo com três contas passou: autenticação/persistência, reciprocidade, chat privado, proposta bilateral, caução simulada, convite/aceite por árbitro designado e cancelamento compartilhado. Equipes de teste desativadas e sessões encerradas ao final. |
+| Atualização aditiva 006 hospedada | Deploy concluído e `/health` 200/1.2.0. SQL confirmou colunas de campo, PK própria de caução/avaliação, unicidade por partida/avaliador e transação externa opcional. A caução simulada já existente permaneceu preservada, com ID não nulo e transação externa NULL. O fluxo completo acima ocorreu antes da 006; após ela foram verificados estrutura, preservação e saúde, com contrato da API mantido. |
+
+Os testes de integração automatizados usam PostgreSQL/PGlite local; o teste de fumaça adicional acima executou contra a API e o banco realmente hospedados. O modo local continua disponível sem servidor e com dados fictícios identificados. Não houve teste de gateway financeiro, Docker local, carga, instalação em aparelho ou ensaio do grupo. O APK antigo não inclui automaticamente o código 1.2.0; um novo APK permanece pendente.
+
+**Pendência do APK 1.2.0:** a tentativa de iniciar a compilação foi bloqueada pela revisão automática de aprovação, que exigiu autorização explícita para enviar o código-fonte privado ao Expo/EAS. A autenticação da conta não supriu essa exigência. Não há novo APK concluído nesta etapa; o link histórico abaixo é da versão anterior.
+
+## Etapa anterior: rede de equipes e propostas — 13/11/2026
 
 Versão do código-fonte: **1.1.0**. Esta revisão não gerou novo APK.
 
@@ -18,7 +42,7 @@ Versão do código-fonte: **1.1.0**. Esta revisão não gerou novo APK.
 | Migração | Cadastro válido preservado sem importar matches/mensagens fictícios; reaplicação testada; FK/CHECK rejeitam registros inválidos; cadastro incompleto mantém dados para edição até preencher a região. |
 | Exportação Android/Hermes | Passou: 1.210 módulos, bundle de aproximadamente 2,8 MB. A exportação não produz APK instalável. |
 
-O modo online consulta mudanças a cada 8 s em primeiro plano, ao retornar ao app e por atualização manual. Esses testes não comprovam WebSocket, push, API hospedada ou desempenho sob carga. Agendamento verifica registros internos e não equivale à reserva de campo real. Resultado, avaliação compartilhada, arbitragem e caução financeira permanecem bloqueados online até integrações próprias.
+Naquela etapa, resultado, avaliação compartilhada, arbitragem e caução ainda estavam bloqueados online; o fluxo acadêmico descrito acima substitui parte dessa limitação. O modo conectado consulta a cada 8 s em primeiro plano/retomada/manual, sem comprovar WebSocket/push ou desempenho sob carga. Agendamento verifica registros internos, sem reserva externa de campo.
 
 Não houve novo APK, instalação/homologação em aparelho, execução Docker/PostgreSQL de produção, deploy HTTPS ou teste com gateway de pagamentos nesta revisão. O roteiro de aceite entre dispositivos está em `HOMOLOGACAO_ENTRE_CONTAS.md` e o comportamento das migrações em `MIGRACAO_ONLINE.md`.
 

@@ -74,7 +74,7 @@ export default function Discover() {
         <Row>
           <Icon name="location-outline" size={15} color={c.muted} />
           <Txt style={{ fontSize: 11, color: c.muted }}>
-            {mode === "demo" ? `São Paulo · até ${f.radius} km` : [s.profile.city, s.profile.state].filter(Boolean).join(" · ") || "Sua região"}
+            {mode !== "online" ? `Distâncias ilustrativas · até ${f.radius} km` : [s.profile.city, s.profile.state].filter(Boolean).join(" · ") || "Sua região"}
           </Txt>
         </Row>
         <Pressable
@@ -207,7 +207,7 @@ export default function Discover() {
               </Row>
               <Row style={{ gap: 3 }}>
                 <Icon name="star" size={12} color="#b99b52" />
-                <Txt style={{ fontSize: 11, color: "#b99b52" }}>{t.games > 0 ? t.rating.toFixed(1) : "Sem avaliações"}</Txt>
+                <Txt style={{ fontSize: 11, color: "#b99b52" }}>{(mode === "online" ? (t.reviewCount ?? (t.rating > 0 ? 1 : 0)) > 0 : t.games > 0) ? t.rating.toFixed(1) : "Sem avaliações"}</Txt>
               </Row>
             </Row>
             <Txt
@@ -232,11 +232,11 @@ export default function Discover() {
               <Row style={{ gap: 5 }}>
                 <Icon name="calendar-outline" size={14} color={c.muted} />
                 <Txt style={{ fontSize: 9, color: c.muted }}>
-                  {mode === "demo" ? "Finais de semana" : "Combine pelo chat"}
+                  {mode !== "online" ? "Finais de semana" : "Combine pelo chat"}
                 </Txt>
               </Row>
               <Txt style={{ fontSize: 8, color: "#7e9b6c" }}>
-                {mode === "demo" ? "● Disponível para jogar" : "Equipe cadastrada"}
+                {mode !== "online" ? "● Disponível para jogar" : "Equipe cadastrada"}
               </Txt>
             </Row>
             <Row style={{ marginTop: 18 }}>
@@ -260,10 +260,10 @@ export default function Discover() {
         </Card>
       ) : (
         <Empty
-          title={mode === "local" ? "Seu time está cadastrado" : "O campo está livre por aqui"}
-          text={mode === "local" ? "Este cadastro está salvo no aparelho e não publica seu time. Entre com uma conta para encontrar outras equipes quando o servidor estiver disponível." : !activeTeams.length ? "Ainda não há outras equipes cadastradas disponíveis. Atualize esta tela depois que outro organizador cadastrar um time." : "Amplie seus filtros ou reveja equipes puladas para encontrar outros adversários."}
+          title="O campo está livre por aqui"
+          text={!activeTeams.length && mode === "online" ? "Ainda não há outras equipes cadastradas disponíveis. Atualize esta tela depois que outro organizador cadastrar um time." : "Amplie seus filtros ou reveja equipes puladas para encontrar outros adversários."}
         >
-          {mode !== "local" && <Button
+          <Button
             title="Ampliar busca"
             icon="refresh-outline"
             onPress={() => {
@@ -277,7 +277,7 @@ export default function Discover() {
               F(x);
               dispatch({ type: "resetDiscovery" });
             }}
-          />}
+          />
         </Empty>
       )}
       <Row style={{ justifyContent: "center", marginVertical: 20, gap: 5 }}>
@@ -294,7 +294,7 @@ export default function Discover() {
         }}
       >
         <Txt style={{ fontWeight: "800", fontSize: 15 }}>
-          {mode === "local" ? "Entre na comunidade" : "Mais times, mais resenha"}
+          Mais times, mais resenha
         </Txt>
         <Txt style={{ fontSize: 9, color: c.muted }}>Comunidade</Txt>
       </Row>

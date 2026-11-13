@@ -80,6 +80,34 @@ for (const platform of ["native SQLite", "web QA"]) {
       assert.equal(await storage.getLocalSession(), false);
       assert.equal((await storage.loadState("team-local-v1")).profile.bio, "Jogamos aos domingos.");
       assert.equal((await storage.loadState()).profile.name, "Demo alterada");
+
+      // Classroom mode uses the owner's fresh profile with explicitly fictional opponents.
+      let own = await storage.loadState("team-local-v1");
+      assert.deepEqual(Array.from(own.matches), []);
+      assert.deepEqual(Array.from(own.games), []);
+      own = domain.transition(own, { type: "interest", id: "vila" }).state;
+      assert.deepEqual(own.matches, ["vila"]);
+      own = domain.transition(own, { type: "send", id: "vila", text: "Vamos testar um amistoso?" }).state;
+      own = domain.transition(own, {
+        type: "schedule", id: "vila", date: domain.dateAfter(5), time: "14:00",
+        field: domain.fields[0], home: own.profile.name,
+      }).state;
+      const game = own.games[0].id;
+      own = domain.transition(own, { type: "pay", id: game }).state;
+      assert.equal(own.games[0].payment, "Simulada");
+      assert.equal(own.games[0].status, "Confirmada");
+      await storage.saveState(own, "team-local-v1");
+      await storage.setLocalSession(true);
+      storage = open();
+      const resumed = await storage.loadState("team-local-v1");
+      assert.equal(resumed.profile.name, "União do Bairro");
+      assert.equal(resumed.messages.vila[0].text, "Vamos testar um amistoso?");
+      assert.equal(resumed.games[0].id, game);
+      assert.equal(resumed.games[0].payment, "Simulada");
+      const isolatedDemo = await storage.loadState();
+      assert.equal(isolatedDemo.profile.name, "Demo alterada");
+      assert.ok(!isolatedDemo.games.some((row) => row.id === game));
+      assert.ok(!isolatedDemo.matches.includes("vila"));
     } finally {
       close();
     }

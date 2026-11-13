@@ -12,6 +12,7 @@ import {
 } from "node:crypto";
 import { promisify } from "node:util";
 import { Network } from "./network";
+import { Arbitration } from "./arbitration";
 import type { Database } from "./db";
 const scrypt = promisify(_scrypt);
 const digest = (x: string) => createHash("sha256").update(x).digest("hex");
@@ -103,6 +104,7 @@ export class Service {
   }
   async getState(user: string) { return new Network(this.db).state(user); }
   async update(user: string, body: any) { return new Network(this.db).update(user, body); }
+  async referee(user: string) { return new Arbitration(this.db).snapshot(user); }
   async teams(user: string) { return new Network(this.db).catalog(user); }
   async team(user: string, id: string) { return new Network(this.db).publicProfile(user, id); }
 }

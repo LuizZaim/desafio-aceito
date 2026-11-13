@@ -2,6 +2,8 @@
 
 Escopo: documento técnico fornecido + código desta entrega mobile. Revisão do planejamento em 13/11/2026. Os itens marcados como atendidos **no PDF** não são evidência de código. A validação abaixo é uma conferência técnica, não uma nota acadêmica ou certificação. Não houve acesso autenticado ao Figma, Miro ou Stitch. O [plano de conclusão](PLANO_CONCLUSAO.md) organiza as próximas entregas e os critérios de aceite.
 
+**Escopo da entrega:** aplicativo demonstrativo da faculdade, com operações financeiras simuladas e identificadas. O usuário solicitou o atendimento dos critérios de código 29–50 com API/banco hospedados e persistência compartilhada. API Railway/banco Neon e HTTPS foram verificados conforme `VALIDACAO.md`; novo APK, teste físico e ensaio permanecem separados. O modo local sem API é uma alternativa com adversários fictícios. Gateway real/cobranças não fazem parte da simulação. O PDF original não foi reescrito.
+
 Legenda: **A** = evidência encontrada no escopo indicado; **P** = parcial ou exige evidência adicional; **F** = falta implementar/verificar; **N/A** = critério de web que deve ser adaptado ao mobile.
 
 | # | Critério | Situação | Evidência / falta |
@@ -14,7 +16,7 @@ Legenda: **A** = evidência encontrada no escopo indicado; **P** = parcial ou ex
 | 6 | Introdução da arquitetura | A no PDF | Página 9. |
 | 7 | Arquitetura funcional | A no PDF | Figura 3 e tabela. |
 | 8 | Arquitetura técnica | A no PDF | Figura 4 e tabela. A implementação efetiva é menor que a especificação. |
-| 9 | MVC e hospedagem | A no PDF | Figura 5 e descrição; deploy do app/API não comprovado. |
+| 9 | MVC e hospedagem | A no PDF | Figura 5 e descrição; implementação/API hospedada têm evidência nos itens 34/45/46. Novo APK e homologação física permanecem separados. |
 | 10 | Introdução de requisitos | A no PDF | Capítulo Engenharia de Requisitos. |
 | 11 | Requisitos funcionais em tabela | A no PDF | RF01–RF30. |
 | 12 | Requisitos não funcionais | A no PDF | Tabela do capítulo. |
@@ -43,29 +45,31 @@ Legenda: **A** = evidência encontrada no escopo indicado; **P** = parcial ou ex
 | 35 | API com status semânticos | A no MVP | 200/201/204/400/401/403/404/409; limita tentativas com 429 e trata erros inesperados. Suíte HTTP local cobre autenticação, propriedade de equipe, chat privado e respostas a propostas. |
 | 36 | Erros seguros | A no MVP | Filtro global sem stack trace; mensagens de domínio controladas. |
 | 37 | Variáveis isoladas | A no MVP | `.env.example`, `api/.env.example`, `.gitignore` e ambiente no servidor; somente URL pública no bundle. |
-| 38 | Tabelas rigorosamente iguais ao DER | P | Equipes, interesses, matches, mensagens, campos e propostas de partidas normalizados, além de notificações/denúncias. Migrações 002/003. Faltam CAUCAO, AVALIACAO e PARTIDA_ARBITRO; CAMPO ainda é local textual sem agenda do gestor/coordenadas. O DER completo não está atendido. |
-| 39 | PK/FK e integridade | P | PK/FK/UNIQUE/CHECK nas novas relações, transações/travas para reciprocidade e conflito de agenda; acesso validado pelo servidor. Fluxos financeiros, avaliações, arbitragem e integridades do DER completo permanecem pendentes. |
+| 38 | Tabelas e campos alinhados ao DER | A para o DER lógico representado | Comparação visual da Figura 18 (PDF física 36/impressa 35) e esquema hospedado: entidades/FKs mapeadas; migração 006 acrescenta endereço/coordenadas de campo, PK própria e transação externa opcional da caução e PK própria da avaliação. `game_id` e partida/avaliador continuam únicos. Localização legada e transação externa simulada permanecem NULL, sem dados inventados. Isso não declara gateway/mapa reais. |
+| 39 | PK/FK e integridade | A no escopo acadêmico testado | PK/FK/UNIQUE/CHECK, transações/travas e autorização; caução única por partida, avaliação única por participante/partida, vaga/profissional sem alocação ativa duplicada. Testes cobrem acessos indevidos, conflitos e cancelamento da arbitragem; esquema hospedado também consultado. Não há operação financeira real. |
 | 40 | SQL protegido | A no MVP | Queries com placeholders no pg/SQLite; teste de tentativa de SQL injection no login. |
-| 41 | Migração e dados de teste | A no MVP | Migrações 001–003 e aplicador versionado/transacional. Cadastros antigos válidos são promovidos a equipes; incompletos mantêm rascunho editável; nenhum match/mensagem fictício é importado. Integração PGlite inclui migração/reaplicação e restrições. Demonstração e cadastro local seguem separados. |
+| 41 | Migração e dados de teste | A no MVP | Migrações 001–006 e aplicador versionado/transacional, com registro de aplicação verificado no Neon. Cadastros antigos válidos preservados; incompletos mantêm rascunho; nenhuma relação fictícia importada. Integração inclui reaplicação, restrições e preservação de cauções/avaliações na 006. No aparelho, equipe própria inicia sem histórico e usa dados separados da demonstração pronta. |
 | 42 | Git e .gitignore | A local | Repositório inicializado; dependências, `.env`, builds e chaves excluídos. |
 | 43 | Commits e branches | A local | Histórico do projeto e branches de implementação/validação no bundle Git incluído. Remoto ainda não publicado. |
 | 44 | README e setup | A | Instruções de celular, API, Docker, testes e geração de APK. Bundle Git permite clonar sem remoto. |
-| 45 | Deploy funcional em nuvem | P | APK de teste da versão anterior gerado no Expo; link e registro constam em `VALIDACAO.md`. API/banco online, configuração HTTPS e nova distribuição das alterações posteriores continuam pendentes. APK disponível não comprova backend publicado ou instalação em aparelho. |
-| 46 | SSL e HTTPS obrigatório | F | Exige hospedagem da API e validação do certificado/redirecionamento. O servidor local de desenvolvimento não atende este item. |
+| 45 | Deploy funcional em nuvem | A para API/banco | API Railway e PostgreSQL Neon publicados; `/health` 200, base consultada e teste de fumaça entre contas aprovado. [Endpoint verificado](https://desafio-aceito-api-production.up.railway.app/health). Novo APK 1.2.0 ainda pendente; não confundir deploy da API com instalação móvel. |
+| 46 | SSL e HTTPS obrigatório | A no endpoint verificado | Acesso HTTPS concluído e HTTP redirecionado para HTTPS com status 301 no domínio da API. Evidência em `VALIDACAO.md`; não é certificação de segurança completa. |
 | 47 | SPA e reload de rotas | N/A / P | O app usa navegação nativa e scheme `desafioaceito`. Links profundos precisam ser homologados no binário; critério SPA aplica-se ao renderer web opcional. |
-| 48 | Testes de fluxo e exceção | A no escopo automatizado | Domínio, persistência, transporte/sincronização e integração HTTP/banco: contas independentes, reciprocidade/chat privado, propostas bilaterais, conflitos e clima. Comandos/resultados em `VALIDACAO.md`. Aparelho, carga e integrações externas permanecem pendentes. |
+| 48 | Testes de fluxo e exceção | A no escopo automatizado | Domínio, persistência e integração: cadastro local → match fictício → conversa → partida → caução simulada; contas independentes, propostas bilaterais, conflitos, caução/estorno simulados, resultado, avaliações dos quatro critérios, ranking e convites privados de arbitragem. Comandos/resultados em `VALIDACAO.md`. Aparelho e integrações externas não foram comprovados. |
 | 49 | Revisão e domínio do código gerado | P | Revisão de regras, erros, isolamento e build realizada; o domínio dos integrantes deve ser demonstrado por cada um na apresentação. |
 | 50 | Ensaio geral com dados consistentes | P | Navegação de descoberta → match → chat → proposta inspecionada na prévia; roteiro pronto. Falta ensaio da equipe em celular com APK ou Expo Go. |
 
-## Pendências para sair do demonstrativo
+## Para concluir a entrega e o checklist de código
 
-1. Completar o DER com cauções, avaliações e arbitragem; resultados e ranking compartilhados ainda não estão disponíveis. Equipes, match, chat e propostas entre contas já têm implementação e testes locais, mas dependem de publicação da API para distribuição conectada.
-2. Backend hospedado com HTTPS e política de acesso por papel verificada no servidor.
-3. Integrar cadastro/agenda de gestores de campos. O aceite adversário já é explícito e os conflitos das duas equipes e do local informado são verificados nos registros do app; isso não é reserva externa nem disponibilidade real do campo.
-4. Recuperação de senha com e-mail e identidade Google, sem respostas simuladas de envio.
-5. Gateway de caução com idempotência, webhook autenticado e conciliação; tarifas definidas pelo grupo.
-6. Mapas/PostGIS e push. A atualização entre contas usa consulta a cada 8 s em primeiro plano, retomada e atualização manual; WebSocket/Redis e entrega em segundo plano permanecem pendentes.
-7. Moderação de denúncias, retenção/exclusão e habilitação profissional da arbitragem.
-8. Gerar novo APK com as alterações desta revisão e API configurada; instalar no aparelho, homologar navegação/teclado/acessibilidade e realizar ensaio completo. O APK da etapa anterior não comprova essas verificações.
+1. Manter API/banco publicados e migrações atualizadas; o teste de fumaça e HTTPS já foram executados. Repetir o fluxo no APK atualizado para comprovar o cliente móvel com a base hospedada.
+2. Gerar/instalar APK atualizado; executar cadastro → reciprocidade → chat → proposta/aceite → caução simulada → resultado após o início → avaliação dos quatro critérios → histórico/ranking, além de cancelamento e arbitragem conforme escopo implementado.
+3. Confirmar reabertura, mensagens de erro, legibilidade e separação dos modos. O modo local com adversários fictícios também deve funcionar e não substitui o teste conectado.
+4. Registrar ensaio/explicação do código pelos integrantes. O roteiro não é prova de execução e o APK antigo não comprova as alterações novas. Evidências documentais originais permanecem sob os itens 1–28, sem fabricar prints.
+
+## Limites preservados
+
+Integrações reais de pagamento, campos, mapas, push, e-mail/Google, habilitação profissional de árbitros e operação de moderação não são comprovadas. O recorte financeiro é simulado por definição acadêmica, sem pretensão de cobrança real. Os demais RFs/itens que exigem serviços não implementados continuam parciais. A disponibilidade de campos se refere aos registros do app, sem reserva externa. A atualização entre contas usa consulta a cada 8 s em primeiro plano/retomada/manual, sem garantia de entrega em segundo plano. Publicação/HTTPS possuem evidência de API; instalação, acessibilidade em aparelho e ensaio de apresentação ainda não.
+
+GitHub/release para o professor baixar o APK fica para uma etapa posterior solicitada pelo usuário; nenhum remoto deve ser publicado agora.
 
 Não somar itens A do PDF com os do código para alegar percentual de software em produção. O relatório original de 0/50 é uma lista de itens pendentes naquele levantamento, e não prova de ausência de todo o conteúdo documental.

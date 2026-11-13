@@ -13,11 +13,11 @@ import { Redirect, router } from "expo-router";
 import { useStore } from "../core/store";
 import { FieldArt, Button, Input } from "../components/ui";
 export default function Login() {
-  const { mode, demo, local, login, state } = useStore();
+  const { mode, demo, local, login, state, arbitration } = useStore();
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false);
-  if (mode !== "none") return <Redirect href={state.teamRegistered === false ? "/editar" : "/(tabs)/descobrir"} />;
+  if (mode !== "none") return <Redirect href={state.teamRegistered === false ? mode === "online" && arbitration.profile ? "/arbitragem" : "/editar" : "/(tabs)/descobrir"} />;
   async function submit() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8) {
       Alert.alert(
@@ -132,7 +132,7 @@ export default function Login() {
               finally { setBusy(false); }
             }}
           />
-          <Text style={{ color: "#82907d", fontSize: 11, marginVertical: 18, lineHeight: 18 }}>Seu cadastro fica salvo somente neste celular, sem publicar o time. Para encontrar equipes reais e conversar entre contas, use o acesso abaixo quando o servidor estiver disponível.</Text>
+          <Text style={{ color: "#82907d", fontSize: 11, marginVertical: 18, lineHeight: 18 }}>Seu time e seu progresso ficam salvos neste celular. Você pode apresentar os fluxos com adversários fictícios, sem internet e sem cobranças reais. O acesso por conta abaixo conecta equipes entre usuários quando o servidor está disponível.</Text>
           <Input
             label="E-mail"
             placeholder="voce@email.com"

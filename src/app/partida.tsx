@@ -17,6 +17,7 @@ import {
   DemoLabel,
 } from "../components/ui";
 import { formatDate } from "../components/game-card";
+import { RefereeInvitation } from "../components/referee-invitation";
 export default function Partida() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { state: s, dispatch, busy, mode, teams } = useStore();
@@ -47,8 +48,8 @@ export default function Partida() {
           onPress: async () => {
             if (await dispatch({ type: "pay", id }))
               Alert.alert(
-                "Confirmado na demonstração",
-                "Caução simulada aprovada. O amistoso está confirmado.",
+                "Confirmado para demonstração",
+                "Caução simulada aprovada. O amistoso está confirmado no aplicativo. Nenhum valor foi cobrado.",
               );
           },
         },
@@ -86,18 +87,12 @@ export default function Partida() {
             {g.canRespond ? "Confira data, horário, local e mando antes de responder. O aceite reserva o horário na agenda do app e mantém a partida aguardando caução." : "Aguarde a outra equipe aceitar ou recusar. A resposta aparecerá nesta agenda ao atualizar."}
           </Txt>
           {g.canRespond && <>
-            <Button title={busy ? "Salvando resposta…" : "Aceitar proposta"} disabled={busy} icon="checkmark" onPress={() => Alert.alert("Aceitar esta proposta?", "A partida aguardará a caução. O pagamento ainda não está disponível e o aceite não confirma o amistoso.", [{ text: "Voltar", style: "cancel" }, { text: "Aceitar", onPress: () => dispatch({ type: "acceptProposal", id }) }])} />
+            <Button title={busy ? "Salvando resposta…" : "Aceitar proposta"} disabled={busy} icon="checkmark" onPress={() => Alert.alert("Aceitar esta proposta?", "Depois do aceite, a caução poderá ser simulada para confirmar a partida nesta apresentação acadêmica. Nenhum valor será cobrado.", [{ text: "Voltar", style: "cancel" }, { text: "Aceitar", onPress: () => dispatch({ type: "acceptProposal", id }) }])} />
             <Button title="Recusar proposta" secondary disabled={busy} onPress={() => Alert.alert("Recusar proposta?", "As duas equipes verão a proposta como cancelada e o horário ficará disponível.", [{ text: "Voltar", style: "cancel" }, { text: "Recusar", style: "destructive", onPress: () => dispatch({ type: "rejectProposal", id }) }])} />
           </>}
         </Card>
       )}
-      {g.status === "Aguardando caução" && mode === "online" && (
-        <Card style={{ marginTop: 20, gap: 12 }}>
-          <Txt style={{ fontWeight: "800", fontSize: 16 }}>Proposta aceita · aguardando caução</Txt>
-          <Txt style={{ color: c.muted, fontSize: 12 }}>As duas equipes concordaram com o jogo. A integração financeira ainda está em preparação: nenhum valor foi cobrado e a partida ainda não está confirmada.</Txt>
-        </Card>
-      )}
-      {g.status === "Aguardando caução" && mode === "demo" && (
+      {g.status === "Aguardando caução" && (
         <View style={{ marginTop: 20, gap: 12 }}>
           <Card style={{ alignItems: "center", gap: 9 }}>
             <Icon name="wallet-outline" size={35} color={c.orange} />
@@ -109,22 +104,20 @@ export default function Partida() {
             </Txt>
           </Card>
           <Button
-            title="Simular aprovação da caução"
+            title="Simular caução e confirmar"
             icon="checkmark"
             onPress={pay}
             disabled={busy}
           />
           <Note>
-            O valor é um exemplo e não foi fixado pelo PDF. Nenhum dado de
-            cartão é solicitado. A integração financeira real ainda está
-            pendente.
+            Simulação para apresentação acadêmica. O valor de R$ 50 é ilustrativo e não foi fixado pelo PDF. Nenhum dado de cartão é solicitado e nenhuma cobrança real é feita.
           </Note>
         </View>
       )}
-      {g.status === "Confirmada" && mode === "demo" && (
+      {g.status === "Confirmada" && (
         <View style={{ marginTop: 20, gap: 12 }}>
           <Button
-            title="Registrar resultado"
+            title={mode === "online" ? "Registrar resultado" : "Simular jogo e registrar resultado"}
             icon="football-outline"
             secondary
             onPress={() => S(!result)}
@@ -146,19 +139,20 @@ export default function Partida() {
                 maxLength={2}
               />
               <Button
-                title="Salvar placar"
+                title={mode === "online" ? "Salvar placar" : "Salvar placar simulado"}
                 disabled={busy || a === "" || b === ""}
                 onPress={async () => {
-                  if (await dispatch({ type: "result", id, a, b })) S(false);
+                  if (await dispatch({ type: mode === "online" ? "result" : "simulateResult", id, a, b })) S(false);
                 }}
               />
               <Note>
-                O resultado só é aceito depois do horário de início do jogo.
+                {mode === "online" ? "O resultado só é aceito depois do horário de início do jogo." : "Simulação acadêmica: você pode avançar ao pós-jogo agora, mesmo com data futura, para demonstrar o placar e a avaliação. A data agendada permanece no histórico e o jogo será marcado como simulado."}
               </Note>
             </Card>
           )}
         </View>
       )}
+      {mode === "online" && <RefereeInvitation game={g} />}
       {["Confirmada", "Aguardando caução", "Aguardando adversário"].includes(g.status) && (
         <View style={{ marginTop: 14 }}>
           <Button
@@ -195,7 +189,7 @@ export default function Partida() {
                     "Confirmar cancelamento?",
                     weather
                       ? "A solicitação aguarda acordo adversário para isentar a penalidade."
-                      : mode === "online" ? "A proposta será cancelada para as duas equipes. Nenhuma caução foi cobrada nesta versão." : "Taxa ilustrativa: R$ 10 antes do dia ou R$ 30 no dia, se a caução foi simulada.",
+                      : "Taxa ilustrativa: R$ 10 antes do dia ou R$ 30 no dia, se a caução foi simulada. Nenhum valor será cobrado de verdade.",
                     [
                       { text: "Voltar", style: "cancel" },
                       {
@@ -217,8 +211,8 @@ export default function Partida() {
             Condição climática informada: {g.reason}. A isenção depende da
             concordância adversária.
           </Note>
-          {(mode === "demo" || g.canWeatherAgree) ? <Button
-            title={mode === "demo" ? "Simular concordância do adversário" : "Concordar com cancelamento por clima"}
+          {(mode !== "online" || g.canWeatherAgree) ? <Button
+            title={mode !== "online" ? "Simular concordância do adversário" : "Concordar com cancelamento por clima"}
             icon="rainy-outline"
             disabled={busy}
             onPress={() => Alert.alert("Concordar com o cancelamento?", "A partida será cancelada para as duas equipes.", [{ text: "Voltar", style: "cancel" }, { text: "Concordar", onPress: () => dispatch({ type: "weatherAgree", id }) }])}
@@ -227,11 +221,12 @@ export default function Partida() {
       )}
       {g.status === "Cancelada" && (
         <Note>
-          {mode === "demo" ? `Cancelamento registrado. Penalidade ilustrativa: R$ ${g.fee || 0},00.` : "Cancelamento registrado para as duas equipes."} Nenhuma cobrança ou estorno real foi realizado.
+          Cancelamento registrado. Penalidade ilustrativa: R$ {g.fee || 0},00. Nenhuma cobrança ou estorno real foi realizado.
         </Note>
       )}
       {g.status === "Concluída" && (
         <View style={{ marginTop: 20, gap: 15 }}>
+          {g.simulated && <Note>Pós-jogo simulado para apresentação acadêmica. Este placar não comprova uma partida realizada.</Note>}
           <Txt
             style={{
               fontSize: 40,

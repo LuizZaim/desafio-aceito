@@ -1,10 +1,12 @@
 import type { State, Team } from "./domain";
+import type { ArbitrationState } from "./arbitration";
 
 export type WorkspaceSnapshot = {
   state: State;
   version: number;
   teams: Team[];
   currentTeamId: string | null;
+  arbitration: ArbitrationState;
 };
 type Request = (path: string, method?: string, body?: unknown) => Promise<any>;
 
@@ -44,6 +46,12 @@ export class WorkspaceSession {
       // Old services must never accidentally show demonstration opponents online.
       teams: Array.isArray(data.teams) ? data.teams : [],
       currentTeamId: typeof data.currentTeamId === "string" ? data.currentTeamId : null,
+      arbitration: {
+        profile: data.arbitration?.profile && typeof data.arbitration.profile.id === "string"
+          ? data.arbitration.profile : null,
+        professionals: Array.isArray(data.arbitration?.professionals) ? data.arbitration.professionals : [],
+        invites: Array.isArray(data.arbitration?.invites) ? data.arbitration.invites : [],
+      },
     };
     this.version = data.version;
     this.commit(snapshot);

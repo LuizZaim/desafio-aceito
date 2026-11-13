@@ -2,6 +2,8 @@
 
 Esta evolução atende ao RF04: criar a própria equipe, em vez de apenas editar o perfil fictício da demonstração. O cadastro da equipe é separado da criação de uma conta de organizador.
 
+Na entrega acadêmica, o cadastro próprio local também permite experimentar match, conversa, agendamento, caução e pós-jogo com adversários fictícios identificados, sem servidor. Começa sem matches/partidas e mantém seu próprio histórico salvo, separado da demonstração pronta.
+
 ## Critérios de aceite
 
 | Cenário | Resultado esperado |
@@ -20,9 +22,9 @@ Esta evolução atende ao RF04: criar a própria equipe, em vez de apenas editar
 
 ## Limites do produto
 
-Salvar um time no aparelho não cria uma conta autenticada, não publica a equipe para outras pessoas e não sincroniza outro celular. Contas online dependem de uma API configurada e acessível. No modo online, equipes ativas, matches, conversas e propostas são compartilhados entre contas reais dessa API; somente a demonstração usa adversários fictícios. A proposta aceita permanece aguardando caução: o pagamento ainda não está integrado.
+Salvar um time no aparelho não cria uma conta autenticada, não publica a equipe para outras pessoas e não sincroniza outro celular. Seus adversários e conversas locais são simulados. O modo conectado usa API/banco compartilhados; a implantação Railway/Neon e HTTPS estão verificados em `VALIDACAO.md`. Equipes de contas de teste compartilham matches, conversas, partidas, resultados e avaliações. Caução, penalidade e estorno são simulados em todos os modos; nenhum valor é cobrado.
 
-O ZIP contém o projeto mobile. Ele não substitui um APK assinado e instalado. Um APK de teste da etapa anterior já foi gerado, conforme `VALIDACAO.md`; as alterações desta revisão precisam de nova distribuição. Publicação da API, novo APK configurado, teste físico, localização real, notificações externas e pagamentos reais seguem como etapas separadas.
+O ZIP contém o projeto mobile. Ele não substitui um APK assinado e instalado. Um APK de teste da etapa anterior já foi gerado, conforme `VALIDACAO.md`; as alterações desta revisão precisam de novo APK e teste físico. Hospedagem/HTTPS possuem evidência de API; distância geográfica, push e pagamentos reais não são declarados implementados. O compartilhamento pelo GitHub fica para etapa posterior; nenhum remoto deve ser publicado agora.
 
 ## Roteiro de homologação
 

@@ -2,7 +2,9 @@
 
 Roteiro de aceite para executar com o aplicativo conectado à mesma API e ao mesmo banco. Estes passos são instruções de verificação; não constituem evidência de execução em aparelho. Resultados efetivamente observados devem ser registrados em `VALIDACAO.md`, com versão do APK e ambiente.
 
-Use duas sessões independentes, A e B, e uma terceira conta C para verificar acesso indevido. Não reutilize o perfil local ou a demonstração como se fossem contas online. Se a API ainda não estiver publicada, execute o servidor de desenvolvimento e use o endereço da rede acessível pelos aparelhos.
+Use duas sessões independentes, A e B, e uma terceira conta C para verificar acesso indevido. Não reutilize o perfil local ou a demonstração como se fossem contas online. A API publicada está em `https://desafio-aceito-api-production.up.railway.app`; um servidor de desenvolvimento acessível na rede também pode ser usado para testes locais.
+
+Os critérios 45/46 e um teste de fumaça entre contas já possuem evidência de API/banco/HTTPS em `VALIDACAO.md`; repita este roteiro no APK atualizado para comprovar o cliente móvel. Execução apenas local não comprova implantação. Caução, penalidade e estorno são simulações acadêmicas, sem dinheiro real.
 
 O cliente conectado consulta atualizações a cada 8 segundos enquanto o app está em primeiro plano, ao voltar ao primeiro plano e por atualização manual. Essa consulta periódica permite observar mudanças entre contas; não representa WebSocket nem garante push quando o app estiver fechado. Uma falha de rede preserva a última tela carregada e apresenta o estado de sincronização.
 
@@ -26,14 +28,35 @@ O cliente conectado consulta atualizações a cada 8 segundos enquanto o app est
 |---|---|---|
 | 12 | Após o match, A propõe amistoso para data futura, informa o local e escolhe mandante. | Ambos veem a mesma proposta como **Aguardando adversário**; nenhum pagamento ou confirmação é registrado. |
 | 13 | A tenta aceitar a própria proposta; C tenta responder por ela. | Servidor recusa ambas as ações. Só B pode aceitar/recusar. |
-| 14 | B aceita; A atualiza a agenda. | Ambos veem **Aguardando caução**. Nenhum botão online simula aprovação, e chamada direta de pagamento é recusada. |
+| 14 | B aceita; A atualiza a agenda. | Ambos veem **Aguardando caução**. A simulação de pagamento só fica disponível após esse aceite. |
 | 15 | Tente propor outro jogo com uma das equipes no mesmo horário ou em intervalo menor que 2 horas; repita com outras equipes no mesmo local textual. | API bloqueia o conflito interno; não promete reserva real do campo. |
-| 16 | A solicita cancelamento climático e tenta concordar com o próprio pedido. Depois B concorda. | A não pode aprovar; com o acordo de B, ambos veem a partida cancelada sem cobrança. |
+| 16 | A solicita cancelamento climático e tenta concordar com o próprio pedido. Depois B concorda. | A não pode aprovar; com o acordo de B, ambos veem a partida cancelada sem penalidade e eventual estorno explicitamente simulado. |
 | 17 | Crie uma segunda proposta e B a recusa. | Ambos veem a proposta cancelada e o horário interno é liberado. |
 | 18 | Com uma proposta ativa, tente encerrar o match ou desativar equipe. | API impede até cancelar a proposta/partida ativa. |
 
-## O que este roteiro ainda não encerra
+## Caução simulada e pós-jogo
 
-A proposta aceita não basta para homologar o ciclo completo. Ainda faltam disponibilidade/reserva externa do campo, caução confirmada pelo gateway, conclusão e avaliações compartilhadas dos quatro critérios. Não simular confirmação financeira no fluxo online para marcar esses itens como prontos. O acordo climático desta revisão não testa estorno, pois não houve cobrança.
+| Passo | Ação | Resultado esperado |
+|---|---|---|
+| 19 | Em nova proposta aceita, participante simula a caução. C tenta simular; repita como participante depois da aprovação. | Somente participante aprova uma vez; jogo aparece Confirmada com pagamento **Simulada**. Repetição não duplica caução. Nenhum valor é cobrado e o cliente não escolhe o valor registrado pelo servidor. |
+| 20 | Antes do início, tente registrar placar. Depois do horário, registre com uma das equipes. | Antes é recusado; depois aceita placar inteiro válido e mostra Concluída para ambos. Cada lado vê seu próprio placar e o do adversário na perspectiva correta. |
+| 21 | A avalia nível técnico, fair play, pontualidade e organização; tente omitir nota ou avaliar novamente. Depois B avalia. | Somente notas inteiras de 1–5, uma avaliação por equipe/partida. A e B avaliam o adversário; C não pode avaliar. |
+| 22 | Reabra Ranking e Histórico nas duas contas. | Partida, avaliação própria e notas recebidas persistem. Média do servidor usa os quatro critérios e não é somada novamente no cliente. |
+| 23 | Em outro amistoso com caução simulada, cancele antecipadamente; repita em jogo no mesmo dia. | Penalidade ilustrativa antecipada R$ 10 e no dia R$ 30, com estorno simulado; os valores são exemplos acadêmicos. |
+| 24 | Feche/reabra o app e entre novamente. | Partidas, caução simulada e avaliações são recuperadas da mesma base; não há cobrança real ou pedido de dados de cartão. |
+
+## Arbitragem conectada
+
+| Passo | Ação | Resultado esperado |
+|---|---|---|
+| 25 | Em outra conta R, cadastrar perfil autodeclarado de árbitro ou bandeirinha, região e disponibilidade. | Perfil salvo pela própria conta; não recebe autoridade de organizador sobre outra equipe. Não há alegação de habilitação profissional externa. |
+| 26 | A/B convidam R para uma vaga compatível em jogo futuro confirmado com caução simulada. | Convite fica pendente e só R o recebe; participante alheio não pode criar/aceitar o convite. |
+| 27 | R aceita; repetir aceite ou tentar a mesma vaga/profissional novamente. | Primeiro aceite associa R ao jogo; repetição, vaga ocupada e profissional duplicado são recusados. |
+| 28 | Convide R para outro jogo em intervalo menor que 2 h e tente aceitar; teste disponibilidade desligada e vínculo com equipe participante. | Sistema bloqueia conflito, indisponibilidade e atuação na própria equipe. |
+| 29 | Cancele o jogo ou conclua acordo climático; R atualiza seus convites. | Alocação pendente/aceita passa a Cancelado; histórico é preservado. Recusar convite também permite que outro profissional ocupe a vaga depois. |
+
+## Limites do roteiro
+
+Não há gateway, reserva externa do campo ou movimentação financeira. A disponibilidade vale para registros internos do app. Esses limites são parte da simulação acadêmica; não se deve apresentar os registros como pagamento/estorno reais. Os testes automatizados não comprovam que este roteiro foi executado no celular.
 
 Valide também teclado, botão Voltar, tamanho de fonte, contraste e carregamento em aparelhos reais. Testes HTTP locais não substituem essa etapa.

@@ -33,15 +33,15 @@ function Navigator() {
       <Stack.Screen name="recuperar" options={{ title: "Recuperar acesso" }} />
       <Stack.Protected guard={mode !== "none"}>
       <Stack.Screen name="editar" options={{ title: state.teamRegistered === false ? "Cadastrar meu time" : "Editar minha equipe", headerBackVisible: state.teamRegistered !== false }} />
+      <Stack.Screen
+        name="arbitragem"
+        options={{ title: "Central de arbitragem" }}
+      />
       <Stack.Protected guard={state.teamRegistered !== false}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="chat" options={{ title: "Conversa" }} />
       <Stack.Screen name="agendar" options={{ title: "Agendar amistoso" }} />
       <Stack.Screen name="equipe" options={{ title: "Perfil da equipe" }} />
-      <Stack.Screen
-        name="arbitragem"
-        options={{ title: "Central de arbitragem" }}
-      />
       <Stack.Screen name="configuracoes" options={{ title: "Configurações" }} />
       <Stack.Screen name="notificacoes" options={{ title: "Notificações" }} />
       <Stack.Screen

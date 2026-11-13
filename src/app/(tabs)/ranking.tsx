@@ -22,12 +22,14 @@ export default function Ranking() {
   const list = teams
     .filter((team) => team.active !== false)
     .map((t) => {
+      if (mode === "online") return { ...t, value: t.rating, rated: (t.reviewCount ?? (t.rating > 0 ? 1 : 0)) > 0 };
       const reviews = s.games
         .filter((g) => g.team === t.id && g.review)
         .map((g) => reviewAverage(g.review))
         .filter((value): value is number => value !== null);
       return {
         ...t,
+        rated: t.games + reviews.length > 0,
         value:
           t.games + reviews.length > 0
             ? (t.rating * t.games + reviews.reduce((a, b) => a + b, 0)) / (t.games + reviews.length)
@@ -51,7 +53,7 @@ export default function Ranking() {
               A rivalidade fica só no campo.
             </Txt>
             <Txt style={{ fontSize: 10, color: c.muted, marginTop: 7 }}>
-              {mode === "demo" ? "Ranking demonstrativo de avaliações de 1 a 5." : "As equipes começam sem notas. Avaliações compartilhadas após partidas ainda estão em preparação."}
+              {mode !== "online" ? "Ranking demonstrativo de avaliações de 1 a 5." : "As equipes começam sem notas. Somente avaliações recebidas após jogos concluídos compõem o ranking."}
             </Txt>
           </View>
         </Row>
@@ -90,7 +92,7 @@ export default function Ranking() {
                 <Txt
                   style={{ fontSize: 12, fontWeight: "800", color: "#ba9c53" }}
                 >
-                  {t.games > 0 || s.games.some((g) => g.team === t.id && g.review) ? t.value.toFixed(2) : "Sem notas"}
+                  {t.rated ? t.value.toFixed(2) : "Sem notas"}
                 </Txt>
               </Row>
             </Card>
@@ -106,7 +108,7 @@ export default function Ranking() {
           <GameCard key={g.id} game={g} />
         ))}
       <Note>
-        {mode === "demo" ? "As notas iniciais são fictícias. Novas avaliações consideram nível técnico, fair play, pontualidade e organização. Registros antigos preservam as duas dimensões originais." : "Equipes reais começam sem avaliações. A confirmação financeira, a conclusão de partidas e a avaliação compartilhada ainda estão em preparação."}
+        {mode !== "online" ? "As notas iniciais são fictícias. Novas avaliações consideram nível técnico, fair play, pontualidade e organização. Registros antigos preservam as duas dimensões originais." : "Cada equipe avalia o adversário uma única vez por partida concluída, nos quatro critérios. O ranking conectado usa a média das avaliações recebidas, sem notas iniciais fictícias."}
       </Note>
     </Screen>
   );

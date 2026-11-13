@@ -53,7 +53,7 @@ class Errors implements ExceptionFilter {
 class API {
   constructor(@Inject(TOKEN) private readonly app: Service) {}
   @Get("health") health() {
-    return { status: "ok", app: "Desafio Aceito", version: "1.1.0" };
+    return { status: "ok", app: "Desafio Aceito", version: "1.2.0" };
   }
   @Post("auth/register") register(@Body() body: any) {
     return this.app.register(body);
@@ -67,6 +67,9 @@ class API {
   }
   @Get("state") async state(@Req() req: Request) {
     return this.app.getState(await this.app.authenticate(token(req)));
+  }
+  @Get("referee") async referee(@Req() req: Request) {
+    return this.app.referee(await this.app.authenticate(token(req)));
   }
   @Get("teams") async teams(@Req() req: Request) {
     return this.app.teams(await this.app.authenticate(token(req)));

@@ -137,7 +137,7 @@ export default function Chat() {
               router.push({ pathname: "/agendar", params: { id } })
             }
           />
-          {mode === "online" && <Txt style={{ color: c.muted, fontSize: 11, textAlign: "center" }}>A proposta será enviada à outra equipe. A confirmação depende do aceite e da caução; o pagamento ainda não está disponível.</Txt>}
+          {mode === "online" && <Txt style={{ color: c.muted, fontSize: 11, textAlign: "center" }}>A proposta será enviada à outra equipe. Depois do aceite, a caução é simulada para confirmar o jogo. Nenhum valor é cobrado.</Txt>}
         </View>
       </ScrollView>
       <Row

@@ -1,5 +1,5 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": { "strict": true },
-  "exclude": ["api", "node_modules", "dist"]
+  "exclude": ["api", "node_modules", "dist", "outputs"]
 }

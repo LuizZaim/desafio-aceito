@@ -90,9 +90,36 @@ test("serviço antigo não injeta equipes fictícias e snapshot inválido não �
   await session.refresh();
   assert.deepEqual(commits[0].teams, []);
   assert.equal(commits[0].currentTeamId, null);
+  assert.deepEqual(commits[0].arbitration, { profile: null, professionals: [], invites: [] });
   invalid = true;
   await assert.rejects(session.refresh(), /incompletos/);
   assert.equal(commits.length, 1);
+});
+
+test("arbitragem conectada usa apenas os dados privados do snapshot da sessão atual", async () => {
+  const commits = [];
+  const professional = {
+    id: "referee-account-one", name: "Profissional de teste", city: "São Paulo",
+    state: "SP", kind: "arbitro", bio: "Perfil acadêmico", available: true,
+  };
+  const invite = {
+    id: "invite-private", gameId: "game-one", role: "arbitro", status: "Pendente",
+    gameStatus: "Confirmada", teamAName: "Time A", teamBName: "Time B",
+    date: "2099-11-20", time: "10:00", field: "Campo de teste", canRespond: true,
+  };
+  let next = { ...snapshot(1), arbitration: { profile: professional, professionals: [professional], invites: [invite] } };
+  const session = new WorkspaceSession(async () => next, (data) => commits.push(data));
+  await session.refresh();
+  assert.deepEqual(commits[0].arbitration.profile, professional);
+  assert.equal(commits[0].arbitration.invites[0].id, "invite-private");
+  assert.equal(commits[0].state.profile.role, "organizador", "professional capability does not switch the team role");
+  session.reset();
+  next = snapshot(0);
+  await session.refresh();
+  assert.deepEqual(commits[1].arbitration, { profile: null, professionals: [], invites: [] });
+  next = { ...snapshot(1), arbitration: { profile: {}, professionals: null, invites: "inválido" } };
+  await session.refresh();
+  assert.deepEqual(commits[2].arbitration, { profile: null, professionals: [], invites: [] });
 });
 
 test("transporte envia token por cabeçalho, respeita status e nunca faz retry de POST", async () => {

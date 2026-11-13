@@ -23,7 +23,7 @@ export default function Filters() {
         text="Defina as características da próxima resenha."
       />
       {[
-        ...(mode === "demo" ? [["radius", "Distância máxima", [5, 10, 15, 25, 50]]] : []),
+        ...(mode !== "online" ? [["radius", "Distância máxima", [5, 10, 15, 25, 50]]] : []),
         [
           "level",
           "Nível técnico",
@@ -66,7 +66,7 @@ export default function Filters() {
         }}
       />
       <Note>
-        {mode === "demo" ? "As distâncias dos times fictícios são ilustrativas, a partir da Liberdade." : "O filtro por distância ainda depende de geolocalização. Use bairro, categoria e nível para encontrar equipes cadastradas."} A integração de mapas ainda não está conectada.
+        {mode !== "online" ? "As distâncias dos times fictícios são ilustrativas, a partir da Liberdade." : "O filtro por distância ainda depende de geolocalização. Use bairro, categoria e nível para encontrar equipes cadastradas."} A integração de mapas ainda não está conectada.
       </Note>
     </Screen>
   );

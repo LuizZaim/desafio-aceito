@@ -5,7 +5,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import request from "supertest";
 import { createApp } from "../src/app";
 
-test("agenda compartilhada: proposta bilateral, conflito de equipes/local, caução bloqueada e clima com concordância adversária", async () => {
+test("agenda compartilhada: proposta bilateral, conflito de equipes/local, caução simulada e clima com concordância adversária", async () => {
   const pg = new PGlite();
   for (const file of readdirSync("migrations").filter((f) => f.endsWith(".sql")).sort()) await pg.exec(readFileSync(`migrations/${file}`, "utf8"));
   const db = {
@@ -33,17 +33,28 @@ test("agenda compartilhada: proposta bilateral, conflito de equipes/local, cauç
     await a.act({...proposal,time:"25:01"},400);
     await a.act({...proposal,field:"A"},400);
     await a.act({...proposal,home:c.id},400);
-    await a.act(proposal);
+    for (const metadata of [
+      {latitude:-23.55}, {longitude:-46.63}, {latitude:91,longitude:10},
+      {latitude:10,longitude:-181}, {latitude:"10",longitude:20},
+      {latitude:null,longitude:10}, {fieldAddress:7}, {fieldAddress:"x".repeat(251)},
+    ]) await a.act({...proposal,...metadata},400);
+    await a.act({...proposal,fieldAddress:"Rua da Faculdade, 100",latitude:-23.55,longitude:-46.63});
     const first = (await a.state()).state.games[0];
     assert.equal(first.status,"Aguardando adversário");
     assert.equal(first.canRespond,false);
     assert.equal(first.proposerId,a.id);
     assert.equal(first.time,"10:00");
     assert.equal(first.date,date);
+    assert.equal(first.fieldAddress,"Rua da Faculdade, 100");
+    assert.equal(first.latitude,-23.55);
+    assert.equal(first.longitude,-46.63);
+    await a.act({...proposal,fieldAddress:"Outro endereço, 999"},409);
+    await a.act({...proposal,latitude:-20,longitude:-46.63},409);
     const bobGame = (await b.state()).state.games[0];
     assert.equal(bobGame.id,first.id);
     assert.equal(bobGame.team,a.id);
     assert.equal(bobGame.canRespond,true);
+    await a.act({type:"pay",id:first.id},409);
     await a.act({type:"acceptProposal",id:first.id},403);
     await c.act({type:"acceptProposal",id:first.id},403);
     await a.act({...proposal,time:"11:00",field:"Outro local"},409);
@@ -57,8 +68,9 @@ test("agenda compartilhada: proposta bilateral, conflito de equipes/local, cauç
     assert.equal((await a.state()).state.games[0].status,"Aguardando caução");
     assert.equal((await b.state()).state.games[0].canRespond,false);
     await b.act({type:"acceptProposal",id:first.id},409);
+    await a.act({type:"pay",id:first.id});
+    assert.equal((await a.state()).state.games[0].payment,"Simulada");
     await a.act({type:"pay",id:first.id},409);
-    assert.equal((await a.state()).state.games[0].payment,"Pendente");
     await a.act({type:"cancel",id:first.id,reason:"Chuva forte prevista.",weather:true});
     assert.equal((await a.state()).state.games[0].status,"Clima: aguardando acordo");
     assert.equal((await a.state()).state.games[0].canWeatherAgree,false);
@@ -68,7 +80,7 @@ test("agenda compartilhada: proposta bilateral, conflito de equipes/local, cauç
     await b.act({type:"weatherAgree",id:first.id});
     assert.equal((await a.state()).state.games[0].status,"Cancelada");
     assert.equal((await b.state()).state.games[0].status,"Cancelada");
-    assert.equal((await b.state()).state.games[0].payment,"Não cobrada");
+    assert.equal((await b.state()).state.games[0].payment,"Estorno simulado");
     await a.act({type:"cancel",id:first.id,reason:"novamente"},409);
     await b.act({type:"settings",push:false,email:false,dark:false});
     const notifications = (await b.state()).state.notifications.length;

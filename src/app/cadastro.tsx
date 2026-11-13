@@ -41,7 +41,7 @@ export default function Cadastro() {
       <Section
         eyebrow="FAÇA PARTE DA RESENHA"
         title="Seu time tem lugar aqui."
-        text="Etapa 1 de 2: crie sua conta de organizador. Depois, cadastre sua equipe."
+        text="Crie sua conta de acesso. Depois, cadastre sua equipe ou seu perfil de árbitro/bandeirinha."
       />
       <Input
         label="Seu nome"
