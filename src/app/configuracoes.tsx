@@ -1,5 +1,6 @@
 import { View, Switch, Alert } from "react-native";
 import { router } from "expo-router";
+import Constants from "expo-constants";
 import { useStore } from "../core/store";
 import {
   Screen,
@@ -29,7 +30,7 @@ export default function Settings() {
           [
             "push",
             "Avisos no aplicativo",
-            "Matches e mensagens da demonstração.",
+            mode === "online" ? "Matches e mensagens ao atualizar o aplicativo." : "Matches e mensagens da demonstração.",
           ],
           [
             "email",
@@ -86,7 +87,7 @@ export default function Settings() {
           onPress={() => router.push("/arbitragem")}
         />
         <Button
-          title="Sair do aplicativo"
+          title={mode === "online" ? "Sair da conta" : "Voltar à tela de entrada"}
           secondary
           icon="log-out-outline"
           onPress={async () => {
@@ -105,13 +106,10 @@ export default function Settings() {
         </Txt>
         <Txt style={{ fontSize: 11, color: c.muted, lineHeight: 20 }}>
           Aplicativo React Native para organizar amistosos, inspirado no projeto
-          da FECAP. Versão 1.0.0.
+          da FECAP. Versão {Constants.expoConfig?.version || "não informada"}.
         </Txt>
         <Txt style={{ fontSize: 11, color: c.muted, lineHeight: 20 }}>
-          Nesta versão, os adversários, as respostas mútuas e as cauções são
-          demonstrativos. O app ainda não conecta equipes reais entre contas.
-          Google, recuperação por e-mail, geolocalização e push dependem de
-          integrações.
+          {mode === "online" ? "Equipes cadastradas, interesses mútuos e mensagens são compartilhados entre contas conectadas ao mesmo servidor. Propostas compartilhadas exigem aceite do adversário e ficam aguardando caução. As cobranças ainda estão em preparação." : mode === "local" ? "Seu cadastro permanece neste aparelho e não é publicado para outros usuários. A demonstração separada permite experimentar o fluxo com equipes fictícias." : "Os adversários, as respostas mútuas e as cauções desta demonstração são fictícios."} Google, recuperação por e-mail, geolocalização e push ainda dependem de integrações.
         </Txt>
       </Card>
       <View style={{ marginTop: 22 }}>

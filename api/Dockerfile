@@ -8,4 +8,4 @@ RUN cd api && npm run build
 WORKDIR /project/api
 EXPOSE 3000
 USER node
-CMD ["node","dist/api/src/main.js"]
+CMD ["sh","-c","node dist/api/src/migrate.js && exec node dist/api/src/main.js"]

@@ -515,19 +515,31 @@ export function Line() {
 }
 export function DemoLabel() {
   const c = useColors();
+  const { mode, syncing, syncError, lastSyncedAt, reload } = useStore();
+  const text = mode === "online"
+    ? "Conta conectada · equipes e conversas entre contas"
+    : mode === "local"
+      ? "Meu time · salvo somente neste aparelho"
+      : "Demonstração · equipes fictícias · sem cobranças reais";
   return (
-    <Row style={{ marginBottom: 20, gap: 6 }}>
-      <View
-        style={{
-          width: 5,
-          height: 5,
-          borderRadius: 5,
-          backgroundColor: c.orange,
-        }}
-      />
-      <Txt style={{ fontSize: 9, color: c.muted }}>
-        Demonstração · equipes fictícias · sem cobranças reais
-      </Txt>
-    </Row>
+    <View style={{ marginBottom: 20, gap: 9 }}>
+      <Row style={{ gap: 6 }}>
+        <View style={{ width: 5, height: 5, borderRadius: 5, backgroundColor: mode === "online" ? "#73975d" : c.orange }} />
+        <Txt style={{ fontSize: 10, color: c.muted, flex: 1 }}>{text}</Txt>
+      </Row>
+      {mode === "online" && (
+        <>
+          <Row style={{ justifyContent: "space-between" }}>
+            <Txt style={{ fontSize: 10, color: c.muted, flex: 1 }}>
+              {syncing ? "Atualizando equipes e mensagens…" : lastSyncedAt ? `Atualizado às ${new Date(lastSyncedAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}` : "Aguardando atualização"}
+            </Txt>
+            <Pressable accessibilityRole="button" accessibilityLabel="Atualizar equipes e conversas" disabled={syncing} onPress={reload} style={{ padding: 10, minHeight: 44, justifyContent: "center" }}>
+              <Txt style={{ color: c.orange, fontSize: 11, fontWeight: "700" }}>{syncing ? "Atualizando…" : "Atualizar"}</Txt>
+            </Pressable>
+          </Row>
+          {!!syncError && <Txt accessibilityRole="alert" style={{ fontSize: 11, color: "#ba573b" }}>{syncError} Seus dados exibidos podem estar desatualizados. Toque em Atualizar para tentar novamente.</Txt>}
+        </>
+      )}
+    </View>
   );
 }

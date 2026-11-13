@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { router } from "expo-router";
-import { type Game, teams } from "../core/domain";
+import { type Game, reviewAverage } from "../core/domain";
 import { useStore } from "../core/store";
 import {
   Card,
@@ -19,7 +19,7 @@ export const formatDate = (d: string) =>
     month: "short",
   });
 export function GameCard({ game: g }: { game: Game }) {
-  const { state: s } = useStore();
+  const { state: s, teams, mode } = useStore();
   const c = useColors();
   const t = teams.find((t) => t.id === g.team);
   return (
@@ -79,15 +79,15 @@ export function GameCard({ game: g }: { game: Game }) {
           <Icon name="checkmark-circle" color="#86a176" size={16} />
           <Txt style={{ fontSize: 11, color: c.muted }}>
             Avaliação enviada ·{" "}
-            {((g.review.fair + g.review.skill) / 2).toFixed(1)}
+            {reviewAverage(g.review)?.toFixed(1) ?? "Sem nota"}
           </Txt>
         </Row>
       ) : (
         <Button
           title={
             g.status === "Aguardando caução"
-              ? "Confirmar caução simulada"
-              : "Ver partida"
+              ? mode === "demo" ? "Confirmar caução simulada" : "Ver pendência da caução"
+              : g.status === "Aguardando adversário" ? g.canRespond ? "Responder proposta" : "Acompanhar proposta" : "Ver partida"
           }
           secondary={g.status !== "Aguardando caução"}
           icon={

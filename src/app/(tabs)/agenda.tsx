@@ -13,7 +13,7 @@ import {
 } from "../../components/ui";
 import { GameCard } from "../../components/game-card";
 export default function Agenda() {
-  const { state: s } = useStore();
+  const { state: s, mode } = useStore();
   const [tab, T] = useState("Próximos");
   const list = s.games.filter((g) =>
     tab === "Próximos"
@@ -29,10 +29,10 @@ export default function Agenda() {
         text="Acompanhe propostas, amistosos e seu histórico em campo."
       />
       <Button
-        title="Agendar amistoso"
+        title={mode === "local" ? "Sobre o agendamento" : "Agendar amistoso"}
         icon="add"
         onPress={() =>
-          s.matches.length
+          mode === "local" || s.matches.length
             ? router.push({
                 pathname: "/agendar",
                 params: { id: s.matches[0] },
@@ -54,12 +54,11 @@ export default function Agenda() {
       ) : (
         <Empty
           title="Nenhuma partida por aqui"
-          text="As partidas desta categoria aparecerão nesta área."
+          text={mode === "local" ? "Seu cadastro está salvo no aparelho. Uma conta conectada permite enviar propostas às equipes com match." : "As propostas enviadas e recebidas, as partidas e os cancelamentos aparecerão nesta área."}
         />
       )}
       <Note>
-        A caução e as taxas de cancelamento são simuladas. Nenhum pagamento ou
-        estorno real é processado.
+        {mode === "online" ? "Propostas exigem aceite adversário e continuam aguardando caução. O gateway de pagamento ainda não está disponível; nenhuma cobrança, estorno ou confirmação financeira é processada." : "A caução e as taxas de cancelamento da demonstração são simuladas. Nenhum pagamento ou estorno real é processado."}
       </Note>
     </Screen>
   );

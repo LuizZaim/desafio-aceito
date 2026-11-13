@@ -3,6 +3,7 @@ import {
   Module,
   Controller,
   Get,
+  Param,
   Post,
   Body,
   Req,
@@ -52,7 +53,7 @@ class Errors implements ExceptionFilter {
 class API {
   constructor(@Inject(TOKEN) private readonly app: Service) {}
   @Get("health") health() {
-    return { status: "ok", app: "Desafio Aceito", version: "1.0.0" };
+    return { status: "ok", app: "Desafio Aceito", version: "1.1.0" };
   }
   @Post("auth/register") register(@Body() body: any) {
     return this.app.register(body);
@@ -66,6 +67,12 @@ class API {
   }
   @Get("state") async state(@Req() req: Request) {
     return this.app.getState(await this.app.authenticate(token(req)));
+  }
+  @Get("teams") async teams(@Req() req: Request) {
+    return this.app.teams(await this.app.authenticate(token(req)));
+  }
+  @Get("teams/:id") async team(@Req() req: Request, @Param("id") id: string) {
+    return this.app.team(await this.app.authenticate(token(req)), id);
   }
   @Post("state") @HttpCode(200) async update(
     @Req() req: Request,

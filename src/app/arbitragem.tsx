@@ -1,6 +1,5 @@
 import { View, Switch } from "react-native";
 import { useStore } from "../core/store";
-import { teams } from "../core/domain";
 import {
   Screen,
   Section,
@@ -16,7 +15,7 @@ import {
 } from "../components/ui";
 import { formatDate } from "../components/game-card";
 export default function Referee() {
-  const { state: s, dispatch, busy } = useStore();
+  const { state: s, dispatch, busy, mode, teams } = useStore();
   const c = useColors();
   return (
     <Screen>
@@ -25,7 +24,9 @@ export default function Referee() {
         title="O campo precisa do seu apito."
         text="Sua disponibilidade, seus convites e seu histórico."
       />
-      {s.profile.role !== "arbitro" ? (
+      {mode !== "demo" ? (
+        <Empty title="Cadastro profissional em preparação" text="A área de arbitragem exige verificação do profissional. Não é possível mudar o papel de uma conta de organizador nesta versão. Você pode conhecer os convites e a disponibilidade na demonstração." />
+      ) : s.profile.role !== "arbitro" ? (
         <Card style={{ alignItems: "center", gap: 20, paddingVertical: 35 }}>
           <Icon name="flag-outline" size={45} color={c.muted} />
           <Txt style={{ fontWeight: "800", textAlign: "center", fontSize: 19 }}>

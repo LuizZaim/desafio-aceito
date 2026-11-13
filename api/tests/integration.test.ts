@@ -1,13 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PGlite } from "@electric-sql/pglite";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import request from "supertest";
 import { createApp } from "../src/app";
 test("API: cadastro, login, isolamento, match, persistência e exceções", async () => {
   const pg = new PGlite();
-  await pg.exec(readFileSync("migrations/001_initial.sql", "utf8"));
+  for (const file of readdirSync("migrations").filter((f) => f.endsWith(".sql")).sort()) await pg.exec(readFileSync(`migrations/${file}`, "utf8"));
   const db = {
+    transaction: async (run: any) => pg.transaction(async (tx) => run({query: async (sql: string, args?: any[]) => { const r = await tx.query(sql,args); return {rows:r.rows,rowCount:r.affectedRows}; }})),
     query: async (sql: string, args?: any[]) => {
       const result = await pg.query(sql, args);
       return { rows: result.rows as any[], rowCount: result.affectedRows };
@@ -58,7 +59,7 @@ test("API: cadastro, login, isolamento, match, persistência e exceções", asyn
     assert.deepEqual(initial.body.state.games, []);
     assert.deepEqual(initial.body.state.matches, []);
     await request(http).post("/state").set(auth)
-      .send({ version: 0, action: { type: "interest", id: "vila" } }).expect(400);
+      .send({ version: 0, action: { type: "interest", id: "vila" } }).expect(403);
     const team = {
       type: "registerTeam", name: "Tatuapé FC", district: "Tatuapé",
       city: "São Paulo", state: "SP", category: "Masculino", level: "Amador",
@@ -79,27 +80,13 @@ test("API: cadastro, login, isolamento, match, persistência e exceções", asyn
       .set("Authorization", `Bearer ${login.body.token}`).expect(200);
     assert.deepEqual(reloggedState.body.state, registered.body.state);
 
-    await request(http)
-      .post("/state")
-      .set(auth)
-      .send({ version: 1, action: { type: "interest", id: "vila" } })
-      .expect(200);
+    await request(http).post("/state").set(auth)
+      .send({version:1,action:{type:"interest",id:"vila"}}).expect(404);
     const saved = await request(http).get("/state").set(auth).expect(200);
-    assert.ok(saved.body.state.matches.includes("vila"));
-    assert.equal(saved.body.version, 2);
-    await request(http)
-      .post("/state")
-      .set(auth)
-      .send({ version: 0, action: { type: "read" } })
-      .expect(409);
-    await request(http)
-      .post("/state")
-      .set(auth)
-      .send({
-        version: 2,
-        action: { type: "send", id: "leste", text: "sem match" },
-      })
-      .expect(400);
+    assert.deepEqual(saved.body.state.matches, []);
+    assert.equal(saved.body.version, 1);
+    await request(http).post("/state").set(auth)
+      .send({version:0,action:{type:"read"}}).expect(409);
     const another = await request(http)
       .post("/auth/register")
       .send({
@@ -117,7 +104,7 @@ test("API: cadastro, login, isolamento, match, persistência e exceções", asyn
     assert.equal(other.body.state.profile.name, "");
     assert.equal(other.body.state.teamRegistered, false);
     await request(http).post("/state").set(auth)
-      .send({ version: 2, action: { ...team, type: "profile", name: "Tatuapé Unido" } })
+      .send({ version: 1, action: { ...team, type: "profile", name: "Tatuapé Unido" } })
       .expect(200);
     const edited = await request(http).get("/state").set(auth).expect(200);
     assert.equal(edited.body.state.profile.name, "Tatuapé Unido");

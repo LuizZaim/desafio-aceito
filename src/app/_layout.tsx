@@ -1,16 +1,21 @@
 import React from "react";
+import { Alert } from "react-native";
 import { Stack } from "expo-router";
 import { Provider, useStore } from "../core/store";
 import { useColors, Busy, Empty, Button } from "../components/ui";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 function Navigator() {
-  const { ready, error, reload, mode, state } = useStore();
+  const { ready, error, reload, logout, busy, mode, state } = useStore();
   const c = useColors();
   if (!ready) return <Busy />;
   if (error)
     return (
       <Empty title="Não carregamos seu espaço" text={error}>
-        <Button title="Tentar novamente" onPress={reload} />
+        <Button title="Tentar novamente" disabled={busy} onPress={reload} />
+        <Button title="Voltar à tela de entrada" secondary disabled={busy} onPress={async () => {
+          try { await logout(); }
+          catch { Alert.alert("Não foi possível voltar", "Tente novamente."); }
+        }} />
       </Empty>
     );
   return (

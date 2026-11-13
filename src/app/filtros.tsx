@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { router } from "expo-router";
 import { filters, setFilters } from "../core/filters";
+import { useStore } from "../core/store";
 import {
   Screen,
   Section,
@@ -13,6 +14,7 @@ import {
 } from "../components/ui";
 export default function Filters() {
   const [f, F] = useState({ ...filters });
+  const { mode } = useStore();
   return (
     <Screen>
       <Section
@@ -21,7 +23,7 @@ export default function Filters() {
         text="Defina as características da próxima resenha."
       />
       {[
-        ["radius", "Distância máxima", [5, 10, 15, 25, 50]],
+        ...(mode === "demo" ? [["radius", "Distância máxima", [5, 10, 15, 25, 50]]] : []),
         [
           "level",
           "Nível técnico",
@@ -64,8 +66,7 @@ export default function Filters() {
         }}
       />
       <Note>
-        As distâncias dos times fictícios são ilustrativas, a partir da
-        Liberdade. A integração de mapas ainda não está conectada.
+        {mode === "demo" ? "As distâncias dos times fictícios são ilustrativas, a partir da Liberdade." : "O filtro por distância ainda depende de geolocalização. Use bairro, categoria e nível para encontrar equipes cadastradas."} A integração de mapas ainda não está conectada.
       </Note>
     </Screen>
   );

@@ -11,7 +11,7 @@ import {
   timingSafeEqual,
 } from "node:crypto";
 import { promisify } from "node:util";
-import { freshState, transition } from "../../src/core/domain";
+import { Network } from "./network";
 import type { Database } from "./db";
 const scrypt = promisify(_scrypt);
 const digest = (x: string) => createHash("sha256").update(x).digest("hex");
@@ -101,41 +101,8 @@ export class Service {
       digest(token),
     ]);
   }
-  async getState(user: string) {
-    await this.db.query(
-      "INSERT INTO workspaces(user_id,data) VALUES($1,$2) ON CONFLICT(user_id) DO NOTHING",
-      [user, JSON.stringify(freshState())],
-    );
-    const result = await this.db.query(
-      "SELECT data, version FROM workspaces WHERE user_id=$1",
-      [user],
-    );
-    return { state: result.rows[0].data, version: result.rows[0].version };
-  }
-  async update(user: string, body: any) {
-    if (!body || !Number.isInteger(body.version) || !body.action)
-      throw new BadRequestException("Solicitação inválida.");
-    const previous = await this.getState(user);
-    if (previous.version !== body.version)
-      throw new ConflictException(
-        "Os dados foram atualizados em outra sessão. Reabra o aplicativo.",
-      );
-    let result;
-    try {
-      result = transition(previous.state, body.action);
-    } catch (e) {
-      throw new BadRequestException(
-        e instanceof Error ? e.message : "Ação inválida.",
-      );
-    }
-    const write = await this.db.query(
-      "UPDATE workspaces SET data=$1,version=version+1 WHERE user_id=$2 AND version=$3 RETURNING version",
-      [JSON.stringify(result.state), user, body.version],
-    );
-    if (!write.rows.length)
-      throw new ConflictException(
-        "Conflito de atualização. Reabra o aplicativo.",
-      );
-    return { ...result, version: write.rows[0].version };
-  }
+  async getState(user: string) { return new Network(this.db).state(user); }
+  async update(user: string, body: any) { return new Network(this.db).update(user, body); }
+  async teams(user: string) { return new Network(this.db).catalog(user); }
+  async team(user: string, id: string) { return new Network(this.db).publicProfile(user, id); }
 }

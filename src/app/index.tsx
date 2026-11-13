@@ -132,7 +132,7 @@ export default function Login() {
               finally { setBusy(false); }
             }}
           />
-          <Text style={{ color: "#82907d", fontSize: 11, marginVertical: 18, lineHeight: 18 }}>Seu cadastro fica salvo no celular, sem precisar criar uma conta. Para sincronizar pela conta, use o acesso abaixo quando o serviço estiver disponível.</Text>
+          <Text style={{ color: "#82907d", fontSize: 11, marginVertical: 18, lineHeight: 18 }}>Seu cadastro fica salvo somente neste celular, sem publicar o time. Para encontrar equipes reais e conversar entre contas, use o acesso abaixo quando o servidor estiver disponível.</Text>
           <Input
             label="E-mail"
             placeholder="voce@email.com"

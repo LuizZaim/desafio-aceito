@@ -10,7 +10,6 @@ import {
 import { useLocalSearchParams, router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useStore } from "../core/store";
-import { teams } from "../core/domain";
 import {
   Txt,
   Row,
@@ -19,16 +18,17 @@ import {
   Button,
   Empty,
   useColors,
+  DemoLabel,
 } from "../components/ui";
 export default function Chat() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { state: s, dispatch, busy } = useStore();
+  const { state: s, dispatch, busy, mode, teams } = useStore();
   const c = useColors();
   const insets = useSafeAreaInsets();
   const [text, T] = useState("");
   const scroll = useRef<React.ComponentRef<typeof ScrollView>>(null);
   const t = teams.find((t) => t.id === id);
-  if (!t || !s.matches.includes(id))
+  if (!t || t.active === false || !s.matches.includes(id))
     return (
       <Empty
         title="Conversa indisponível"
@@ -60,7 +60,7 @@ export default function Chat() {
         <View style={{ flex: 1 }}>
           <Txt style={{ fontSize: 14, fontWeight: "800" }}>{t.name}</Txt>
           <Txt style={{ fontSize: 9, color: c.muted }}>
-            Conversa de demonstração · match confirmado
+            {mode === "online" ? "Conversa entre equipes · match confirmado" : "Conversa de demonstração · match confirmado"}
           </Txt>
         </View>
         <Pressable
@@ -78,6 +78,7 @@ export default function Chat() {
           scroll.current?.scrollToEnd({ animated: true })
         }
       >
+        <DemoLabel />
         <Txt
           style={{
             textAlign: "center",
@@ -127,7 +128,7 @@ export default function Chat() {
         <View style={{ alignItems: "center", padding: 27, gap: 14 }}>
           <Icon name="calendar-outline" size={30} color={c.muted} />
           <Txt style={{ fontSize: 14, textAlign: "center", fontWeight: "700" }}>
-            A resenha já tem adversário.{`\n`}Agora só falta marcar.
+            {mode === "online" ? "Combine com a outra equipe pelo chat." : <>A resenha já tem adversário.{`\n`}Agora só falta marcar.</>}
           </Txt>
           <Button
             title="Propor amistoso"
@@ -136,6 +137,7 @@ export default function Chat() {
               router.push({ pathname: "/agendar", params: { id } })
             }
           />
+          {mode === "online" && <Txt style={{ color: c.muted, fontSize: 11, textAlign: "center" }}>A proposta será enviada à outra equipe. A confirmação depende do aceite e da caução; o pagamento ainda não está disponível.</Txt>}
         </View>
       </ScrollView>
       <Row
@@ -173,7 +175,7 @@ export default function Chat() {
             backgroundColor: c.orange,
             borderRadius: 12,
             padding: 14,
-            opacity: busy ? 0.5 : 1,
+            opacity: busy || !text.trim() ? 0.5 : 1,
           }}
         >
           <Icon name="send" color="white" size={20} />

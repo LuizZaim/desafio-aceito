@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Pressable, Alert } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useStore } from "../core/store";
-import { teams } from "../core/domain";
 import {
   Screen,
   Section,
@@ -17,10 +16,12 @@ import {
 } from "../components/ui";
 export default function Review() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { state: s, dispatch, busy } = useStore();
+  const { state: s, dispatch, busy, teams } = useStore();
   const c = useColors();
   const [skill, S] = useState(5),
-    [fair, F] = useState(5);
+    [fair, F] = useState(5),
+    [punctuality, P] = useState(5),
+    [organization, O] = useState(5);
   const g = s.games.find((g) => g.id === id);
   if (!g || g.status !== "Concluída" || g.review)
     return (
@@ -47,6 +48,8 @@ export default function Review() {
       {[
         ["Nível técnico", skill, S],
         ["Fair play e disciplina", fair, F],
+        ["Pontualidade", punctuality, P],
+        ["Organização", organization, O],
       ].map(([title, value, setter]) => (
         <Card key={String(title)} style={{ marginBottom: 16 }}>
           <Txt style={{ fontWeight: "700", fontSize: 13, marginBottom: 17 }}>
@@ -57,11 +60,13 @@ export default function Review() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={`${title}: ${n} de 5`}
+                accessibilityState={{ selected: n === Number(value), disabled: busy }}
+                disabled={busy}
                 key={n}
                 onPress={() => {
                   (setter as (v: number) => void)(n);
                 }}
-                style={{ padding: 5 }}
+                style={{ padding: 6, minWidth: 44, minHeight: 44 }}
               >
                 <Icon
                   name={n <= Number(value) ? "star" : "star-outline"}
@@ -78,7 +83,7 @@ export default function Review() {
         disabled={busy}
         icon="star-outline"
         onPress={async () => {
-          if (await dispatch({ type: "review", id, skill, fair })) {
+          if (await dispatch({ type: "review", id, skill, fair, punctuality, organization })) {
             Alert.alert(
               "Avaliação registrada",
               "Sua nota foi incluída no histórico e no ranking da demonstração.",

@@ -14,15 +14,15 @@ Esta evolução atende ao RF04: criar a própria equipe, em vez de apenas editar
 | Fechar e reabrir | Dados salvos continuam disponíveis no mesmo aparelho; contas online recuperam o estado da própria conta. |
 | Editar depois do cadastro | Alteração preserva a identidade e o restante do estado da equipe. |
 | Tentar interagir sem cadastrar equipe | Interesse e agendamento são bloqueados até concluir o cadastro. |
-| Duas contas online | Os dados de uma equipe não substituem nem aparecem como equipe própria da outra conta. |
+| Duas contas online | Os dados de uma equipe não substituem nem aparecem como equipe própria da outra conta. Equipes ativas aparecem como adversárias no catálogo da mesma API, e a comunicação só é liberada após reciprocidade real. |
 | Explorar demonstração | Os dados fictícios continuam identificados e separados do cadastro da própria equipe. |
 | Falha de gravação ou rede | Sem confirmação de sucesso; usuário pode corrigir ou tentar novamente. |
 
 ## Limites do produto
 
-Salvar um time no aparelho não cria uma conta autenticada, não publica a equipe para outras pessoas e não sincroniza outro celular. Contas online dependem de uma API configurada e acessível. Mesmo com a API, esta versão ainda usa adversários fictícios e não permite conversa ou negociação entre duas contas reais.
+Salvar um time no aparelho não cria uma conta autenticada, não publica a equipe para outras pessoas e não sincroniza outro celular. Contas online dependem de uma API configurada e acessível. No modo online, equipes ativas, matches, conversas e propostas são compartilhados entre contas reais dessa API; somente a demonstração usa adversários fictícios. A proposta aceita permanece aguardando caução: o pagamento ainda não está integrado.
 
-O ZIP contém o projeto mobile. Ele não substitui um APK assinado e instalado. Publicação da API, geração e instalação do APK, teste físico, equipes públicas, localização real, notificações externas e pagamentos reais seguem como etapas separadas.
+O ZIP contém o projeto mobile. Ele não substitui um APK assinado e instalado. Um APK de teste da etapa anterior já foi gerado, conforme `VALIDACAO.md`; as alterações desta revisão precisam de nova distribuição. Publicação da API, novo APK configurado, teste físico, localização real, notificações externas e pagamentos reais seguem como etapas separadas.
 
 ## Roteiro de homologação
 
@@ -32,6 +32,6 @@ O ZIP contém o projeto mobile. Ele não substitui um APK assinado e instalado. 
 4. Feche e reabra o app; retome a própria equipe e confirme os campos salvos.
 5. Edite a descrição, salve e confirme a alteração após reabrir.
 6. Entre na demonstração e confirme que ela mantém a equipe fictícia separada.
-7. Se a API estiver configurada, repita com duas contas diferentes e confirme o isolamento.
+7. Se a API estiver configurada, repita com duas contas diferentes e confirme a separação de propriedade e a descoberta como adversários. Execute `HOMOLOGACAO_ENTRE_CONTAS.md` para conferir match, conversa e proposta.
 
 A lista acima é um roteiro de aceite. Não é uma afirmação de que todas as etapas foram executadas em um aparelho Android; as evidências de execução estão em `VALIDACAO.md`.

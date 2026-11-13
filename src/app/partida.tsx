@@ -2,7 +2,6 @@ import { useState } from "react";
 import { View, Alert, Switch } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useStore } from "../core/store";
-import { teams } from "../core/domain";
 import {
   Screen,
   Section,
@@ -15,11 +14,12 @@ import {
   Note,
   Empty,
   useColors,
+  DemoLabel,
 } from "../components/ui";
 import { formatDate } from "../components/game-card";
 export default function Partida() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { state: s, dispatch, busy } = useStore();
+  const { state: s, dispatch, busy, mode, teams } = useStore();
   const c = useColors();
   const [reason, R] = useState(""),
     [weather, W] = useState(false),
@@ -57,6 +57,7 @@ export default function Partida() {
   }
   return (
     <Screen>
+      <DemoLabel />
       <Section
         eyebrow={g.status.toUpperCase()}
         title={`${s.profile.name}\n× ${t?.name}`}
@@ -78,7 +79,25 @@ export default function Partida() {
           ))}
         </View>
       </Card>
-      {g.status === "Aguardando caução" && (
+      {g.status === "Aguardando adversário" && (
+        <Card style={{ marginTop: 20, gap: 16 }}>
+          <Txt style={{ fontWeight: "800", fontSize: 16 }}>{g.canRespond ? "Seu time recebeu uma proposta" : "Proposta enviada ao adversário"}</Txt>
+          <Txt style={{ color: c.muted, fontSize: 12 }}>
+            {g.canRespond ? "Confira data, horário, local e mando antes de responder. O aceite reserva o horário na agenda do app e mantém a partida aguardando caução." : "Aguarde a outra equipe aceitar ou recusar. A resposta aparecerá nesta agenda ao atualizar."}
+          </Txt>
+          {g.canRespond && <>
+            <Button title={busy ? "Salvando resposta…" : "Aceitar proposta"} disabled={busy} icon="checkmark" onPress={() => Alert.alert("Aceitar esta proposta?", "A partida aguardará a caução. O pagamento ainda não está disponível e o aceite não confirma o amistoso.", [{ text: "Voltar", style: "cancel" }, { text: "Aceitar", onPress: () => dispatch({ type: "acceptProposal", id }) }])} />
+            <Button title="Recusar proposta" secondary disabled={busy} onPress={() => Alert.alert("Recusar proposta?", "As duas equipes verão a proposta como cancelada e o horário ficará disponível.", [{ text: "Voltar", style: "cancel" }, { text: "Recusar", style: "destructive", onPress: () => dispatch({ type: "rejectProposal", id }) }])} />
+          </>}
+        </Card>
+      )}
+      {g.status === "Aguardando caução" && mode === "online" && (
+        <Card style={{ marginTop: 20, gap: 12 }}>
+          <Txt style={{ fontWeight: "800", fontSize: 16 }}>Proposta aceita · aguardando caução</Txt>
+          <Txt style={{ color: c.muted, fontSize: 12 }}>As duas equipes concordaram com o jogo. A integração financeira ainda está em preparação: nenhum valor foi cobrado e a partida ainda não está confirmada.</Txt>
+        </Card>
+      )}
+      {g.status === "Aguardando caução" && mode === "demo" && (
         <View style={{ marginTop: 20, gap: 12 }}>
           <Card style={{ alignItems: "center", gap: 9 }}>
             <Icon name="wallet-outline" size={35} color={c.orange} />
@@ -102,7 +121,7 @@ export default function Partida() {
           </Note>
         </View>
       )}
-      {g.status === "Confirmada" && (
+      {g.status === "Confirmada" && mode === "demo" && (
         <View style={{ marginTop: 20, gap: 12 }}>
           <Button
             title="Registrar resultado"
@@ -140,7 +159,7 @@ export default function Partida() {
           )}
         </View>
       )}
-      {["Confirmada", "Aguardando caução"].includes(g.status) && (
+      {["Confirmada", "Aguardando caução", "Aguardando adversário"].includes(g.status) && (
         <View style={{ marginTop: 14 }}>
           <Button
             title="Solicitar cancelamento"
@@ -176,7 +195,7 @@ export default function Partida() {
                     "Confirmar cancelamento?",
                     weather
                       ? "A solicitação aguarda acordo adversário para isentar a penalidade."
-                      : "Taxa ilustrativa: R$ 10 antes do dia ou R$ 30 no dia, se a caução foi simulada.",
+                      : mode === "online" ? "A proposta será cancelada para as duas equipes. Nenhuma caução foi cobrada nesta versão." : "Taxa ilustrativa: R$ 10 antes do dia ou R$ 30 no dia, se a caução foi simulada.",
                     [
                       { text: "Voltar", style: "cancel" },
                       {
@@ -198,17 +217,17 @@ export default function Partida() {
             Condição climática informada: {g.reason}. A isenção depende da
             concordância adversária.
           </Note>
-          <Button
-            title="Simular concordância do adversário"
+          {(mode === "demo" || g.canWeatherAgree) ? <Button
+            title={mode === "demo" ? "Simular concordância do adversário" : "Concordar com cancelamento por clima"}
             icon="rainy-outline"
-            onPress={() => dispatch({ type: "weatherAgree", id })}
-          />
+            disabled={busy}
+            onPress={() => Alert.alert("Concordar com o cancelamento?", "A partida será cancelada para as duas equipes.", [{ text: "Voltar", style: "cancel" }, { text: "Concordar", onPress: () => dispatch({ type: "weatherAgree", id }) }])}
+          /> : <Txt style={{ color: c.muted, fontSize: 12 }}>Aguarde a concordância do adversário. Você não pode aprovar sua própria solicitação.</Txt>}
         </View>
       )}
       {g.status === "Cancelada" && (
         <Note>
-          Cancelamento registrado. Penalidade ilustrativa: R$ {g.fee || 0},00.
-          Nenhuma cobrança ou estorno real foi realizado.
+          {mode === "demo" ? `Cancelamento registrado. Penalidade ilustrativa: R$ ${g.fee || 0},00.` : "Cancelamento registrado para as duas equipes."} Nenhuma cobrança ou estorno real foi realizado.
         </Note>
       )}
       {g.status === "Concluída" && (

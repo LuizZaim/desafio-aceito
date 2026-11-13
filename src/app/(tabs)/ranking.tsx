@@ -1,7 +1,7 @@
 import { View, Pressable } from "react-native";
 import { router } from "expo-router";
 import { useStore } from "../../core/store";
-import { teams } from "../../core/domain";
+import { reviewAverage } from "../../core/domain";
 import {
   Screen,
   Section,
@@ -12,22 +12,26 @@ import {
   Crest,
   DemoLabel,
   Note,
+  Empty,
   useColors,
 } from "../../components/ui";
 import { GameCard } from "../../components/game-card";
 export default function Ranking() {
-  const { state: s } = useStore();
+  const { state: s, mode, teams } = useStore();
   const c = useColors();
   const list = teams
+    .filter((team) => team.active !== false)
     .map((t) => {
       const reviews = s.games
         .filter((g) => g.team === t.id && g.review)
-        .map((g) => (g.review!.fair + g.review!.skill) / 2);
+        .map((g) => reviewAverage(g.review))
+        .filter((value): value is number => value !== null);
       return {
         ...t,
         value:
-          (t.rating * t.games + reviews.reduce((a, b) => a + b, 0)) /
-          (t.games + reviews.length),
+          t.games + reviews.length > 0
+            ? (t.rating * t.games + reviews.reduce((a, b) => a + b, 0)) / (t.games + reviews.length)
+            : 0,
       };
     })
     .sort((a, b) => b.value - a.value);
@@ -47,11 +51,12 @@ export default function Ranking() {
               A rivalidade fica só no campo.
             </Txt>
             <Txt style={{ fontSize: 10, color: c.muted, marginTop: 7 }}>
-              Ranking demonstrativo de avaliações de 1 a 5.
+              {mode === "demo" ? "Ranking demonstrativo de avaliações de 1 a 5." : "As equipes começam sem notas. Avaliações compartilhadas após partidas ainda estão em preparação."}
             </Txt>
           </View>
         </Row>
       </Card>
+      {!list.length && <Empty title="O ranking começa em campo" text={mode === "local" ? "Seu time está salvo no aparelho. A demonstração mostra como funcionará o ranking após os jogos." : "As equipes cadastradas e suas avaliações aparecerão aqui. Nenhuma nota fictícia é atribuída a equipes reais."} />}
       <View style={{ gap: 9 }}>
         {list.map((t, i) => (
           <Pressable
@@ -85,7 +90,7 @@ export default function Ranking() {
                 <Txt
                   style={{ fontSize: 12, fontWeight: "800", color: "#ba9c53" }}
                 >
-                  {t.value.toFixed(2)}
+                  {t.games > 0 || s.games.some((g) => g.team === t.id && g.review) ? t.value.toFixed(2) : "Sem notas"}
                 </Txt>
               </Row>
             </Card>
@@ -101,8 +106,7 @@ export default function Ranking() {
           <GameCard key={g.id} game={g} />
         ))}
       <Note>
-        As notas iniciais são fictícias. Sua avaliação após um jogo concluído
-        compõe a média exibida nesta demonstração.
+        {mode === "demo" ? "As notas iniciais são fictícias. Novas avaliações consideram nível técnico, fair play, pontualidade e organização. Registros antigos preservam as duas dimensões originais." : "Equipes reais começam sem avaliações. A confirmação financeira, a conclusão de partidas e a avaliação compartilhada ainda estão em preparação."}
       </Note>
     </Screen>
   );

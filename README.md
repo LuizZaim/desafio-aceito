@@ -16,7 +16,7 @@ npx expo start
 4. Deixe computador e celular na mesma rede. Leia o QR code pelo Expo Go no Android; no iOS, use a câmera ou o Expo Go.
 5. Na primeira tela, toque em **Explorar demonstração**. Não precisa de servidor ou cadastro para testar os fluxos offline.
 
-A demonstração salva os registros em SQLite no aparelho, inclusive ao fechar e reabrir. O projeto entregue é código-fonte executável: **o pacote ZIP não é um APK**. A compilação do JavaScript para Android foi verificada; instalação em aparelho e compilação de APK assinado ainda precisam ser realizadas.
+A demonstração salva os registros em SQLite no aparelho, inclusive ao fechar e reabrir. O projeto entregue é código-fonte executável: **o pacote ZIP não é um APK**. O APK da primeira versão foi concluído no Expo em 12/11/2026, conforme o histórico do projeto. As alterações deste pacote precisam de uma nova compilação para chegar ao celular. A instalação e a homologação em aparelho continuam sem evidência registrada.
 
 ## Cadastrar sua própria equipe
 
@@ -28,11 +28,12 @@ Para usar uma conta online, configure a API conforme as instruções abaixo e cr
 
 ## O que está implementado
 
-- Descoberta, filtros por raio, bairro, nível e categoria, cartões de equipes e perfis.
+- Descoberta, filtros por região, nível e categoria, cartões de equipes e perfis. O filtro de raio em km está restrito às distâncias fictícias da demonstração; coordenadas reais ainda não foram integradas.
 - Interesse recíproco, bloqueio de chat sem match, conversa e histórico de mensagens.
-- Agendamento com validação de data, horário, local, mando e conflito de agenda.
-- Caução simulada, estados da partida, cancelamento com penalidade ilustrativa e acordo climático.
-- Histórico, registro de placar depois do início do jogo, avaliação única e ranking.
+- Propostas online com aceite/recusa exclusiva do adversário, agenda compartilhada e validação de conflitos das duas equipes e do local informado (2 horas). Mando usa o identificador da equipe.
+- Cancelamento compartilhado; acordo climático só pode ser confirmado por quem não o solicitou. Partidas ativas impedem encerrar match/desativar equipe.
+- Na demonstração: caução simulada, resultado e cancelamento com penalidade ilustrativa. No modo online: aceite leva à espera de caução; pagamento, resultado e avaliação permanecem bloqueados até as respectivas integrações.
+- Histórico das propostas online. Na demonstração: placar depois do início do jogo, avaliação única em quatro critérios (nível técnico, fair play, pontualidade e organização) e ranking.
 - Cadastro dedicado da própria equipe, persistência local separada da demonstração e persistência por conta na API.
 - Perfil da equipe, edição, compartilhamento textual, denúncias e desativação com proteção de partidas ativas.
 - Perfil de árbitro, disponibilidade e aceite/recusa de convites da demonstração.
@@ -41,9 +42,13 @@ Para usar uma conta online, configure a API conforme as instruções abaixo e cr
 
 ## Limites desta versão
 
-Esta entrega é um **MVP mobile demonstrativo**, com equipes fictícias. As contas da API possuem espaços separados; ainda não negociam partidas entre si. O chat não envia mensagens a outra pessoa real. O pagamento não faz cobranças reais. Os preços R$ 50 / R$ 10 / R$ 30 são exemplos configurados para demonstração; o PDF não define valores.
+Esta versão inclui um modo demonstrativo com equipes fictícias e um modo conectado para contas independentes. Com a API configurada, organizadores com equipes cadastradas podem descobrir adversários reais, registrar interesse e trocar mensagens depois da reciprocidade. Propostas e cancelamentos são compartilhados entre os dois organizadores; apenas o adversário pode aceitar ou recusar uma proposta. Depois do aceite, a partida fica **Aguardando caução**, sem confirmação ou cobrança simulada no modo online. O pagamento não faz cobranças reais. Os preços R$ 50 / R$ 10 / R$ 30 são exemplos configurados para demonstração; o PDF não define valores.
 
-Ainda faltam: recuperação por e-mail, Google OAuth, gateway com webhook, mapas e distâncias reais, push, moderação operacional, comunicação entre contas, sincronização em tempo real, autorização profissional dos árbitros e DER completo em produção. A API persiste o estado do MVP em JSONB por conta, além das tabelas relacionais de usuários e sessões; **isso não substitui o DER normalizado proposto no PDF**.
+Ainda faltam: recuperação por e-mail, Google OAuth, gateway com webhook, mapas e distâncias reais, push, moderação operacional, confirmação financeira e pós-jogo compartilhado, autorização profissional dos árbitros e DER completo em produção. A API mantém preferências em JSONB por conta e usa tabelas relacionais para equipes, interesses, matches, mensagens, locais e propostas de partidas; **o DER completo, incluindo cauções, avaliações e alocação de árbitros, permanece pendente**. Locais informados por texto são comparados na agenda interna; isso não é uma reserva real do estabelecimento. O catálogo online não inventa distâncias ou avaliações.
+
+Consulte [o plano de conclusão com critérios de aceite](docs/PLANO_CONCLUSAO.md).
+
+Para testar entre contas A/B/C, siga [o roteiro de homologação](docs/HOMOLOGACAO_ENTRE_CONTAS.md).
 
 Consulte [a matriz dos 50 critérios](docs/AUDITORIA.md) e [os requisitos RF01–RF30](docs/REQUISITOS.md). Não foi atribuída uma nota de conformidade de 100%.
 
@@ -53,7 +58,7 @@ O modo offline funciona sem `.env`. Para habilitar contas:
 
 1. Instale PostgreSQL ou use o Docker Compose incluído.
 2. Configure um arquivo `.env` na raiz com `POSTGRES_PASSWORD` (sem esse valor o Compose não inicia).
-3. Execute `docker compose up --build`. A migração inicial é aplicada na criação do banco.
+3. Execute `docker compose up --build`. A API aplica as migrações SQL em ordem antes de iniciar, inclusive em bancos existentes; o controle de versões impede a reaplicação de migrações concluídas.
 4. Adicione `EXPO_PUBLIC_API_URL=http://IP_DO_COMPUTADOR:3000` ao `.env` da raiz. Use o IP da rede local, não `localhost` no celular.
 5. Reinicie o Expo com `npx expo start --clear`.
 
@@ -81,7 +86,7 @@ npx eas-cli@latest build:configure
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-Esse processo exige conta Expo, vinculação do projeto e credenciais de assinatura gerenciadas pelo serviço. Não foi realizado nesta entrega. Para iOS, a distribuição também requer a configuração e as credenciais da Apple. Não há APK ou publicação na Play Store/App Store incluídos.
+O projeto já está vinculado à conta Expo usada no primeiro APK. A primeira compilação foi concluída; este incremento ainda não possui APK novo. O APK anterior não inclui estas alterações. Para distribuir o modo online, configure a URL HTTPS da API no ambiente de build antes de compilar. Para iOS, a distribuição também requer a configuração e as credenciais da Apple. Não houve publicação na Play Store/App Store.
 
 ## Verificações
 
@@ -96,7 +101,7 @@ npm run build
 npm test
 ```
 
-A suíte de integração usa PostgreSQL embutido PGlite, instala a migração e testa a API por HTTP local: cadastro, autenticação, erros, isolamento entre contas, persistência, conflito de versão, prevenção de SQL injection e revogação de sessão. Não substitui teste de carga, teste em PostgreSQL de produção ou homologação em aparelho físico.
+A suíte de integração usa PostgreSQL embutido PGlite, aplica as migrações e testa a API por HTTP local: cadastro, autenticação, erros, isolamento entre contas, persistência, conflito de versão, prevenção de SQL injection e revogação de sessão; relações entre contas independentes, chat privado, propostas bilaterais, conflitos de equipes/local, cancelamento climático e preservação de cadastros legados. Há também teste de migração e restrições de integridade. Não substitui teste de carga, teste em PostgreSQL de produção ou homologação em aparelho físico.
 
 ## Clonar o histórico local
 
@@ -108,7 +113,7 @@ cd desafio-aceito
 npm ci
 ```
 
-O projeto ainda não foi publicado em um repositório remoto.
+O projeto ainda não foi publicado em um repositório remoto. O bundle acompanha o código para preservar o histórico local.
 
 ## Estrutura
 
@@ -128,8 +133,8 @@ O renderer web é usado apenas para QA de navegação; a entrega principal é mo
 
 ## Fontes
 
-- `Documentacao_Tecnica_Desafio_Aceito_Auditada_Revisada(1).pdf`, fornecido pelo usuário.
-- `auditoria_vibe_coding_2026-11-11.txt`, fornecido pelo usuário.
+- [PDF técnico original](docs/referencias/Documentacao_Tecnica_Desafio_Aceito.pdf), fornecido pelo usuário.
+- [Auditoria original de 11/11/2026](docs/referencias/auditoria_original_2026-11-11.txt), fornecida pelo usuário.
 - [Documentação versionada Expo SDK 58](https://docs.expo.dev/versions/v58.0.0/).
 - [Instalação do Expo Router](https://docs.expo.dev/router/installation/).
 

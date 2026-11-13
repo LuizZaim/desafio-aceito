@@ -9,13 +9,16 @@ export type Team = {
   short: string;
   color: string;
   district: string;
-  distance: number;
+  distance: number | null;
+  city?: string;
+  state?: string;
   level: string;
   category: string;
   rating: number;
   games: number;
   bio: string;
   reciprocal?: boolean;
+  active?: boolean;
 };
 export type Game = {
   id: string;
@@ -27,11 +30,28 @@ export type Game = {
   status: string;
   payment: string;
   referee: string;
+  proposerId?: string;
+  canRespond?: boolean;
+  canWeatherAgree?: boolean;
   score?: string;
-  review?: { skill: number; fair: number };
+  review?: {
+    skill: number;
+    fair: number;
+    punctuality?: number;
+    organization?: number;
+  };
   fee?: number;
   reason?: string;
 };
+/** Older saved reviews have two dimensions; do not manufacture missing ratings. */
+export function reviewAverage(review: Game["review"]): number | null {
+  if (!review) return null;
+  const values = [review.skill, review.fair, review.punctuality, review.organization]
+    .filter((value): value is number =>
+      typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 5,
+    );
+  return values.length ? values.reduce((total, value) => total + value, 0) / values.length : null;
+}
 export type State = {
   teamRegistered?: boolean;
   profile: {
@@ -462,12 +482,17 @@ export function transition(
         "Avaliação disponível uma vez por partida concluída.",
       );
       need(
-        [action.skill, action.fair].every(
-          (n) => Number.isInteger(+n) && +n >= 1 && +n <= 5,
+        [action.skill, action.fair, action.punctuality, action.organization].every(
+          (n) => typeof n === "number" && Number.isInteger(n) && n >= 1 && n <= 5,
         ),
         "As notas devem ser de 1 a 5.",
       );
-      g.review = { skill: +action.skill, fair: +action.fair };
+      g.review = {
+        skill: action.skill,
+        fair: action.fair,
+        punctuality: action.punctuality,
+        organization: action.organization,
+      };
       message = "Avaliação registrada no histórico e no ranking.";
       break;
     }

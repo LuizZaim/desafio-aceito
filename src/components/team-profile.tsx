@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { View, Share, Alert } from "react-native";
 import { router } from "expo-router";
-import { teams } from "../core/domain";
 import { useStore } from "../core/store";
 import {
   Screen,
@@ -21,7 +20,7 @@ import {
 } from "./ui";
 import { GameCard } from "./game-card";
 export function TeamProfile({ id }: { id?: string }) {
-  const { state: s, dispatch, busy, mode } = useStore();
+  const { state: s, dispatch, busy, mode, teams } = useStore();
   const c = useColors();
   const [report, R] = useState(false),
     [reason, S] = useState("");
@@ -34,14 +33,16 @@ export function TeamProfile({ id }: { id?: string }) {
         text="Volte à descoberta para escolher um adversário."
       />
     );
-  const location = own ? [s.profile.district, s.profile.city, s.profile.state].filter(Boolean).join(", ") : `${t!.district}, São Paulo`;
+  const location = own ? [s.profile.district, s.profile.city, s.profile.state].filter(Boolean).join(", ") : [t!.district, t!.city, t!.state].filter(Boolean).join(", ");
   const name = own ? s.profile.name : t!.name;
+  const inactive = !own && t!.active === false;
   return (
     <Screen>
       <Section
         eyebrow={own ? "SEU ESCUDO, SUA HISTÓRIA" : "CONHEÇA O ADVERSÁRIO"}
         title={own ? "Sua casa no futebol." : name}
       />
+      {inactive && <Note>Equipe desativada. O nome permanece no histórico das partidas, mas novos interesses e conversas estão indisponíveis.</Note>}
       <Card style={{ padding: 0, overflow: "hidden" }}>
         <View style={{ height: 155, backgroundColor: c.navy }}>
           <FieldArt />
@@ -98,6 +99,8 @@ export function TeamProfile({ id }: { id?: string }) {
                 }
               />
             </View>
+          ) : inactive ? (
+            <Txt style={{ fontSize: 12, color: c.muted }}>Este perfil está disponível apenas para consulta do histórico.</Txt>
           ) : s.matches.includes(id!) ? (
             <View style={{ gap: 12 }}>
               <Button
@@ -181,12 +184,13 @@ export function TeamProfile({ id }: { id?: string }) {
       ) : (
         <View style={{ marginTop: 20, gap: 15 }}>
           <Button
-            title="Denunciar equipe"
+            title={inactive ? "Equipe desativada" : "Denunciar equipe"}
+            disabled={inactive || busy}
             secondary
             icon="flag-outline"
             onPress={() => R(!report)}
           />
-          {report && (
+          {report && !inactive && (
             <Card>
               <Input
                 label="O que aconteceu?"
@@ -204,7 +208,7 @@ export function TeamProfile({ id }: { id?: string }) {
                     R(false);
                     Alert.alert(
                       "Denúncia armazenada",
-                      "Registro salvo na demonstração. Não há central de moderação conectada.",
+                      mode === "online" ? "Registro recebido pelo servidor. O acompanhamento e a central de moderação ainda estão em preparação." : "Registro salvo na demonstração. Não há central de moderação conectada.",
                     );
                   }
                 }}
@@ -214,7 +218,7 @@ export function TeamProfile({ id }: { id?: string }) {
         </View>
       )}
       <Note>
-        {own && mode !== "demo" ? `Seu cadastro está salvo ${mode === "local" ? "neste aparelho" : "na sua conta"}. Os adversários e as partidas desta versão são demonstrativos.` : "Os dados das equipes e os históricos desta versão são demonstrativos."} O compartilhamento envia um resumo textual. Perfis públicos ainda não estão publicados.
+        {mode === "online" ? "Seu time pode ser encontrado por outras contas conectadas. As conversas exigem interesse mútuo. Propostas de amistoso exigem aceite da outra equipe. A integração de pagamentos ainda está em preparação." : mode === "local" ? "Seu cadastro está salvo somente neste aparelho. Entre com uma conta para publicar uma equipe quando o servidor estiver disponível." : "Os dados das equipes e os históricos desta demonstração são fictícios."} O compartilhamento envia um resumo textual.
       </Note>
     </Screen>
   );

@@ -6,8 +6,15 @@ import {
   transition,
   dateAfter,
   fields,
+  reviewAverage,
 } from "../src/core/domain.ts";
 const run = (s, a) => transition(s, a).state;
+test("média das avaliações considera quatro dimensões e mantém histórico antigo", () => {
+  assert.equal(reviewAverage(undefined), null);
+  assert.equal(reviewAverage({ skill: 4, fair: 5 }), 4.5);
+  assert.equal(reviewAverage({ skill: 4, fair: 5, punctuality: 3, organization: 2 }), 3.5);
+  assert.equal(reviewAverage({ skill: 0, fair: 6 }), null);
+});
 test("interesse sem reciprocidade não libera chat", () => {
   const s = run(initialState(), { type: "interest", id: "leste" });
   assert.ok(s.interests.includes("leste"));
@@ -81,17 +88,17 @@ test("clima exige acordo antes de cancelar sem taxa", () => {
 test("avaliação só aceita uma por partida concluída e notas válidas", () => {
   let s = initialState();
   assert.throws(
-    () => run(s, { type: "review", id: "game-demo-1", skill: 5, fair: 5 }),
+    () => run(s, { type: "review", id: "game-demo-1", skill: 5, fair: 5, punctuality: 5, organization: 5 }),
     /concluída/,
   );
   assert.throws(
-    () => run(s, { type: "review", id: "game-demo-2", skill: 6, fair: 5 }),
+    () => run(s, { type: "review", id: "game-demo-2", skill: 6, fair: 5, punctuality: 5, organization: 5 }),
     /1 a 5/,
   );
-  s = run(s, { type: "review", id: "game-demo-2", skill: 4, fair: 5 });
-  assert.equal(s.games[1].review.skill, 4);
+  s = run(s, { type: "review", id: "game-demo-2", skill: 4, fair: 5, punctuality: 3, organization: 2 });
+  assert.deepEqual(s.games[1].review, { skill: 4, fair: 5, punctuality: 3, organization: 2 });
   assert.throws(
-    () => run(s, { type: "review", id: "game-demo-2", skill: 5, fair: 5 }),
+    () => run(s, { type: "review", id: "game-demo-2", skill: 5, fair: 5, punctuality: 5, organization: 5 }),
     /uma vez/,
   );
 });
@@ -212,4 +219,19 @@ test("cadastro valida localização e campos, registra sem criar histórico, per
   assert.equal(edited.teamRegistered, true);
   assert.equal(run(edited, { type: "interest", id: "vila" }).matches[0], "vila");
   assert.throws(() => transition(s, null), /inválida/);
+});
+
+// UC-R03/R05: every new rating must cover all four documented dimensions.
+test("avaliação exige pontualidade e organização e preserva notas antigas", () => {
+  const state = initialState();
+  const valid = { type: "review", id: "game-demo-2", skill: 4, fair: 5, punctuality: 3, organization: 2 };
+  for (const key of ["skill", "fair", "punctuality", "organization"]) {
+    for (const invalid of [undefined, null, "5", 0, 6, 2.5, true]) {
+      assert.throws(() => run(state, { ...valid, [key]: invalid }), /1 a 5/);
+    }
+  }
+  state.games[1].review = { skill: 4, fair: 5 };
+  const saved = run(state, { type: "settings", push: true, email: false, dark: false });
+  assert.deepEqual(saved.games[1].review, { skill: 4, fair: 5 });
+  assert.throws(() => run(saved, valid), /uma vez/);
 });

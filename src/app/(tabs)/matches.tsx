@@ -1,7 +1,6 @@
 import { Pressable, View } from "react-native";
 import { router } from "expo-router";
 import { useStore } from "../../core/store";
-import { teams } from "../../core/domain";
 import {
   Screen,
   Section,
@@ -16,9 +15,9 @@ import {
   useColors,
 } from "../../components/ui";
 export default function Matches() {
-  const { state: s } = useStore();
+  const { state: s, teams } = useStore();
   const c = useColors();
-  const list = teams.filter((t) => s.matches.includes(t.id));
+  const list = teams.filter((t) => t.active !== false && s.matches.includes(t.id));
   return (
     <Screen>
       <DemoLabel />

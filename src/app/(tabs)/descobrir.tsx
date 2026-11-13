@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { View, Pressable, ScrollView, Alert } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import { useStore } from "../../core/store";
-import { teams } from "../../core/domain";
 import { filters, setFilters } from "../../core/filters";
 import {
   Screen,
@@ -20,7 +19,7 @@ import {
   useColors,
 } from "../../components/ui";
 export default function Discover() {
-  const { state: s, dispatch, busy } = useStore();
+  const { state: s, dispatch, busy, mode, teams } = useStore();
   const c = useColors();
   const [f, F] = useState(filters);
   useFocusEffect(
@@ -28,15 +27,16 @@ export default function Discover() {
       F({ ...filters });
     }, []),
   );
-  const available = teams.filter(
+  const activeTeams = teams.filter((team) => team.active !== false);
+  const available = activeTeams.filter(
     (t) =>
       !s.skipped.includes(t.id) &&
       !s.interests.includes(t.id) &&
       !s.matches.includes(t.id) &&
-      t.distance <= f.radius &&
+      (t.distance === null || t.distance <= f.radius) &&
       (f.category === "Todas" || t.category === f.category) &&
       (f.level === "Todos" || t.level === f.level) &&
-      (!f.region || t.district.toLowerCase().includes(f.region.toLowerCase())),
+      (!f.region || [t.district, t.city, t.state].filter(Boolean).join(" ").toLowerCase().includes(f.region.toLowerCase())),
   );
   const t = available[0];
   async function like() {
@@ -74,7 +74,7 @@ export default function Discover() {
         <Row>
           <Icon name="location-outline" size={15} color={c.muted} />
           <Txt style={{ fontSize: 11, color: c.muted }}>
-            São Paulo · até {f.radius} km
+            {mode === "demo" ? `São Paulo · até ${f.radius} km` : [s.profile.city, s.profile.state].filter(Boolean).join(" · ") || "Sua região"}
           </Txt>
         </Row>
         <Pressable
@@ -194,7 +194,7 @@ export default function Discover() {
                   {t.name}
                 </Txt>
                 <Txt style={{ fontSize: 10, color: "#d4dfc7", marginTop: 5 }}>
-                  {t.district} · {t.distance} km
+                  {t.district}{t.distance === null ? " · distância não calculada" : ` · ${t.distance} km`}
                 </Txt>
               </View>
             </Row>
@@ -207,7 +207,7 @@ export default function Discover() {
               </Row>
               <Row style={{ gap: 3 }}>
                 <Icon name="star" size={12} color="#b99b52" />
-                <Txt style={{ fontSize: 11, color: "#b99b52" }}>{t.rating}</Txt>
+                <Txt style={{ fontSize: 11, color: "#b99b52" }}>{t.games > 0 ? t.rating.toFixed(1) : "Sem avaliações"}</Txt>
               </Row>
             </Row>
             <Txt
@@ -232,11 +232,11 @@ export default function Discover() {
               <Row style={{ gap: 5 }}>
                 <Icon name="calendar-outline" size={14} color={c.muted} />
                 <Txt style={{ fontSize: 9, color: c.muted }}>
-                  Finais de semana
+                  {mode === "demo" ? "Finais de semana" : "Combine pelo chat"}
                 </Txt>
               </Row>
               <Txt style={{ fontSize: 8, color: "#7e9b6c" }}>
-                ● Disponível para jogar
+                {mode === "demo" ? "● Disponível para jogar" : "Equipe cadastrada"}
               </Txt>
             </Row>
             <Row style={{ marginTop: 18 }}>
@@ -260,10 +260,10 @@ export default function Discover() {
         </Card>
       ) : (
         <Empty
-          title="O campo está livre por aqui"
-          text="Amplie seus filtros ou reveja equipes puladas para encontrar outros adversários."
+          title={mode === "local" ? "Seu time está cadastrado" : "O campo está livre por aqui"}
+          text={mode === "local" ? "Este cadastro está salvo no aparelho e não publica seu time. Entre com uma conta para encontrar outras equipes quando o servidor estiver disponível." : !activeTeams.length ? "Ainda não há outras equipes cadastradas disponíveis. Atualize esta tela depois que outro organizador cadastrar um time." : "Amplie seus filtros ou reveja equipes puladas para encontrar outros adversários."}
         >
-          <Button
+          {mode !== "local" && <Button
             title="Ampliar busca"
             icon="refresh-outline"
             onPress={() => {
@@ -277,7 +277,7 @@ export default function Discover() {
               F(x);
               dispatch({ type: "resetDiscovery" });
             }}
-          />
+          />}
         </Empty>
       )}
       <Row style={{ justifyContent: "center", marginVertical: 20, gap: 5 }}>
@@ -294,12 +294,12 @@ export default function Discover() {
         }}
       >
         <Txt style={{ fontWeight: "800", fontSize: 15 }}>
-          Mais times, mais resenha
+          {mode === "local" ? "Entre na comunidade" : "Mais times, mais resenha"}
         </Txt>
         <Txt style={{ fontSize: 9, color: c.muted }}>Comunidade</Txt>
       </Row>
-      {teams
-        .filter((x) => x.id !== t?.id)
+      {activeTeams
+        .filter((x) => x.id !== t?.id && !s.skipped.includes(x.id))
         .slice(0, 3)
         .map((x) => (
           <Pressable
@@ -317,7 +317,7 @@ export default function Discover() {
                     {x.name}
                   </Txt>
                   <Txt style={{ fontSize: 9, color: c.muted }}>
-                    {x.district} · {x.distance} km
+                    {x.district}{x.distance === null ? " · distância não calculada" : ` · ${x.distance} km`}
                   </Txt>
                 </View>
                 <Icon name="arrow-up-right-box" size={18} color={c.muted} />

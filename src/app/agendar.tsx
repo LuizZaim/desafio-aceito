@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, Alert } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useStore } from "../core/store";
-import { teams, fields, dateAfter } from "../core/domain";
+import { fields, dateAfter } from "../core/domain";
 import {
   Screen,
   Section,
@@ -12,16 +12,28 @@ import {
   Txt,
   Note,
   Empty,
+  DemoLabel,
 } from "../components/ui";
 export default function Schedule() {
   const params = useLocalSearchParams<{ id: string }>();
-  const { state: s, dispatch, busy } = useStore();
+  const { state: s, dispatch, busy, mode, teams, currentTeamId } = useStore();
   const [id, I] = useState(params.id || s.matches[0]),
     [date, D] = useState(dateAfter(5).split("-").reverse().join("/")),
     [time, T] = useState("10:00"),
-    [field, F] = useState(fields[0]),
-    [home, H] = useState(s.profile.name);
+    [field, F] = useState(mode === "demo" ? fields[0] : ""),
+    [home, H] = useState(mode === "online" ? currentTeamId || "" : s.profile.name);
   const team = teams.find((t) => t.id === id);
+  if (mode === "local")
+    return (
+      <Screen>
+        <Empty
+          title="Seu time está salvo neste aparelho"
+          text="Para propor jogos a outros organizadores, entre com uma conta conectada ao servidor. A demonstração permite conhecer o fluxo com equipes fictícias."
+        >
+          <Button title="Voltar" secondary onPress={() => router.back()} />
+        </Empty>
+      </Screen>
+    );
   if (!s.matches.length)
     return (
       <Screen>
@@ -37,6 +49,10 @@ export default function Schedule() {
       !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)
     ) {
       Alert.alert("Confira a data e o horário", "Use DD/MM/AAAA e HH:MM.");
+      return;
+    }
+    if (mode === "online" && (field.trim().length < 3 || field.trim().length > 100)) {
+      Alert.alert("Informe o local", "Use entre 3 e 100 caracteres para identificar o campo ou a quadra, incluindo endereço ou região para evitar confusão.");
       return;
     }
     const iso = date.split("/").reverse().join("-");
@@ -55,7 +71,7 @@ export default function Schedule() {
     ) {
       Alert.alert(
         "Proposta criada",
-        "Simule a caução para confirmar seu amistoso.",
+        mode === "online" ? "A outra equipe precisa aceitar a proposta na agenda. O amistoso só será confirmado depois da caução, cuja integração ainda está em preparação." : "Simule a caução para confirmar seu amistoso.",
       );
       router.replace("/(tabs)/agenda");
     }
@@ -72,10 +88,11 @@ export default function Schedule() {
   }
   return (
     <Screen>
+      <DemoLabel />
       <Section
         eyebrow="DO MATCH AO CAMPO"
         title="Vamos marcar esse jogo?"
-        text="Combine os detalhes e confirme a caução da demonstração."
+        text={mode === "online" ? "Envie os detalhes para o adversário aceitar ou recusar. A proposta não confirma a partida." : "Combine os detalhes e confirme a caução da demonstração."}
       />
       <Txt style={{ fontWeight: "700", fontSize: 12, marginBottom: 12 }}>
         Adversário
@@ -89,15 +106,17 @@ export default function Schedule() {
         }}
       >
         {teams
-          .filter((t) => s.matches.includes(t.id))
+          .filter((t) => t.active !== false && s.matches.includes(t.id))
           .map((t) => (
             <Chip
               key={t.id}
               title={t.name}
               selected={t.id === id}
               onPress={() => {
-                I(t.id);
-                H(s.profile.name);
+                if (!busy) {
+                  I(t.id);
+                  H(mode === "online" ? currentTeamId || "" : s.profile.name);
+                }
               }}
             />
           ))}
@@ -107,32 +126,37 @@ export default function Schedule() {
         value={date}
         onChangeText={maskedDate}
         keyboardType="number-pad"
+        editable={!busy}
         maxLength={10}
       />
       <Input
-        label="Horário · HH:MM"
+        label={mode === "online" ? "Horário de Brasília · HH:MM" : "Horário · HH:MM"}
         value={time}
         onChangeText={(v) => {
           const n = v.replace(/\D/g, "").slice(0, 4);
           T(n.length > 2 ? n.slice(0, 2) + ":" + n.slice(2) : n);
         }}
         keyboardType="number-pad"
+        editable={!busy}
         maxLength={5}
       />
       <Txt style={{ fontWeight: "700", fontSize: 12, marginBottom: 12 }}>
         Local da partida
       </Txt>
-      <View style={{ gap: 8, marginBottom: 22 }}>
+      {mode === "online" ? <Input label="Nome e endereço do campo ou quadra" placeholder="Ex.: Campo União, Rua das Flores 100, Tatuapé" value={field} onChangeText={F} maxLength={100} editable={!busy} /> : <View style={{ gap: 8, marginBottom: 22 }}>
         {fields.map((x) => (
-          <Chip key={x} title={x} selected={field === x} onPress={() => F(x)} />
+          <Chip key={x} title={x} selected={field === x} onPress={() => !busy && F(x)} />
         ))}
-      </View>
+      </View>}
       <Txt style={{ fontWeight: "700", fontSize: 12, marginBottom: 12 }}>
         Mando de campo
       </Txt>
       <View style={{ gap: 8, marginBottom: 22 }}>
-        {[s.profile.name, team?.name || ""].map((x) => (
-          <Chip key={x} title={x} selected={home === x} onPress={() => H(x)} />
+        {[
+          { id: mode === "online" ? currentTeamId || "" : s.profile.name, label: `${s.profile.name} (seu time)` },
+          { id: mode === "online" ? team?.id || "" : team?.name || "", label: `${team?.name || "Adversário"} (adversário)` },
+        ].map((option) => (
+          <Chip key={option.id} title={option.label} selected={home === option.id} onPress={() => !busy && H(option.id)} />
         ))}
       </View>
       <Button
@@ -142,9 +166,7 @@ export default function Schedule() {
         onPress={submit}
       />
       <Note>
-        A agenda bloqueia conflitos com intervalo de 2 horas entre seus jogos. A
-        disponibilidade do campo e a confirmação adversária são demonstrativas
-        nesta versão.
+        {mode === "online" ? "A agenda verifica sobreposição de 2 horas das duas equipes e do local informado entre as propostas deste aplicativo. Isso não reserva o campo junto ao estabelecimento. Após o aceite adversário, a partida aguarda a integração de caução e permanece sem confirmação." : "A agenda bloqueia conflitos com intervalo de 2 horas entre seus jogos. A disponibilidade do campo e a confirmação adversária são demonstrativas nesta versão."}
       </Note>
     </Screen>
   );

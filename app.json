@@ -2,7 +2,7 @@
   "expo": {
     "name": "Desafio Aceito",
     "slug": "desafio-aceito-app",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,7 +18,8 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.futtech.desafioaceito"
+      "package": "com.futtech.desafioaceito",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"
