@@ -1,8 +1,8 @@
 # Desafio Aceito — aplicativo mobile
 
-Projeto acadêmico da FutTech/FECAP em React Native, TypeScript e Expo SDK 58. A API usa NestJS e PostgreSQL. A caução é sempre **simulada**, sem cartão, cobrança ou transferência real.
+Projeto acadêmico da FutTech/FECAP em React Native, TypeScript e Expo SDK 58. A API usa NestJS e PostgreSQL. A caução é sempre **simulada**, sem cobrança ou transferência real. Identificadores de cartão acadêmicos guardam somente apelido e quatro dígitos fictícios, sem PAN/CVV.
 
-## Versão 1.2.0
+## Código e API 1.3.0
 
 - Contas e cadastro/edição da própria equipe.
 - Descoberta e filtros, interesse mútuo, matches e chat privado entre contas.
@@ -12,6 +12,9 @@ Projeto acadêmico da FutTech/FECAP em React Native, TypeScript e Expo SDK 58. A
 - Resultado após o início, avaliação única por participante em quatro critérios e ranking agregado no servidor.
 - Cadastro separado de árbitro/bandeirinha, disponibilidade, convites privados e aceite/recusa. O servidor impede atuação na própria equipe e conflito de horário.
 - Persistência local isolada da demonstração, notificações internas e modo escuro.
+- Minha conta, troca de senha e códigos de recuperação de uso único; recuperação/confirmação por e-mail com transporte SMTP configurável.
+- Pagamentos/cartões/planos acadêmicos, elenco, campo preferido e interesse prioritário sem dispensar reciprocidade.
+- Tratamento de links e retomada segura de destino após autenticação, com validação de rotas, IDs e tokens.
 
 ## API e banco online
 
@@ -24,7 +27,7 @@ API: https://desafio-aceito-api-production.up.railway.app
 
 A área de acesso permite criar contas conectadas ao mesmo servidor. Cadastre duas equipes independentes para demonstrar interesse mútuo, mensagens e propostas. O perfil profissional pode existir sem equipe.
 
-A caução serve apenas à apresentação acadêmica: todos os registros financeiros são identificados como simulações. O local digitado verifica a agenda interna do aplicativo e não reserva um estabelecimento. Distâncias geográficas, e-mail de recuperação, login Google e push externo permanecem fora desta implementação; não são apresentados como serviços reais.
+A caução serve apenas à apresentação acadêmica: todos os registros financeiros são identificados como simulações. O local digitado verifica a agenda interna do aplicativo e não reserva um estabelecimento. Distância geográfica, login Google e push externo não estão implementados/configurados como serviços reais. O código de recuperação/confirmação por e-mail existe, mas o ambiente publicado está sem SMTP; códigos de recuperação previamente salvos permitem redefinir a senha sem e-mail. Não há envio fictício de mensagens.
 
 ## Abrir pelo Expo Go
 
@@ -63,7 +66,15 @@ npm run migrate
 npm run start:dev
 ```
 
-As migrações 001–006 são aplicadas em ordem sob transação/trava, com registro em schema_migrations. A API no Docker aplica as migrações antes de iniciar, inclusive em banco existente. Cadastros antigos válidos são preservados; incompletos mantêm rascunhos; matches fictícios não são importados para relações reais.
+As migrações 001–008 são aplicadas em ordem sob transação/trava, com registro em schema_migrations. A API no Docker aplica as migrações antes de iniciar, inclusive em banco existente. Cadastros antigos válidos são preservados; incompletos mantêm rascunhos; matches fictícios não são importados para relações reais.
+
+## Recuperação e manutenção da conta
+
+Abra **Configurações → Minha conta** com uma conta conectada. A senha atual autoriza trocar senha e gerar seis códigos de recuperação; guarde-os antes de perder o acesso. Eles são mostrados uma vez, usados uma única vez e regenerá-los invalida os anteriores. Recuperar/trocar credenciais encerra as sessões da conta.
+
+Para habilitar entrega de e-mail, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` e `SMTP_FROM` somente no servidor. O adaptador exige TLS ou STARTTLS com certificado verificado. Sem configuração, a API informa indisponibilidade e a interface não declara envio. Tokens de recuperação/confirmação duram 20 minutos e só seus hashes ficam no banco. Testes com adaptador injetado não comprovam entrega por um provedor externo.
+
+Os planos e créditos são escolhas da demonstração, sem preços: ativação acadêmica libera um crédito fictício uma vez e a recarga gratuita permite até dez. Prioridade não garante match. Esses números não foram definidos pelo PDF.
 
 ## Atualizar a API no Railway sem GitHub
 
@@ -84,7 +95,7 @@ npx eas-cli@latest login --device
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-O ZIP contém o projeto executável e não é um APK. O APK anterior, gerado em 12/11/2026, não incorpora automaticamente alterações posteriores. O APK 1.2.0 já foi gerado: [baixar versão Android](https://expo.dev/artifacts/eas/9XNjPamhqQQm1NlGjO9TcO9aNbIAHRsIe4svpbIkDIA.apk). Deve ser instalado e homologado antes da demonstração ao professor.
+O ZIP contém o projeto executável e não é um APK. O APK anterior, gerado em 12/11/2026, não incorpora automaticamente alterações posteriores. O APK anterior 1.2.0 já foi gerado: [baixar APK 1.2.0](https://expo.dev/artifacts/eas/9XNjPamhqQQm1NlGjO9TcO9aNbIAHRsIe4svpbIkDIA.apk). Ele não contém as novidades 1.3.0. O APK 1.3.0 ainda não foi gerado; a sessão Expo/EAS precisa ser autenticada novamente. Instalação e homologação no celular continuam necessárias.
 
 ## Verificações
 
@@ -112,6 +123,7 @@ git clone repositorio.bundle desafio-aceito
 A publicação do repositório no GitHub fica para uma etapa posterior, conforme solicitado. O README descreve execução e configuração; o PDF acadêmico original foi preservado.
 
 - [Evidências executadas](docs/VALIDACAO.md).
+- [Guia de leitura do código](docs/GUIA_CODIGO.md).
 - [Conferência dos 50 critérios](docs/AUDITORIA.md).
 - [Checklist de código e critérios de aceite](docs/PLANO_CONCLUSAO.md).
 - [Roteiro entre contas](docs/HOMOLOGACAO_ENTRE_CONTAS.md).
@@ -119,3 +131,5 @@ A publicação do repositório no GitHub fica para uma etapa posterior, conforme
 - [Auditoria original](docs/referencias/auditoria_original_2026-11-11.txt).
 
 Integrantes: Luiz Henrique Zaim da Cruz; Guilherme Monteiro da Silva; Murilo Angelo Pimentel Braggio; Enzo Henrique; Vitor Kolle.
+
+Verificação 1.3.0: **37 testes mobile e 15 cenários de API passaram**, além de tipos, lint, compilação e exportação Android. API publicada confirmou `/health` 200/1.3.0 e capacidades coerentes com SMTP indisponível. Permanecem sem evidência: fidelidade ao Figma (permissão do arquivo negada), nova matriz visual, APK 1.3.0/instalação, deep link entregue pelo Android e ensaio dos integrantes. Não se declara 100% do checklist.

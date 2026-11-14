@@ -1,5 +1,28 @@
 # Evidências de validação
 
+## Implementação 1.3.0 — segurança, sitemap e navegação
+
+Esta seção registra a nova implementação sem substituir a evidência histórica 1.2.0 abaixo. O PDF acadêmico permaneceu intacto.
+
+| Verificação executada | Resultado / limite |
+|---|---|
+| `npm test` no aplicativo | 37 testes passaram, incluindo complementos acadêmicos, isolamento de persistência e cinco cenários de navegação/links. |
+| `npm run typecheck` e `npm run lint` | Passaram no código atual. |
+| Exportação Android/Hermes | Passou após o ajuste final de alertas do renderer web: 1.225 módulos, bundle de aproximadamente 2,9 MB. Exportação não produz APK instalável nem comprova inspeção visual. |
+| API: `npm test` e `npm run build` | 15 cenários de integração passaram e a API compilou. Incluem segurança de conta, complementos acadêmicos e rollback HTTP de operações rejeitadas, além dos fluxos anteriores. |
+| Segurança sem SMTP | Troca de senha e geração de seis códigos privados de recuperação exigem senha atual; código previamente salvo funciona uma única vez. Regeneração invalida os antigos. Recuperação/troca revogam sessões; só hashes são persistidos. |
+| Segurança com transporte de teste | Adaptador injetado testou token único de 20 min, confirmação de novo e-mail, respostas genéricas e invalidação após falha de entrega. Isso não comprova entrega de e-mail por SMTP externo. Sem credenciais, API informa 503/capacidade indisponível e não simula envio. |
+| Complementos do sitemap | Conta/recuperação/confirmação, pagamentos/cartões/planos, elenco/campo preferido e interesse prioritário implementados. Cartões guardam só rótulo/últimos quatro dígitos fictícios; créditos/planos são escolhas acadêmicas sem cobrança e não garantem match. |
+| Links e proteção de rotas | Cinco testes verificam scheme/origem, rotas permitidas, IDs/tokens inválidos ou repetidos, rejeição de redirect externo e retomada após autenticação/cadastro. Tokens de recuperação não são guardados como destino pós-login. Não testa a entrega pelo sistema Android. |
+| Banco | 007/008 primeiro verificadas na branch de teste Neon; depois ledger 001–008 e 24 tabelas públicas confirmados na base principal. Teste isolado e atualização publicada são evidências distintas. |
+| API 1.3.0 publicada | Deploy Railway concluído; `/health` respondeu 200/1.3.0. `/auth/capabilities` respondeu 200 com troca de senha/códigos ativos e recuperação/troca por e-mail indisponíveis. Nenhuma entrega SMTP foi declarada realizada. |
+| Referência visual Figma | Conta conectada; criação de sessão e leitura de contexto do arquivo negadas por permissão. A conta tem acesso de visualização e as operações disponíveis pediram edição. Não houve leitura das telas nem prova de fidelidade. |
+| Matriz visual | Duas tentativas de abrir o renderer local falharam nos navegadores. Não houve nova inspeção desktop/tablet/mobile nesta etapa. |
+
+**Ainda sem evidência nesta revisão:** APK 1.3.0 concluído, envio SMTP externo, Google OAuth, abertura fria por link no Android, instalação física e ensaio/compreensão dos integrantes. O APK 1.2.0 abaixo continua sendo evidência daquela versão, não das alterações novas. `GUIA_CODIGO.md` apoia o estudo sem certificar entendimento humano.
+
+A sessão Expo/EAS estava expirada na checagem final; o novo APK depende da retomada da autenticação. Não foi declarado um build 1.3.0 concluído. A igualdade do PDF técnico preservado com o original foi confirmada por hash; nenhum conteúdo acadêmico do PDF foi reescrito.
+
 ## Fluxo acadêmico completo — 13/11/2026
 
 Código-fonte **1.2.0**. Esta seção atualiza o comportamento da etapa anterior: caução, penalidade e estorno passaram a ser simulados também no modo conectado, permitindo concluir o fluxo esportivo sem gateway. Nenhum dinheiro real é cobrado. A API/banco hospedados foram verificados pelos testes de fumaça abaixo; a compilação do APK 1.2.0 foi concluída; a instalação em aparelho permanece sem homologação registrada.
