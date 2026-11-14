@@ -2,7 +2,7 @@
 
 ## Fluxo acadêmico completo — 13/11/2026
 
-Código-fonte **1.2.0**. Esta seção atualiza o comportamento da etapa anterior: caução, penalidade e estorno passaram a ser simulados também no modo conectado, permitindo concluir o fluxo esportivo sem gateway. Nenhum dinheiro real é cobrado. A API/banco hospedados foram verificados pelos testes de fumaça abaixo; instalação em aparelho e novo APK ainda não estão comprovados.
+Código-fonte **1.2.0**. Esta seção atualiza o comportamento da etapa anterior: caução, penalidade e estorno passaram a ser simulados também no modo conectado, permitindo concluir o fluxo esportivo sem gateway. Nenhum dinheiro real é cobrado. A API/banco hospedados foram verificados pelos testes de fumaça abaixo; a compilação do APK 1.2.0 foi concluída; a instalação em aparelho permanece sem homologação registrada.
 
 | Verificação executada | Resultado |
 |---|---|
@@ -20,9 +20,9 @@ Código-fonte **1.2.0**. Esta seção atualiza o comportamento da etapa anterior
 | Teste de fumaça no ambiente hospedado | Fluxo com três contas passou: autenticação/persistência, reciprocidade, chat privado, proposta bilateral, caução simulada, convite/aceite por árbitro designado e cancelamento compartilhado. Equipes de teste desativadas e sessões encerradas ao final. |
 | Atualização aditiva 006 hospedada | Deploy concluído e `/health` 200/1.2.0. SQL confirmou colunas de campo, PK própria de caução/avaliação, unicidade por partida/avaliador e transação externa opcional. A caução simulada já existente permaneceu preservada, com ID não nulo e transação externa NULL. O fluxo completo acima ocorreu antes da 006; após ela foram verificados estrutura, preservação e saúde, com contrato da API mantido. |
 
-Os testes de integração automatizados usam PostgreSQL/PGlite local; o teste de fumaça adicional acima executou contra a API e o banco realmente hospedados. O modo local continua disponível sem servidor e com dados fictícios identificados. Não houve teste de gateway financeiro, Docker local, carga, instalação em aparelho ou ensaio do grupo. O APK antigo não inclui automaticamente o código 1.2.0; um novo APK permanece pendente.
+Os testes de integração automatizados usam PostgreSQL/PGlite local; o teste de fumaça adicional acima executou contra a API e o banco realmente hospedados. O modo local continua disponível sem servidor e com dados fictícios identificados. Não houve teste de gateway financeiro, Docker local, carga, instalação em aparelho ou ensaio do grupo. O APK antigo não inclui automaticamente o código 1.2.0; o APK 1.2.0 foi gerado no build registrado abaixo.
 
-**Pendência do APK 1.2.0:** a tentativa de iniciar a compilação foi bloqueada pela revisão automática de aprovação, que exigiu autorização explícita para enviar o código-fonte privado ao Expo/EAS. A autenticação da conta não supriu essa exigência. Não há novo APK concluído nesta etapa; o link histórico abaixo é da versão anterior.
+**APK 1.2.0 concluído:** após autorização explícita do usuário para envio do código mobile e dos assets ao Expo/EAS, a compilação terminou com status FINISHED, versionCode 3. [Build Expo](https://expo.dev/accounts/luizzaim/projects/desafio-aceito-app/builds/b4b0d6fc-fa6d-4585-b28e-a036c193b8fd). [Baixar APK](https://expo.dev/artifacts/eas/9XNjPamhqQQm1NlGjO9TcO9aNbIAHRsIe4svpbIkDIA.apk). A assinatura usa as credenciais Android já configuradas. Isso não comprova instalação ou homologação em aparelho.
 
 ## Etapa anterior: rede de equipes e propostas — 13/11/2026
 

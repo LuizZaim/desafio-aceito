@@ -84,7 +84,7 @@ npx eas-cli@latest login --device
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-O ZIP contém o projeto executável e não é um APK. O APK anterior, gerado em 12/11/2026, não incorpora automaticamente alterações posteriores. O novo APK deve ser instalado e homologado antes da demonstração ao professor.
+O ZIP contém o projeto executável e não é um APK. O APK anterior, gerado em 12/11/2026, não incorpora automaticamente alterações posteriores. O APK 1.2.0 já foi gerado: [baixar versão Android](https://expo.dev/artifacts/eas/9XNjPamhqQQm1NlGjO9TcO9aNbIAHRsIe4svpbIkDIA.apk). Deve ser instalado e homologado antes da demonstração ao professor.
 
 ## Verificações
 
