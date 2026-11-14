@@ -3,6 +3,8 @@ import { randomUUID } from "node:crypto";
 import { freshState, transition, type State } from "../../src/core/domain";
 import type { Database } from "./db";
 import { Arbitration } from "./arbitration";
+import { AcademicExtras, EXTRAS_ACTIONS } from "./academic-extras";
+import { academicInput } from "../../src/core/academic";
 
 const REFEREE_ACTIONS = ["registerReferee","refereeProfile","refereeAvailable","inviteReferee","respondReferee"];
 
@@ -39,14 +41,14 @@ export class Network {
        ) ORDER BY t.name,t.id`,
       [own?.id || ""],
     );
-    return { teams: result.rows.map((t) => this.publicTeam(t, t.reciprocal)), currentTeamId: own?.id || null };
+    return { teams: await new AcademicExtras(this.db).publicTeams(result.rows.map((t) => this.publicTeam(t,t.reciprocal)),own?.id || null), currentTeamId: own?.id || null };
   }
   async publicProfile(user: string, id: string) {
     const own = await this.own(user);
     const row = (await this.db.query(`SELECT t.*, ${TEAM_STATS} FROM teams t WHERE t.id=$1 AND (t.active=TRUE
       OR EXISTS(SELECT 1 FROM games g WHERE (g.team_a_id=$2 AND g.team_b_id=t.id) OR (g.team_b_id=$2 AND g.team_a_id=t.id)))`, [id, own?.id || ""])).rows[0];
     if (!row) throw new NotFoundException("Equipe não encontrada.");
-    return this.publicTeam(row);
+    return (await new AcademicExtras(this.db).publicTeams([this.publicTeam(row)],own?.id || null))[0];
   }
   async state(user: string) {
     await this.db.query("INSERT INTO workspaces(user_id,data) VALUES($1,$2) ON CONFLICT(user_id) DO NOTHING", [user, JSON.stringify(freshState())]);
@@ -106,7 +108,7 @@ export class Network {
       state.notifications = notifications.rows;
       state.reports = reports.rows.map((r) => ({ team: r.reported_team_id, reason: r.reason }));
     }
-    return { state, version: record.version as number, ...await this.catalog(user), arbitration: await new Arbitration(this.db).snapshot(user) };
+    return { state, version: record.version as number, ...await this.catalog(user), arbitration: await new Arbitration(this.db).snapshot(user), academic: await new AcademicExtras(this.db).snapshot(user) };
   }
   async update(user: string, body: any): Promise<any> {
     if (!body || !Number.isInteger(body.version) || body.version < 0 || !body.action || typeof body.action !== "object" || Array.isArray(body.action)) throw new BadRequestException("Solicitação inválida.");
@@ -114,7 +116,8 @@ export class Network {
     return this.db.transaction(async (tx) => new Network(tx).write(user, body));
   }
   private async write(user: string, body: any) {
-    const action = body.action, own = await this.own(user);
+    let action = body.action;
+    const own = await this.own(user);
     // Locks always precede workspace/profile/game mutations. A professional may have no team.
     // Include both game participants, plus any team owned by the professional, in sorted order.
     let ids: string[] = own ? [own.id] : [];
@@ -131,9 +134,16 @@ export class Network {
     const record = (await this.db.query("SELECT version FROM workspaces WHERE user_id=$1 FOR UPDATE", [user])).rows[0];
     if (record.version !== body.version) throw new ConflictException("Os dados foram atualizados em outra sessão. Atualize e tente novamente.");
     const previous = await this.state(user), state = previous.state;
-    if (state.deleted && action.type !== "restore" && !REFEREE_ACTIONS.includes(action.type)) throw new ForbiddenException("Sua equipe está desativada. Restaure-a nas configurações.");
+    if (state.deleted && action.type !== "restore" && !REFEREE_ACTIONS.includes(action.type) && !EXTRAS_ACTIONS.includes(action.type)) throw new ForbiddenException("Sua equipe está desativada. Restaure-a nas configurações.");
     let message = "Alterações salvas.";
-    if (REFEREE_ACTIONS.includes(action.type)) {
+    if (action.type === "priorityInterest") {
+      try { academicInput(action); } catch (error) { throw new BadRequestException(error instanceof Error ? error.message : "Interesse inválido."); }
+      await new AcademicExtras(this.db).consumePriority(user,own,action.id);
+      action = {...action,type:"interest"};
+    }
+    if (EXTRAS_ACTIONS.includes(action.type)) {
+      message = await new AcademicExtras(this.db).action(user,own,action);
+    } else if (REFEREE_ACTIONS.includes(action.type)) {
       message = await new Arbitration(this.db).action(user,own,action);
       if (["inviteReferee","respondReferee"].includes(action.type)) {
         const game = action.type === "inviteReferee"

@@ -23,13 +23,14 @@ export default function Layout() {
           height: 80,
           paddingBottom: 17,
         },
-        tabBarLabelStyle: { fontSize: 9, fontWeight: "600" },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
         headerRight: () => (
           <View style={{ flexDirection: "row", gap: 8, paddingRight: 17 }}>
             <Pressable
+              accessibilityRole="button"
               accessibilityLabel="Notificações"
               onPress={() => router.push("/notificacoes")}
-              style={{ padding: 10 }}
+              style={{ padding: 10, minWidth: 44, minHeight: 44, justifyContent: "center", alignItems: "center" }}
             >
               <Icon name="notifications-outline" color={c.text} size={21} />
               {state.notifications.some((n) => !n.read) && (
@@ -47,9 +48,10 @@ export default function Layout() {
               )}
             </Pressable>
             <Pressable
+              accessibilityRole="button"
               accessibilityLabel="Configurações"
               onPress={() => router.push("/configuracoes")}
-              style={{ padding: 10 }}
+              style={{ padding: 10, minWidth: 44, minHeight: 44, justifyContent: "center", alignItems: "center" }}
             >
               <Icon name="options-outline" color={c.text} size={21} />
             </Pressable>

@@ -72,7 +72,7 @@ export default function Ranking() {
                 <Txt
                   style={{
                     fontWeight: "800",
-                    color: i < 3 ? "#b7a166" : c.muted,
+                    color: i < 3 ? c.orange : c.muted,
                     fontSize: 12,
                     width: 23,
                   }}
@@ -88,9 +88,9 @@ export default function Ranking() {
                     {t.district} · {t.level}
                   </Txt>
                 </View>
-                <Icon name="star" size={12} color="#ba9c53" />
+                <Icon name="star" size={12} color={c.orange} />
                 <Txt
-                  style={{ fontSize: 12, fontWeight: "800", color: "#ba9c53" }}
+                  style={{ fontSize: 12, fontWeight: "800", color: c.orange }}
                 >
                   {t.rated ? t.value.toFixed(2) : "Sem notas"}
                 </Txt>

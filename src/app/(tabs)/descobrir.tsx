@@ -19,7 +19,7 @@ import {
   useColors,
 } from "../../components/ui";
 export default function Discover() {
-  const { state: s, dispatch, busy, mode, teams } = useStore();
+  const { state: s, dispatch, busy, mode, teams, academic } = useStore();
   const c = useColors();
   const [f, F] = useState(filters);
   useFocusEffect(
@@ -39,9 +39,9 @@ export default function Discover() {
       (!f.region || [t.district, t.city, t.state].filter(Boolean).join(" ").toLowerCase().includes(f.region.toLowerCase())),
   );
   const t = available[0];
-  async function like() {
+  async function like(priority = false) {
     if (!t) return;
-    if (await dispatch({ type: "interest", id: t.id })) {
+    if (await dispatch({ type: priority ? "priorityInterest" : "interest", id: t.id })) {
       if (t.reciprocal)
         Alert.alert(
           "É match! 🤝",
@@ -71,13 +71,14 @@ export default function Discover() {
         text="Encontre equipes, dê o match e leve a resenha para o campo."
       />
       <Row style={{ justifyContent: "space-between", marginBottom: 18 }}>
-        <Row>
+        <Row style={{ flex: 1 }}>
           <Icon name="location-outline" size={15} color={c.muted} />
           <Txt style={{ fontSize: 11, color: c.muted }}>
             {mode !== "online" ? `Distâncias ilustrativas · até ${f.radius} km` : [s.profile.city, s.profile.state].filter(Boolean).join(" · ") || "Sua região"}
           </Txt>
         </Row>
         <Pressable
+          accessibilityRole="button"
           accessibilityLabel="Abrir filtros"
           onPress={() => router.push("/filtros")}
           style={{
@@ -85,6 +86,10 @@ export default function Discover() {
             borderWidth: 1,
             borderColor: c.border,
             padding: 11,
+            minWidth: 44,
+            minHeight: 44,
+            alignItems: "center",
+            justifyContent: "center",
             borderRadius: 9,
           }}
         >
@@ -152,6 +157,7 @@ export default function Discover() {
                 </Txt>
               </View>
               <Pressable
+                accessibilityRole="button"
                 accessibilityLabel="Ver perfil do adversário"
                 onPress={() =>
                   router.push({ pathname: "/equipe", params: { id: t.id } })
@@ -159,7 +165,11 @@ export default function Discover() {
                 style={{
                   backgroundColor: "#ffffff30",
                   borderRadius: 20,
-                  padding: 8,
+                  padding: 10,
+                  minWidth: 44,
+                  minHeight: 44,
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <Icon name="arrow-up-right-box" color="white" size={17} />
@@ -200,14 +210,14 @@ export default function Discover() {
             </Row>
           </View>
           <View style={{ padding: 20 }}>
-            <Row style={{ justifyContent: "space-between" }}>
-              <Row style={{ gap: 5 }}>
+            <Row style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+              <Row style={{ gap: 5, flexWrap: "wrap", flexShrink: 1 }}>
                 <Chip title={t.level} />
                 <Chip title={t.category} />
               </Row>
               <Row style={{ gap: 3 }}>
-                <Icon name="star" size={12} color="#b99b52" />
-                <Txt style={{ fontSize: 11, color: "#b99b52" }}>{(mode === "online" ? (t.reviewCount ?? (t.rating > 0 ? 1 : 0)) > 0 : t.games > 0) ? t.rating.toFixed(1) : "Sem avaliações"}</Txt>
+                <Icon name="star" size={12} color={c.muted} />
+                <Txt style={{ fontSize: 11, color: c.muted }}>{(mode === "online" ? (t.reviewCount ?? (t.rating > 0 ? 1 : 0)) > 0 : t.games > 0) ? t.rating.toFixed(1) : "Sem avaliações"}</Txt>
               </Row>
             </Row>
             <Txt
@@ -224,6 +234,7 @@ export default function Discover() {
             <Row
               style={{
                 justifyContent: "space-between",
+                flexWrap: "wrap",
                 borderBottomWidth: 1,
                 borderColor: c.border,
                 paddingBottom: 20,
@@ -235,27 +246,35 @@ export default function Discover() {
                   {mode !== "online" ? "Finais de semana" : "Combine pelo chat"}
                 </Txt>
               </Row>
-              <Txt style={{ fontSize: 8, color: "#7e9b6c" }}>
+              <Txt style={{ fontSize: 8, color: c.muted }}>
                 {mode !== "online" ? "● Disponível para jogar" : "Equipe cadastrada"}
               </Txt>
             </Row>
-            <Row style={{ marginTop: 18 }}>
+            <Row style={{ marginTop: 18, flexWrap: "wrap" }}>
               <Button
                 title="Agora não"
                 secondary
                 icon="close"
                 onPress={() => dispatch({ type: "skip", id: t.id })}
                 disabled={busy}
-                style={{ flex: 1, paddingHorizontal: 12 }}
+                style={{ flexGrow: 1, flexBasis: 110, paddingHorizontal: 12 }}
               />
               <Button
                 title="Bora jogar!"
                 icon="heart-outline"
-                onPress={like}
+                onPress={() => like()}
                 disabled={busy || s.profile.role !== "organizador"}
-                style={{ flex: 1.25, paddingHorizontal: 12 }}
+                style={{ flexGrow: 1.25, flexBasis: 125, paddingHorizontal: 12 }}
               />
             </Row>
+            <Button
+              title={academic.subscription.priorityCredits ? `Jogar com prioridade · ${academic.subscription.priorityCredits} crédito(s)` : "Conhecer créditos de prioridade"}
+              secondary
+              disabled={busy || s.profile.role !== "organizador"}
+              style={{ marginTop: 12 }}
+              onPress={() => academic.subscription.priorityCredits ? void like(true) : router.push("/assinaturas")}
+            />
+            {t.priority && <Txt style={{ fontSize: 11, color: c.muted, marginTop: 12 }}>Esta equipe enviou interesse prioritário para você.</Txt>}
           </View>
         </Card>
       ) : (

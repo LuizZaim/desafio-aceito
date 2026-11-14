@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TextInput,
   ActivityIndicator,
+  useWindowDimensions,
   type TextInputProps,
   type ViewStyle,
 } from "react-native";
@@ -19,10 +20,11 @@ export const light = {
   bg: "#f7f8f3",
   panel: "#ffffff",
   text: "#20372f",
-  muted: "#82907d",
+  muted: "#5e6d59",
   border: "#e6eadf",
   soft: "#eef1e7",
-  orange: "#ee6a3b",
+  orange: "#b74a22",
+  action: "#b7471f",
   navy: "#193a32",
 };
 export const dark = {
@@ -33,6 +35,7 @@ export const dark = {
   border: "#355043",
   soft: "#2a4437",
   orange: "#f58151",
+  action: "#b7471f",
   navy: "#193a32",
 };
 export const useColors = () => (useStore().state.settings.dark ? dark : light);
@@ -45,7 +48,7 @@ export function Icon({
   size?: number;
   color?: string;
 }) {
-  return <Ionicons name={name} size={size} color={color || light.text} />;
+  return <Ionicons accessible={false} accessibilityElementsHidden importantForAccessibility="no" name={name} size={size} color={color || light.text} />;
 }
 export function Txt({
   children,
@@ -56,7 +59,7 @@ export function Txt({
   return (
     <Text
       {...props}
-      style={[{ color: c.text, fontSize: 14, lineHeight: 21 }, style]}
+      style={[{ color: c.text, fontSize: 14, lineHeight: 21, flexShrink: 1 }, style]}
     >
       {children}
     </Text>
@@ -84,12 +87,15 @@ export function Button({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
+      accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
         {
           minHeight: 50,
-          backgroundColor: danger ? "#fff0e8" : secondary ? c.soft : c.orange,
+          backgroundColor: danger ? "#fff0e8" : secondary ? c.soft : c.action,
+          maxWidth: "100%",
+          minWidth: 0,
           borderRadius: 12,
           paddingHorizontal: 18,
           paddingVertical: 13,
@@ -105,15 +111,17 @@ export function Button({
       {icon && (
         <Icon
           name={icon}
-          color={danger ? "#be674e" : secondary ? c.text : "white"}
+          color={danger ? "#a23d24" : secondary ? c.text : "white"}
           size={19}
         />
       )}
       <Text
         style={{
-          color: danger ? "#be674e" : secondary ? c.text : "white",
+          color: danger ? "#a23d24" : secondary ? c.text : "white",
           fontWeight: "700",
           fontSize: 13,
+          flexShrink: 1,
+          textAlign: "center",
         }}
       >
         {title}
@@ -137,6 +145,8 @@ export function Chip({
       accessibilityState={{ selected: !!selected }}
       onPress={onPress}
       style={{
+        maxWidth: "100%",
+        flexShrink: 1,
         backgroundColor: selected ? c.navy : c.soft,
         paddingVertical: 9,
         paddingHorizontal: 14,
@@ -147,8 +157,8 @@ export function Chip({
     >
       <Txt
         style={{
-          fontSize: 11,
-          lineHeight: 16,
+          fontSize: 12,
+          lineHeight: 18,
           color: selected ? "#fff" : c.muted,
           fontWeight: "600",
         }}
@@ -309,6 +319,7 @@ export function Card({
           borderColor: c.border,
           borderRadius: 17,
           padding: 20,
+          minWidth: 0,
         },
         style,
       ]}
@@ -334,7 +345,7 @@ export function Section({
       {eyebrow && (
         <Txt
           style={{
-            fontSize: 9,
+            fontSize: 11,
             fontWeight: "800",
             letterSpacing: 2,
             color: c.orange,
@@ -371,16 +382,19 @@ export function Screen({
   scroll?: boolean;
 }) {
   const c = useColors();
+  const { width } = useWindowDimensions();
   return (
     <SafeAreaView
-      edges={["left", "right"]}
+      edges={["left", "right", "bottom"]}
       style={{ flex: 1, backgroundColor: c.bg }}
     >
       {scroll ? (
         <ScrollView
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          automaticallyAdjustKeyboardInsets
           contentContainerStyle={{
-            padding: 21,
+            padding: width < 360 ? 16 : 21,
             paddingBottom: 40,
             width: "100%",
             maxWidth: 800,
@@ -404,7 +418,7 @@ export function Row({
 }) {
   return (
     <View
-      style={[{ flexDirection: "row", alignItems: "center", gap: 10 }, style]}
+      style={[{ flexDirection: "row", alignItems: "center", gap: 10, minWidth: 0 }, style]}
     >
       {children}
     </View>
@@ -414,9 +428,12 @@ export function Input({ label, ...props }: TextInputProps & { label: string }) {
   const c = useColors();
   return (
     <View style={{ gap: 8, marginBottom: 17 }}>
-      <Txt style={{ fontSize: 11, fontWeight: "700" }}>{label}</Txt>
+      <Txt style={{ fontSize: 12, fontWeight: "700" }}>{label}</Txt>
       <TextInput
         accessibilityLabel={label}
+        autoCapitalize={props.secureTextEntry ? "none" : undefined}
+        autoCorrect={props.secureTextEntry ? false : undefined}
+        underlineColorAndroid="transparent"
         placeholderTextColor={c.muted}
         {...props}
         style={[
@@ -429,7 +446,8 @@ export function Input({ label, ...props }: TextInputProps & { label: string }) {
             minHeight: 49,
             paddingHorizontal: 15,
             paddingVertical: 12,
-            fontSize: 14,
+            fontSize: 16,
+            width: "100%",
           },
           props.multiline && { minHeight: 92, textAlignVertical: "top" },
           props.style,
@@ -452,7 +470,7 @@ export function Note({ children }: { children: React.ReactNode }) {
       }}
     >
       <Icon name="information-circle-outline" size={18} color={c.muted} />
-      <Txt style={{ fontSize: 10, lineHeight: 17, color: c.muted, flex: 1 }}>
+      <Txt style={{ fontSize: 12, lineHeight: 19, color: c.muted, flex: 1 }}>
         {children}
       </Txt>
     </View>
@@ -525,7 +543,7 @@ export function DemoLabel() {
     <View style={{ marginBottom: 20, gap: 9 }}>
       <Row style={{ gap: 6 }}>
         <View style={{ width: 5, height: 5, borderRadius: 5, backgroundColor: mode === "online" ? "#73975d" : c.orange }} />
-        <Txt style={{ fontSize: 10, color: c.muted, flex: 1 }}>{text}</Txt>
+        <Txt style={{ fontSize: 12, color: c.muted, flex: 1 }}>{text}</Txt>
       </Row>
       {mode === "online" && (
         <>

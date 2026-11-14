@@ -9,15 +9,17 @@ import {
   Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Redirect, router } from "expo-router";
+import { Redirect, router, useLocalSearchParams } from "expo-router";
 import { useStore } from "../core/store";
-import { FieldArt, Button, Input } from "../components/ui";
+import { postLoginDestination } from "../core/navigation";
+import { FieldArt, Button, Input, Note } from "../components/ui";
 export default function Login() {
-  const { mode, demo, local, login, state, arbitration } = useStore();
+  const { aviso } = useLocalSearchParams<{ aviso?: string }>();
+  const { mode, demo, local, login, state, arbitration, pendingDestination } = useStore();
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false);
-  if (mode !== "none") return <Redirect href={state.teamRegistered === false ? mode === "online" && arbitration.profile ? "/arbitragem" : "/editar" : "/(tabs)/descobrir"} />;
+  if (mode !== "none") return <Redirect href={postLoginDestination({ mode, state, arbitration, pendingDestination })} />;
   async function submit() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8) {
       Alert.alert(
@@ -43,10 +45,10 @@ export default function Login() {
       style={{ flex: 1, backgroundColor: "#f7f8f3" }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView keyboardShouldPersistTaps="handled">
+      <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" automaticallyAdjustKeyboardInsets>
         <View
           style={{
-            height: 330,
+            minHeight: 330,
             backgroundColor: "#193a32",
             overflow: "hidden",
           }}
@@ -75,6 +77,7 @@ export default function Login() {
               <Text
                 style={{
                   fontSize: 20,
+                  flexShrink: 1,
                   fontWeight: "900",
                   color: "white",
                   letterSpacing: -0.8,
@@ -108,6 +111,8 @@ export default function Login() {
             alignSelf: "center",
           }}
         >
+          {aviso === "senha-alterada" && <Note>Senha alterada. Suas sessões anteriores foram encerradas; entre novamente com a nova senha.</Note>}
+          {aviso === "email-confirmado" && <Note>E-mail confirmado. Entre novamente com o novo endereço.</Note>}
           <Text
             style={{
               fontSize: 23,
@@ -118,7 +123,7 @@ export default function Login() {
           >
             Bora entrar em campo?
           </Text>
-          <Text style={{ color: "#82907d", fontSize: 12, marginBottom: 25 }}>
+          <Text style={{ color: "#5e6d59", fontSize: 12, marginBottom: 25 }}>
             Cadastre seu time neste aparelho ou entre na sua conta.
           </Text>
           <Button
@@ -132,7 +137,7 @@ export default function Login() {
               finally { setBusy(false); }
             }}
           />
-          <Text style={{ color: "#82907d", fontSize: 11, marginVertical: 18, lineHeight: 18 }}>Seu time e seu progresso ficam salvos neste celular. Você pode apresentar os fluxos com adversários fictícios, sem internet e sem cobranças reais. O acesso por conta abaixo conecta equipes entre usuários quando o servidor está disponível.</Text>
+          <Text style={{ color: "#5e6d59", fontSize: 11, marginVertical: 18, lineHeight: 18 }}>Seu time e seu progresso ficam salvos neste celular. Você pode apresentar os fluxos com adversários fictícios, sem internet e sem cobranças reais. O acesso por conta abaixo conecta equipes entre usuários quando o servidor está disponível.</Text>
           <Input
             label="E-mail"
             placeholder="voce@email.com"
@@ -153,14 +158,17 @@ export default function Login() {
           />
           <Pressable
             onPress={() => router.push("/recuperar")}
+            accessibilityRole="button"
             style={{
               alignSelf: "flex-end",
+              minHeight: 44,
+              justifyContent: "center",
               padding: 9,
               marginTop: -8,
               marginBottom: 12,
             }}
           >
-            <Text style={{ fontSize: 11, color: "#8b957f" }}>
+            <Text style={{ fontSize: 11, color: "#5e6d59" }}>
               Esqueci minha senha
             </Text>
           </Pressable>
@@ -172,11 +180,12 @@ export default function Login() {
           />
           <Pressable
             onPress={() => router.push("/cadastro")}
-            style={{ alignItems: "center", padding: 19 }}
+            accessibilityRole="button"
+            style={{ alignItems: "center", padding: 19, minHeight: 44 }}
           >
-            <Text style={{ fontSize: 12, color: "#82907d" }}>
+            <Text style={{ fontSize: 12, color: "#5e6d59" }}>
               Ainda não tem conta?{" "}
-              <Text style={{ color: "#ee6a3b", fontWeight: "700" }}>
+              <Text style={{ color: "#b74a22", fontWeight: "700" }}>
                 Cadastre-se
               </Text>
             </Text>
@@ -197,7 +206,7 @@ export default function Login() {
             style={{
               textAlign: "center",
               fontSize: 9,
-              color: "#9aa58e",
+              color: "#5e6d59",
               marginTop: 15,
               lineHeight: 17,
             }}

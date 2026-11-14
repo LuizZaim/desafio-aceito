@@ -1,3 +1,5 @@
+import type { AcademicState } from "./academic";
+
 function uniqueId() {
   return (
     Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 12)
@@ -20,6 +22,9 @@ export type Team = {
   reciprocal?: boolean;
   active?: boolean;
   reviewCount?: number;
+  players?: { id: string; name: string; number: number | null; position: string }[];
+  preferredField?: string;
+  priority?: boolean;
 };
 export type Game = {
   id: string;
@@ -62,6 +67,7 @@ export function reviewAverage(review: Game["review"]): number | null {
   return values.length ? values.reduce((total, value) => total + value, 0) / values.length : null;
 }
 export type State = {
+  academic?: AcademicState;
   teamRegistered?: boolean;
   profile: {
     city?: string;

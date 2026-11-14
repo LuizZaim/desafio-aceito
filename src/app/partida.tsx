@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Alert, Switch } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useStore } from "../core/store";
+import { routeId } from "../core/navigation";
 import {
   Screen,
   Section,
@@ -19,7 +20,8 @@ import {
 import { formatDate } from "../components/game-card";
 import { RefereeInvitation } from "../components/referee-invitation";
 export default function Partida() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const id = routeId(params.id) || "";
   const { state: s, dispatch, busy, mode, teams } = useStore();
   const c = useColors();
   const [reason, R] = useState(""),

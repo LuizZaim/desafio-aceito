@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Pressable, Alert } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useStore } from "../core/store";
+import { routeId } from "../core/navigation";
 import {
   Screen,
   Section,
@@ -16,7 +17,8 @@ import {
   DemoLabel,
 } from "../components/ui";
 export default function Review() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const id = routeId(params.id) || "";
   const { state: s, dispatch, busy, teams, mode } = useStore();
   const c = useColors();
   const [skill, S] = useState(5),
@@ -57,7 +59,7 @@ export default function Review() {
           <Txt style={{ fontWeight: "700", fontSize: 13, marginBottom: 17 }}>
             {String(title)}
           </Txt>
-          <Row style={{ justifyContent: "space-between" }}>
+          <Row style={{ justifyContent: "space-between", gap: 0, flexWrap: "wrap" }}>
             {[1, 2, 3, 4, 5].map((n) => (
               <Pressable
                 accessibilityRole="button"
@@ -68,12 +70,12 @@ export default function Review() {
                 onPress={() => {
                   (setter as (v: number) => void)(n);
                 }}
-                style={{ padding: 6, minWidth: 44, minHeight: 44 }}
+                style={{ padding: 5, minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }}
               >
                 <Icon
                   name={n <= Number(value) ? "star" : "star-outline"}
-                  size={33}
-                  color="#d7a84f"
+                  size={30}
+                  color={c.orange}
                 />
               </Pressable>
             ))}

@@ -10,6 +10,7 @@ import {
 import { useLocalSearchParams, router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useStore } from "../core/store";
+import { routeId } from "../core/navigation";
 import {
   Txt,
   Row,
@@ -21,7 +22,8 @@ import {
   DemoLabel,
 } from "../components/ui";
 export default function Chat() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const id = routeId(params.id) || "";
   const { state: s, dispatch, busy, mode, teams } = useStore();
   const c = useColors();
   const insets = useSafeAreaInsets();
@@ -51,6 +53,9 @@ export default function Chat() {
       <Row
         style={{
           padding: 20,
+          width: "100%",
+          maxWidth: 800,
+          alignSelf: "center",
           borderBottomWidth: 1,
           borderColor: c.border,
           backgroundColor: c.panel,
@@ -64,16 +69,19 @@ export default function Chat() {
           </Txt>
         </View>
         <Pressable
+          accessibilityRole="button"
           accessibilityLabel="Ver perfil da equipe"
           onPress={() => router.push({ pathname: "/equipe", params: { id } })}
-          style={{ padding: 10 }}
+          style={{ padding: 10, minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }}
         >
           <Icon name="information-circle-outline" color={c.muted} />
         </Pressable>
       </Row>
       <ScrollView
         ref={scroll}
-        contentContainerStyle={{ padding: 20, gap: 14 }}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        contentContainerStyle={{ padding: 20, gap: 14, width: "100%", maxWidth: 800, alignSelf: "center" }}
         onContentSizeChange={() =>
           scroll.current?.scrollToEnd({ animated: true })
         }
@@ -95,7 +103,7 @@ export default function Chat() {
             style={{
               maxWidth: "86%",
               alignSelf: m.own ? "flex-end" : "flex-start",
-              backgroundColor: m.own ? c.orange : c.panel,
+              backgroundColor: m.own ? c.action : c.panel,
               padding: 15,
               borderRadius: 15,
               borderBottomLeftRadius: m.own ? 15 : 2,
@@ -143,6 +151,9 @@ export default function Chat() {
       <Row
         style={{
           padding: 14,
+          width: "100%",
+          maxWidth: 800,
+          alignSelf: "center",
           paddingBottom: Math.max(14, insets.bottom),
           borderTopWidth: 1,
           borderColor: c.border,
@@ -162,17 +173,20 @@ export default function Chat() {
             borderRadius: 11,
             padding: 14,
             color: c.text,
-            fontSize: 12,
+            fontSize: 16,
+            maxHeight: 150,
+            minHeight: 48,
           }}
           multiline
         />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Enviar mensagem"
+          accessibilityState={{ disabled: busy || !text.trim() }}
           disabled={busy || !text.trim()}
           onPress={send}
           style={{
-            backgroundColor: c.orange,
+            backgroundColor: c.action,
             borderRadius: 12,
             padding: 14,
             opacity: busy || !text.trim() ? 0.5 : 1,

@@ -5,6 +5,7 @@ import { useStore } from "../core/store";
 import { brazilianStates } from "../core/domain";
 import type { RefereeKind } from "../core/arbitration";
 import { formatDate } from "./game-card";
+import { RefereeMerits } from "./referee-merits";
 import {
   Screen, Section, Card, Row, Txt, Button, Chip, Empty, Note,
   Input, DemoLabel, useColors,
@@ -95,6 +96,8 @@ export function ConnectedReferee() {
           </>}
         </Card>
       ))}
+      <RefereeMerits />
+      <Button title="Dados de acesso e recuperação" secondary onPress={() => router.push("/conta")} />
       {state.teamRegistered === false && <>
         <Button title="Cadastrar uma equipe também" secondary disabled={busy} onPress={() => router.push("/editar")} />
         <Button title="Sair da conta" secondary disabled={busy} style={{ marginTop: 12 }} onPress={async () => {

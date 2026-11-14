@@ -7,6 +7,7 @@ import React, {
   useCallback,
 } from "react";
 import { Alert, AppState } from "react-native";
+import * as Linking from "expo-linking";
 import {
   loadState,
   saveState,
@@ -18,12 +19,17 @@ import { initialState, freshState, transition, teams as demoTeams, type State, t
 import { getToken, setToken, request, ApiError } from "./api";
 import { WorkspaceSession, type WorkspaceSnapshot } from "./workspace-session";
 import type { ArbitrationState } from "./arbitration";
+import { protectedDestination } from "./navigation";
+import { emptyAcademic, localAcademic, academicTransition, ACADEMIC_ACTIONS, type AcademicState } from "./academic";
 
 type Mode = "none" | "demo" | "online" | "local";
 interface Store {
   state: State;
   teams: Team[];
   arbitration: ArbitrationState;
+  academic: AcademicState;
+  pendingDestination: string | null;
+  clearPendingDestination: () => void;
   currentTeamId: string | null;
   ready: boolean;
   error: string;
@@ -47,6 +53,8 @@ export function Provider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState(initialState),
     [onlineTeams, setOnlineTeams] = useState<Team[]>([]),
     [arbitration, setArbitration] = useState<ArbitrationState>({ profile: null, professionals: [], invites: [] }),
+    [onlineAcademic, setOnlineAcademic] = useState<AcademicState>(emptyAcademic),
+    [pendingDestination, setPendingDestination] = useState<string | null>(null),
     [currentTeamId, setCurrentTeamId] = useState<string | null>(null),
     [ready, setReady] = useState(false),
     [mode, setMode] = useState<Mode>("none"),
@@ -67,6 +75,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
       setState(data.state);
       setOnlineTeams(data.teams);
       setArbitration(data.arbitration);
+      setOnlineAcademic(data.academic);
       setCurrentTeamId(data.currentTeamId);
       setLastSyncedAt(Date.now());
       setSyncError("");
@@ -84,6 +93,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
     online.current!.reset();
     setOnlineTeams([]);
     setArbitration({ profile: null, professionals: [], invites: [] });
+    setOnlineAcademic(emptyAcademic());
     setCurrentTeamId(null);
     setLastSyncedAt(null);
     setSyncError("");
@@ -184,6 +194,19 @@ export function Provider({ children }: { children: React.ReactNode }) {
   }, [applyLocal, changeMode, commitOnline, invalidateEpoch, refreshOnline]);
 
   useEffect(() => {
+    let active = true;
+    const remember = (url: string | null) => {
+      if (!active || modeRef.current !== "none") return;
+      const origin = typeof window !== "undefined" && window.location ? window.location.origin : undefined;
+      const target = protectedDestination(url, origin);
+      if (target) setPendingDestination(target);
+    };
+    void Linking.getInitialURL().then(remember).catch(() => {});
+    const subscription = Linking.addEventListener("url", (event) => remember(event.url));
+    return () => { active = false; subscription.remove(); };
+  }, []);
+
+  useEffect(() => {
     if (mode !== "online") return;
     const refresh = () => {
       if (!lock.current && AppState.currentState === "active")
@@ -211,7 +234,16 @@ export function Provider({ children }: { children: React.ReactNode }) {
       }
       if (modeRef.current === "none")
         throw Error("Abra sua equipe ou entre na demonstração para continuar.");
-      const next = transition(stateRef.current, action);
+      let next: { state: State; message: string };
+      if (ACADEMIC_ACTIONS.includes(action?.type)) {
+        const current = stateRef.current;
+        if (["savePlayer", "removePlayer", "teamField", "priorityInterest"].includes(action.type) && (current.teamRegistered === false || current.deleted))
+          throw Error("Cadastre uma equipe ativa antes de continuar.");
+        const academic = academicTransition(localAcademic(current), action);
+        const base = action.type === "priorityInterest"
+          ? transition(current, { type: "interest", id: action.id }).state : current;
+        next = { state: { ...base, academic }, message: "Demonstração atualizada. Nenhuma cobrança foi realizada." };
+      } else next = transition(stateRef.current, action);
       await saveState(next.state, modeRef.current === "local" ? "team-local-v1" : "demo-v1");
       if (epoch !== sessionEpoch.current) return false;
       applyLocal(next.state);
@@ -273,6 +305,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
     setBusy(true);
     const wasOnline = modeRef.current === "online";
     resetSession();
+    setPendingDestination(null);
     try {
       if (wasOnline) await request("/auth/logout", "POST");
     } catch {
@@ -291,6 +324,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
     lock.current = true;
     setBusy(true);
     resetSession();
+    setPendingDestination(null);
     const epoch = sessionEpoch.current;
     try {
       await setToken(null);
@@ -311,6 +345,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
     lock.current = true;
     setBusy(true);
     resetSession();
+    setPendingDestination(null);
     const epoch = sessionEpoch.current;
     try {
       await setToken(null);
@@ -329,6 +364,9 @@ export function Provider({ children }: { children: React.ReactNode }) {
       state,
       teams: mode === "demo" || mode === "local" ? demoTeams : mode === "online" ? onlineTeams : [],
       arbitration,
+      academic: mode === "online" ? onlineAcademic : localAcademic(state),
+      pendingDestination,
+      clearPendingDestination: () => setPendingDestination(null),
       currentTeamId,
       ready,
       error,

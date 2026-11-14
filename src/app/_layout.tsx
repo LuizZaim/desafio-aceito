@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Alert } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
+import { destinationPath } from "../core/navigation";
 import { Provider, useStore } from "../core/store";
+import { AlertHost } from "../components/alert-host";
 import { useColors, Busy, Empty, Button } from "../components/ui";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 function Navigator() {
-  const { ready, error, reload, logout, busy, mode, state } = useStore();
+  const { ready, error, reload, logout, busy, mode, state, pendingDestination, clearPendingDestination } = useStore();
   const c = useColors();
+  const pathname = usePathname();
+  useEffect(() => {
+    if (mode !== "none" && pendingDestination && destinationPath(pendingDestination) === pathname) void clearPendingDestination();
+  }, [mode, pendingDestination, pathname, clearPendingDestination]);
   if (!ready) return <Busy />;
   if (error)
     return (
@@ -31,7 +37,9 @@ function Navigator() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="cadastro" options={{ title: "Criar minha conta" }} />
       <Stack.Screen name="recuperar" options={{ title: "Recuperar acesso" }} />
+      <Stack.Screen name="confirmar-email" options={{ title: "Confirmar novo e-mail" }} />
       <Stack.Protected guard={mode !== "none"}>
+      <Stack.Screen name="conta" options={{ title: "Minha conta" }} />
       <Stack.Screen name="editar" options={{ title: state.teamRegistered === false ? "Cadastrar meu time" : "Editar minha equipe", headerBackVisible: state.teamRegistered !== false }} />
       <Stack.Screen
         name="arbitragem"
@@ -42,6 +50,10 @@ function Navigator() {
       <Stack.Screen name="chat" options={{ title: "Conversa" }} />
       <Stack.Screen name="agendar" options={{ title: "Agendar amistoso" }} />
       <Stack.Screen name="equipe" options={{ title: "Perfil da equipe" }} />
+      <Stack.Screen name="pagamentos" options={{ title: "Pagamentos demonstrativos" }} />
+      <Stack.Screen name="cartoes" options={{ title: "Cartões demonstrativos" }} />
+      <Stack.Screen name="assinaturas" options={{ title: "Planos acadêmicos" }} />
+      <Stack.Screen name="jogadores" options={{ title: "Elenco da equipe" }} />
       <Stack.Screen name="configuracoes" options={{ title: "Configurações" }} />
       <Stack.Screen name="notificacoes" options={{ title: "Notificações" }} />
       <Stack.Screen
@@ -59,7 +71,7 @@ export default function Root() {
   return (
     <SafeAreaProvider>
       <Provider>
-        <Navigator />
+        <AlertHost><Navigator /></AlertHost>
       </Provider>
     </SafeAreaProvider>
   );

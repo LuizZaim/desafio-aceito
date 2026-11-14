@@ -19,8 +19,9 @@ import {
   useColors,
 } from "./ui";
 import { GameCard } from "./game-card";
+import { TeamDetails } from "./team-details";
 export function TeamProfile({ id }: { id?: string }) {
-  const { state: s, dispatch, busy, mode, teams } = useStore();
+  const { state: s, dispatch, busy, mode, teams, academic } = useStore();
   const c = useColors();
   const [report, R] = useState(false),
     [reason, S] = useState("");
@@ -73,7 +74,7 @@ export function TeamProfile({ id }: { id?: string }) {
               </Txt>
             </View>
           </Row>
-          <Row style={{ marginBottom: 20 }}>
+          <Row style={{ marginBottom: 20, flexWrap: "wrap" }}>
             <Chip title={own ? s.profile.category : t!.category} />
             <Chip title={own ? s.profile.level : t!.level} />
           </Row>
@@ -150,6 +151,17 @@ export function TeamProfile({ id }: { id?: string }) {
           )}
         </View>
       </Card>
+      <TeamDetails id={id} />
+      {!own && !inactive && !s.matches.includes(id!) && !s.interests.includes(id!) && <Button
+        title={academic.subscription.priorityCredits ? `Jogar com prioridade · ${academic.subscription.priorityCredits} crédito(s)` : "Conhecer créditos de prioridade"}
+        secondary
+        disabled={busy || s.profile.role !== "organizador"}
+        style={{ marginTop: 16 }}
+        onPress={async () => {
+          if (!academic.subscription.priorityCredits) { router.push("/assinaturas"); return; }
+          if (await dispatch({ type: "priorityInterest", id })) Alert.alert("Interesse prioritário enviado", "O destaque é demonstrativo. O chat continua dependendo de interesse mútuo.");
+        }}
+      />}
       {own ? (
         <>
           <Row style={{ gap: 12, marginVertical: 20 }}>

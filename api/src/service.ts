@@ -6,18 +6,27 @@ import {
 import {
   randomUUID,
   randomBytes,
-  scrypt as _scrypt,
   createHash,
-  timingSafeEqual,
 } from "node:crypto";
-import { promisify } from "node:util";
 import { Network } from "./network";
 import { Arbitration } from "./arbitration";
+import { AccountSecurity } from "./account-security";
+import { createEmailDelivery, type EmailDelivery } from "./mail";
+import { hashPassword, verifyPassword } from "./passwords";
 import type { Database } from "./db";
-const scrypt = promisify(_scrypt);
 const digest = (x: string) => createHash("sha256").update(x).digest("hex");
 export class Service {
-  constructor(private db: Database) {}
+  private readonly security: AccountSecurity;
+  constructor(private db: Database, mail: EmailDelivery = createEmailDelivery()) { this.security = new AccountSecurity(db,mail); }
+  capabilities() { return this.security.capabilities(); }
+  forgot(body: any) { return this.security.forgot(body); }
+  reset(body: any) { return this.security.reset(body); }
+  account(user: string) { return this.security.account(user); }
+  changePassword(user: string, body: any) { return this.security.changePassword(user,body); }
+  changeEmail(user: string, body: any) { return this.security.changeEmail(user,body); }
+  confirmEmail(body: any) { return this.security.confirmEmail(body); }
+  createRecoveryCodes(user: string, body: any) { return this.security.createRecoveryCodes(user,body); }
+  recoverCode(body: any) { return this.security.recoverCode(body); }
   async register(body: any) {
     if (!body || typeof body !== "object" || Array.isArray(body))
       throw new BadRequestException("Solicitação inválida.");
@@ -37,13 +46,12 @@ export class Service {
       throw new BadRequestException(
         "Informe nome, e-mail válido e senha de 8 a 128 caracteres.",
       );
-    const salt = randomBytes(16).toString("hex"),
-      key = (await scrypt(password, salt, 64)) as Buffer;
+    const hash = await hashPassword(password);
     let row;
     try {
       row = await this.db.query(
         "INSERT INTO users(id,name,email,password_hash) VALUES($1,$2,$3,$4) RETURNING id,name,email",
-        [randomUUID(), name, email, `${salt}:${key.toString("hex")}`],
+        [randomUUID(), name, email, hash],
       );
     } catch (e: any) {
       if (e.code === "23505")
@@ -65,13 +73,8 @@ export class Service {
       email,
     ]);
     const user = result.rows[0];
-    const [salt, hash] = (
-      user?.password_hash ||
-      "00000000000000000000000000000000:" + "0".repeat(128)
-    ).split(":");
-    const key = (await scrypt(password, salt, 64)) as Buffer;
-    if (!user || !timingSafeEqual(key, Buffer.from(hash, "hex")))
-      throw new UnauthorizedException("E-mail ou senha inválidos.");
+    const valid = await verifyPassword(password,user?.password_hash);
+    if (!user || !valid) throw new UnauthorizedException("E-mail ou senha inválidos.");
     return this.session({ id: user.id, name: user.name, email: user.email });
   }
   private async session(user: any) {

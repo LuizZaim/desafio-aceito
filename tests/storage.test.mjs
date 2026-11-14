@@ -5,6 +5,7 @@ import vm from "node:vm";
 import { DatabaseSync } from "node:sqlite";
 import ts from "typescript";
 import * as domain from "../src/core/domain.ts";
+import { academicTransition, localAcademic } from "../src/core/academic.ts";
 
 function adapter(file, dependencies, globals = {}) {
   const source = readFileSync(new URL(file, import.meta.url), "utf8");
@@ -108,6 +109,20 @@ for (const platform of ["native SQLite", "web QA"]) {
       assert.equal(isolatedDemo.profile.name, "Demo alterada");
       assert.ok(!isolatedDemo.games.some((row) => row.id === game));
       assert.ok(!isolatedDemo.matches.includes("vila"));
+
+      let academic = academicTransition(localAcademic(resumed), { type: "addDemoCard", label: "Teste da apresentação", last4: "1234" });
+      academic = academicTransition(academic, { type: "selectAcademicPlan", plan: "academico" });
+      academic = academicTransition(academic, { type: "savePlayer", name: "Capitão", number: 10, position: "Meio-campo" });
+      academic = academicTransition(academic, { type: "teamField", field: "Campo do bairro" });
+      await storage.saveState({ ...resumed, academic }, "team-local-v1");
+      storage = open();
+      const reopenedAcademic = localAcademic(await storage.loadState("team-local-v1"));
+      assert.equal(reopenedAcademic.cards[0].last4, "1234");
+      assert.equal(reopenedAcademic.players[0].name, "Capitão");
+      assert.equal(reopenedAcademic.preferredField, "Campo do bairro");
+      assert.equal(reopenedAcademic.subscription.priorityCredits, 1);
+      assert.deepEqual(localAcademic(await storage.loadState()).cards, []);
+      assert.deepEqual(localAcademic(await storage.loadState()).players, []);
     } finally {
       close();
     }

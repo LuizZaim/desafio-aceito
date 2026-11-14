@@ -81,6 +81,10 @@ export default function Settings() {
         <Txt style={{ fontSize: 11, color: c.muted }}>
           Perfil: {s.profile.role === "organizador" ? "Organizador" : "Árbitro"}
         </Txt>
+        <Button title="Editar dados da equipe" secondary icon="create-outline" onPress={() => router.push("/editar")} />
+        <Button title="Campo e elenco da equipe" secondary icon="people-outline" onPress={() => router.push("/jogadores")} />
+        <Button title="Pagamentos, cartões e planos" secondary icon="wallet-outline" onPress={() => router.push("/pagamentos")} />
+        {mode === "online" && <Button title="E-mail, senha e recuperação" secondary icon="key-outline" onPress={() => router.push("/conta")} />}
         <Button
           title="Central de arbitragem"
           secondary
@@ -109,7 +113,7 @@ export default function Settings() {
           da FECAP. Versão {Constants.expoConfig?.version || "não informada"}.
         </Txt>
         <Txt style={{ fontSize: 11, color: c.muted, lineHeight: 20 }}>
-          {mode === "online" ? "Equipes cadastradas, interesses mútuos e mensagens são compartilhados entre contas conectadas ao mesmo servidor. Propostas compartilhadas exigem aceite do adversário. A caução simulada confirma o jogo; depois do horário de início, é possível registrar o placar e avaliar o adversário. Todas as cobranças são fictícias, para apresentação acadêmica." : mode === "local" ? "Seu time permanece neste aparelho. Os adversários, interesses recebidos e respostas de conversa são fictícios; você pode demonstrar matches, agenda, caução, resultado e avaliação sem internet. Nenhuma equipe real recebe seus dados." : "Os adversários, as respostas mútuas e as cauções desta demonstração são fictícios."} Google, recuperação por e-mail, geolocalização e push ainda dependem de integrações.
+          {mode === "online" ? "Equipes cadastradas, interesses mútuos e mensagens são compartilhados entre contas conectadas ao mesmo servidor. Propostas compartilhadas exigem aceite do adversário. A caução simulada confirma o jogo; depois do horário de início, é possível registrar o placar e avaliar o adversário. Todas as cobranças são fictícias, para apresentação acadêmica." : mode === "local" ? "Seu time permanece neste aparelho. Os adversários, interesses recebidos e respostas de conversa são fictícios; você pode demonstrar matches, agenda, caução, resultado e avaliação sem internet. Nenhuma equipe real recebe seus dados." : "Os adversários, as respostas mútuas e as cauções desta demonstração são fictícios."} O acesso com Google e as notificações push não estão configurados. A recuperação por e-mail depende da disponibilidade do envio; códigos salvos permitem recuperar contas conectadas.
         </Txt>
       </Card>
       <View style={{ marginTop: 22 }}>

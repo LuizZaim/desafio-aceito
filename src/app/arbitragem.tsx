@@ -15,6 +15,7 @@ import {
 } from "../components/ui";
 import { formatDate } from "../components/game-card";
 import { ConnectedReferee } from "../components/connected-referee";
+import { RefereeMerits } from "../components/referee-merits";
 export default function Referee() {
   const { state: s, dispatch, busy, mode, teams } = useStore();
   const c = useColors();
@@ -132,6 +133,7 @@ export default function Referee() {
           </Note>
         </>
       )}
+      <RefereeMerits />
     </Screen>
   );
 }

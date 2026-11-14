@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Alert } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useStore } from "../core/store";
+import { routeId } from "../core/navigation";
 import { fields, dateAfter } from "../core/domain";
 import {
   Screen,
@@ -15,14 +16,16 @@ import {
   DemoLabel,
 } from "../components/ui";
 export default function Schedule() {
-  const params = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const requestedId = routeId(params.id);
   const { state: s, dispatch, busy, mode, teams, currentTeamId } = useStore();
-  const [id, I] = useState(params.id || s.matches[0]),
+  const [id, I] = useState(requestedId || s.matches[0]),
     [date, D] = useState(dateAfter(5).split("-").reverse().join("/")),
     [time, T] = useState("10:00"),
     [field, F] = useState(mode !== "online" ? fields[0] : ""),
     [home, H] = useState(mode === "online" ? currentTeamId || "" : s.profile.name);
   const team = teams.find((t) => t.id === id);
+  if (params.id !== undefined && !requestedId) return <Screen><Empty title="Link de agendamento inválido" text="Escolha uma equipe na aba Matches para criar uma proposta." /></Screen>;
   if (!s.matches.length)
     return (
       <Screen>

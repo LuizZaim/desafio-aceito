@@ -19,6 +19,7 @@ import { type Request, type Response, json } from "express";
 import helmet from "helmet";
 import type { Database } from "./db";
 import { Service } from "./service";
+import type { EmailDelivery } from "./mail";
 const TOKEN = "APP_SERVICE";
 const token = (r: Request) =>
   r.headers.authorization?.replace(/^Bearer /, "") || "";
@@ -53,13 +54,28 @@ class Errors implements ExceptionFilter {
 class API {
   constructor(@Inject(TOKEN) private readonly app: Service) {}
   @Get("health") health() {
-    return { status: "ok", app: "Desafio Aceito", version: "1.2.0" };
+    return { status: "ok", app: "Desafio Aceito", version: "1.3.0" };
   }
   @Post("auth/register") register(@Body() body: any) {
     return this.app.register(body);
   }
   @Post("auth/login") @HttpCode(200) login(@Body() body: any) {
     return this.app.login(body);
+  }
+  @Get("auth/capabilities") capabilities() { return this.app.capabilities(); }
+  @Post("auth/forgot-password") @HttpCode(202) forgot(@Body() body: any) { return this.app.forgot(body); }
+  @Post("auth/reset-password") @HttpCode(200) reset(@Body() body: any) { return this.app.reset(body); }
+  @Post("auth/recover-code") @HttpCode(200) recoverCode(@Body() body: any) { return this.app.recoverCode(body); }
+  @Post("auth/confirm-email") @HttpCode(200) confirmEmail(@Body() body: any) { return this.app.confirmEmail(body); }
+  @Get("account") async account(@Req() req: Request) { return this.app.account(await this.app.authenticate(token(req))); }
+  @Post("account/password") @HttpCode(200) async password(@Req() req: Request, @Body() body: any) {
+    return this.app.changePassword(await this.app.authenticate(token(req)),body);
+  }
+  @Post("account/email") @HttpCode(202) async email(@Req() req: Request, @Body() body: any) {
+    return this.app.changeEmail(await this.app.authenticate(token(req)),body);
+  }
+  @Post("account/recovery-codes") @HttpCode(200) async recoveryCodes(@Req() req: Request, @Body() body: any) {
+    return this.app.createRecoveryCodes(await this.app.authenticate(token(req)),body);
   }
   @Post("auth/logout") @HttpCode(204) async logout(@Req() req: Request) {
     await this.app.authenticate(token(req));
@@ -84,10 +100,10 @@ class API {
     return this.app.update(await this.app.authenticate(token(req)), body);
   }
 }
-export async function createApp(db: Database) {
+export async function createApp(db: Database, options: {emailDelivery?: EmailDelivery} = {}) {
   @Module({
     controllers: [API],
-    providers: [{ provide: TOKEN, useValue: new Service(db) }],
+    providers: [{ provide: TOKEN, useValue: new Service(db,options.emailDelivery) }],
   })
   class AppModule {}
   const app = await NestFactory.create(AppModule, {
@@ -101,7 +117,7 @@ export async function createApp(db: Database) {
   app.useGlobalFilters(new Errors());
   const hits = new Map<string, { count: number; until: number }>();
   app.use((req: Request, res: Response, next: () => void) => {
-    if (req.url.startsWith("/auth/")) {
+    if (req.url.startsWith("/auth/") || req.url.startsWith("/account")) {
       const key = req.ip || "unknown",
         now = Date.now(),
         old = hits.get(key);

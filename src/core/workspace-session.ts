@@ -1,5 +1,6 @@
 import type { State, Team } from "./domain";
 import type { ArbitrationState } from "./arbitration";
+import type { AcademicState } from "./academic";
 
 export type WorkspaceSnapshot = {
   state: State;
@@ -7,6 +8,7 @@ export type WorkspaceSnapshot = {
   teams: Team[];
   currentTeamId: string | null;
   arbitration: ArbitrationState;
+  academic: AcademicState;
 };
 type Request = (path: string, method?: string, body?: unknown) => Promise<any>;
 
@@ -51,6 +53,16 @@ export class WorkspaceSession {
           ? data.arbitration.profile : null,
         professionals: Array.isArray(data.arbitration?.professionals) ? data.arbitration.professionals : [],
         invites: Array.isArray(data.arbitration?.invites) ? data.arbitration.invites : [],
+      },
+      academic: {
+        cards: Array.isArray(data.academic?.cards) ? data.academic.cards : [],
+        subscription: data.academic?.subscription && ["gratuito", "academico"].includes(data.academic.subscription.plan) && Number.isInteger(data.academic.subscription.priorityCredits)
+          ? data.academic.subscription : { plan: "gratuito", priorityCredits: 0 },
+        players: Array.isArray(data.academic?.players) ? data.academic.players : [],
+        preferredField: typeof data.academic?.preferredField === "string" ? data.academic.preferredField : "",
+        achievements: Array.isArray(data.academic?.achievements) ? data.academic.achievements : [],
+        refereeMerits: Array.isArray(data.academic?.refereeMerits) ? data.academic.refereeMerits : [],
+        planCreditGranted: data.academic?.planCreditGranted === true,
       },
     };
     this.version = data.version;

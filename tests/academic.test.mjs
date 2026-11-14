@@ -1,31 +1,51 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { freshState, transition, dateAfter, fields, reviewAverage } from "../src/core/domain.ts";
+import { emptyAcademic, academicTransition, localAcademic } from "../src/core/academic.ts";
+import { freshState, transition, fields, dateAfter } from "../src/core/domain.ts";
 
-test("apresentação offline: time próprio percorre match, conversa, caução, jogo simulado e avaliação", () => {
-  let state = freshState();
-  const act = (action) => { state = transition(state, action).state; };
-  act({ type: "registerTeam", name: "Time da Faculdade", district: "Liberdade", city: "São Paulo", state: "SP", category: "Masculino", level: "Amador" });
-  assert.deepEqual(state.matches, []);
-  assert.deepEqual(state.games, []);
-  act({ type: "interest", id: "vila" });
-  act({ type: "send", id: "vila", text: "Vamos demonstrar o agendamento?" });
-  act({ type: "schedule", id: "vila", date: dateAfter(5), time: "10:00", field: fields[0], home: state.profile.name });
-  const id = state.games[0].id;
-  assert.throws(() => act({ type: "simulateResult", id, a: 2, b: 1 }), /confirmada/);
-  act({ type: "pay", id });
-  assert.equal(state.games[0].payment, "Simulada");
-  assert.throws(() => act({ type: "result", id, a: 2, b: 1 }), /após o início/);
-  for (const score of [-1, 100, 1.5, "inválido"]) {
-    assert.throws(() => act({ type: "simulateResult", id, a: score, b: 1 }), /Placar/);
-  }
-  act({ type: "simulateResult", id, a: 2, b: 1 });
-  assert.equal(state.games[0].status, "Concluída");
-  assert.equal(state.games[0].simulated, true);
-  assert.equal(state.games[0].date, dateAfter(5));
-  act({ type: "review", id, skill: 4, fair: 5, punctuality: 3, organization: 4 });
-  assert.equal(reviewAverage(state.games[0].review), 4);
-  assert.throws(() => act({ type: "review", id, skill: 5, fair: 5, punctuality: 5, organization: 5 }), /uma vez/);
-  assert.equal(state.profile.name, "Time da Faculdade");
-  assert.equal(state.messages.vila[0].text, "Vamos demonstrar o agendamento?");
+test("cartões acadêmicos aceitam somente apelido e quatro dígitos fictícios", () => {
+  for (const action of [{last4:"4111111111111111"},{last4:"abcd"},{last4:1234},{cvv:"123"},{pan:"4111111111111111"}])
+    assert.throws(() => academicTransition(emptyAcademic(), {type:"addDemoCard",label:"Teste",last4:"1234",...action}));
+  const state = academicTransition(emptyAcademic(), {type:"addDemoCard",label:"  Cartão fictício  ",last4:"1234"});
+  assert.deepEqual(Object.keys(state.cards[0]).sort(), ["id","label","last4"]);
+  assert.equal(state.cards[0].label,"Cartão fictício");
+  assert.equal(academicTransition(state,{type:"removeDemoCard",id:state.cards[0].id}).cards.length,0);
+  assert.throws(() => academicTransition(state,{type:"removeDemoCard",id:"outro"}),/não encontrado/);
+});
+
+test("plano simulado concede um crédito uma única vez e não duplica benefício ao alternar", () => {
+  let state = academicTransition(emptyAcademic(),{type:"selectAcademicPlan",plan:"academico"});
+  assert.equal(state.subscription.priorityCredits,1);
+  state = academicTransition(state,{type:"priorityInterest",id:"vila"});
+  assert.equal(state.subscription.priorityCredits,0);
+  assert.throws(() => academicTransition(state,{type:"priorityInterest",id:"mooca"}),/crédito/);
+  state = academicTransition(state,{type:"selectAcademicPlan",plan:"gratuito"});
+  state = academicTransition(state,{type:"selectAcademicPlan",plan:"academico"});
+  assert.equal(state.subscription.priorityCredits,0);
+  for(let i=0;i<10;i++) state = academicTransition(state,{type:"addPriorityCredit"});
+  assert.throws(() => academicTransition(state,{type:"addPriorityCredit"}),/máximo/);
+});
+
+test("elenco valida dados, evita número duplicado e não edita IDs desconhecidos", () => {
+  let state = academicTransition(emptyAcademic(),{type:"savePlayer",name:"Goleiro",number:1,position:"Goleiro"});
+  const id = state.players[0].id;
+  assert.throws(() => academicTransition(state,{type:"savePlayer",name:"Outro",number:1,position:"Atacante"}),/em uso/);
+  for(const number of [-1,100,1.5,"10",undefined]) assert.throws(() => academicTransition(state,{type:"savePlayer",name:"Outro",number,position:"Atacante"}));
+  assert.throws(() => academicTransition(state,{type:"savePlayer",id:"outro",name:"Outro",number:10,position:"Atacante"}),/não encontrado/);
+  state = academicTransition(state,{type:"savePlayer",id,name:"Capitão",number:10,position:"Meio-campo"});
+  assert.equal(state.players.length,1);
+  assert.equal(state.players[0].number,10);
+  state = academicTransition(state,{type:"teamField",field:"  Campo do bairro  "});
+  assert.equal(state.preferredField,"Campo do bairro");
+  state = academicTransition(state,{type:"removePlayer",id});
+  assert.equal(state.players.length,0);
+});
+
+test("conquistas derivam do histórico e não aparecem na equipe recém-cadastrada", () => {
+  let state = transition(freshState(),{type:"registerTeam",name:"Time do Bairro",district:"Tatuapé",city:"São Paulo",state:"SP",category:"Masculino",level:"Amador",bio:""}).state;
+  assert.deepEqual(localAcademic(state).achievements,[]);
+  state = transition(state,{type:"interest",id:"vila"}).state;
+  assert.deepEqual(localAcademic(state).achievements.map((row)=>row.id),["first-match"]);
+  state = transition(state,{type:"schedule",id:"vila",date:dateAfter(5),time:"10:00",field:fields[0],home:state.profile.name}).state;
+  assert.equal(localAcademic(state).achievements.length,1,"a future proposal is not a completed game");
 });
