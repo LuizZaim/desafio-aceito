@@ -1,5 +1,7 @@
 # Validação contra a auditoria de 11/11/2026
 
+**Preparação 1.5.0:** configuração Render Free, tratamento de espera e envio de e-mail HTTPS adicionados e testados localmente. Ainda não houve migração; a evidência publicada abaixo continua sendo a API 1.4.0 no Railway. Nenhuma versão web será entregue. Publicação Render aguarda confirmação de workspace e repositório autorizado.
+
 Escopo: documento técnico fornecido + código desta entrega mobile. Revisão de implementação 1.4.0. Os itens marcados como atendidos **no PDF** não são evidência de código. A validação abaixo não é uma nota acadêmica ou certificação. A conta Figma foi conectada, mas o arquivo não pôde ser inspecionado por falta de permissão nas operações disponíveis; não há comparação visual autenticada. O [plano de conclusão](PLANO_CONCLUSAO.md) organiza o aceite restante. O PDF original não foi alterado. A instrução atual é não gerar novo APK nesta etapa.
 
 **Escopo da entrega:** aplicativo demonstrativo da faculdade, com operações financeiras simuladas e identificadas. O usuário solicitou o atendimento dos critérios de código 29–50 com API/banco hospedados e persistência compartilhada. API Railway/banco Neon e HTTPS foram verificados conforme `VALIDACAO.md`; novo APK, teste físico e ensaio permanecem separados. O modo local sem API é uma alternativa com adversários fictícios. Gateway real/cobranças não fazem parte da simulação. O PDF original não foi reescrito.

@@ -1,0 +1,22 @@
+# API only. The Android application is delivered separately as an APK.
+services:
+  - type: web
+    name: desafio-aceito-api
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: cd api && npm ci && npm run build
+    startCommand: cd api && node dist/api/src/migrate.js && node dist/api/src/main.js
+    healthCheckPath: /health
+    autoDeployTrigger: "off"
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: DB_SSL
+        value: "true"
+      - key: DATABASE_URL
+        sync: false
+      - key: MAIL_PROVIDER
+        value: brevo

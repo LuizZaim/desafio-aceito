@@ -1,3 +1,19 @@
+# Preparação 1.5.0 — API gratuita no Render
+
+Entrega somente por APK Android. A configuração `render.yaml` define apenas a API, com `plan: free`, sem banco Render, discos, serviços web de interface ou recursos pagos. O banco permanece no Neon.
+
+**Ainda não houve migração:** a API publicada continua na versão 1.4.0 no Railway e o app ainda aponta para essa URL. Não foi criado serviço Render nem publicado repositório GitHub. Para o deploy, faltam confirmar o workspace Render e disponibilizar o código em um repositório remoto autorizado; o Render também aceita imagem Docker publicada, que este projeto ainda não possui. A preferência anterior de adiar o GitHub foi preservada.
+
+O app permite até 90 segundos por requisição, exibe aviso após 4 segundos de espera e não repete mutações automaticamente. Se uma gravação perder a resposta, orienta conferir os dados antes de reenviar. Isso prepara o primeiro acesso após o servidor gratuito adormecer, sem robôs de keep-alive.
+
+Para e-mail no Render Free, selecionar `MAIL_PROVIDER=brevo` e configurar `BREVO_API_KEY` e `MAIL_FROM` somente no ambiente privado do servidor. O adaptador usa HTTPS, pois SMTP é bloqueado no Render Free. O remetente precisa ser verificado e o plano Free respeitado; não houve cadastro/ativação de provedor nem envio externo. Sem configuração completa, recuperação por e-mail continua indisponível. O adaptador SMTP existente permanece opcional para outros ambientes.
+
+O professor recebe o APK e não precisa configurar a infraestrutura. Antes de gerar o APK final, publicar e verificar o Render, atualizar a URL pública no app e no perfil EAS e validar os fluxos conectados. Google e entrega externa de e-mail ainda dependem de configuração real; testes visuais/no aparelho ainda não foram concluídos.
+
+Referências: [Render Free](https://render.com/docs/free), [Blueprint](https://render.com/docs/blueprint-spec), [Brevo Free](https://help.brevo.com/hc/en-us/articles/208580669-FAQs-What-are-the-limits-of-the-Free-plan).
+
+---
+
 # Estado atual — 1.4.0
 
 ## Acesso do professor — somente Android

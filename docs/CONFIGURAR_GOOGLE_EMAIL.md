@@ -25,3 +25,9 @@ Após configurar, verificar capacidades da API e executar recuperação/alteraç
 O teste de transporte real usa um servidor SMTP **TLS local**, aceita o certificado de teste explicitamente confiável e rejeita certificado não confiável; não envia e-mail à internet. Para executar a suíte completa da API, instalar também o comando `openssl`, usado para gerar o certificado temporário desse teste. O teste não requer credenciais SMTP de produção.
 
 Enquanto SMTP estiver indisponível, troca de senha e códigos de recuperação previamente guardados continuam disponíveis. Códigos precisam ser gerados dentro da conta antes de perder o acesso; são exibidos uma vez e não substituem retroativamente um e-mail que nunca foi entregue.
+
+## Render Free: envio HTTPS
+
+O Render Free bloqueia as portas SMTP usuais. Selecione `MAIL_PROVIDER=brevo`, cadastre/verifique um remetente em uma conta Free e configure somente no servidor `BREVO_API_KEY` e `MAIL_FROM`. Não publique a chave no GitHub ou APK. O adaptador envia para o endpoint HTTPS fixo do provedor, não segue redirects nem faz retry automático. Uma resposta aceita do provedor não comprova recebimento; validar a caixa de destino antes de marcar entrega externa como concluída.
+
+Sem chave/remetente completos ou com provedor desconhecido, a capacidade fica indisponível e não há fallback silencioso para SMTP. A integração está testada com respostas simuladas, sem criação de conta, compra de domínio ou envio externo. Os limites e a aceitação do remetente devem ser conferidos no plano gratuito do provedor.

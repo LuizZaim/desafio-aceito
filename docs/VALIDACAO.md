@@ -1,5 +1,15 @@
 # Evidências de validação
 
+## Preparação 1.5.0 — Render Free, espera e e-mail HTTPS
+
+- `render.yaml` validado contra o JSON Schema oficial; validação estrutural local não é deploy nem validação da conta Render. Workspace ainda precisa ser confirmado. Sem remoto Git ou imagem publicada, não houve criação de serviço.
+- 12 testes focados do transporte/sessão passaram: aviso concorrente, encerramento da espera, timeout e mutações sem retry, além dos cenários anteriores de sessão.
+- 8 testes focados de e-mail/segurança passaram: HTTPS com host fixo e sem redirects, rejeição de erros/quota/resposta inválida sem vazar segredos, ausência de fallback e regras de recuperação anteriores. Nenhuma mensagem externa foi enviada. API compilou; lint/tipos passaram.
+- Exportação Android/Hermes 1.5.0 concluída: 1.245 módulos, cerca de 2,9 MB. Não é APK nem teste em aparelho.
+- Dockerfile agora inclui também `academic.ts`, exigido pelo backend. Docker não está instalado no ambiente; não declarar imagem compilada.
+- Fonte 1.5.0 é preparação. Serviço publicado segue 1.4.0 no Railway, URL móvel preservada. Nenhum APK/GitHub/serviço Render novo foi publicado nesta etapa.
+
+
 ## Implementação 1.4.0 — Google, transporte TLS e correções de fluxo
 
 Registro do código atual; 1.3.0 e versões anteriores permanecem como histórico abaixo. Não houve geração de APK nesta etapa, conforme solicitado pelo usuário.

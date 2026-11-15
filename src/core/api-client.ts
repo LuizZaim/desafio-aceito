@@ -13,6 +13,8 @@ export function createApiClient(options: {
   getToken: () => Promise<string | null>;
   fetch?: typeof fetch;
   timeoutMs?: number;
+  slowAfterMs?: number;
+  onSlowRequest?: () => (() => void);
 }) {
   const baseURL = options.baseURL.replace(/\/+$/, "");
   return async function request<T = any>(
@@ -31,8 +33,12 @@ export function createApiClient(options: {
     const controller = new AbortController();
     const timeout = setTimeout(
       () => controller.abort(),
-      options.timeoutMs ?? 15000,
+      options.timeoutMs ?? 90000,
     );
+    let endSlowRequest: (() => void) | undefined;
+    const slowNotice = options.onSlowRequest ? setTimeout(() => {
+      endSlowRequest = options.onSlowRequest?.();
+    }, options.slowAfterMs ?? 4000) : undefined;
     try {
       const response = await (options.fetch ?? fetch)(baseURL + path, {
         method,
@@ -65,11 +71,15 @@ export function createApiClient(options: {
       if (error instanceof ApiError) throw error;
       throw Error(
         controller.signal.aborted
-          ? "A conexão demorou mais que o esperado. Tente novamente."
+          ? method === "GET"
+            ? "A conexão demorou mais que o esperado. Aguarde um pouco e tente novamente."
+            : "A resposta demorou. A operação pode ter sido concluída; atualize seus dados antes de tentar novamente."
           : "Não foi possível conectar ao serviço. Confira sua internet e tente novamente.",
       );
     } finally {
       clearTimeout(timeout);
+      if (slowNotice !== undefined) clearTimeout(slowNotice);
+      endSlowRequest?.();
     }
   };
 }

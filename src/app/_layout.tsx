@@ -4,6 +4,7 @@ import { Stack, usePathname } from "expo-router";
 import { destinationPath } from "../core/navigation";
 import { Provider, useStore } from "../core/store";
 import { AlertHost } from "../components/alert-host";
+import { ConnectionNotice } from "../components/connection-notice";
 import { useColors, Busy, Empty, Button } from "../components/ui";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 function Navigator() {
@@ -71,7 +72,7 @@ export default function Root() {
   return (
     <SafeAreaProvider>
       <Provider>
-        <AlertHost><Navigator /></AlertHost>
+        <AlertHost><Navigator /><ConnectionNotice /></AlertHost>
       </Provider>
     </SafeAreaProvider>
   );
