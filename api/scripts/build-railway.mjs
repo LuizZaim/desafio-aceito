@@ -2,6 +2,7 @@ import { build } from "esbuild";
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { resolve, dirname } from "node:path";
+import { gzipSync, gunzipSync } from "node:zlib";
 
 // Packages are external; only our compiled NestJS code and SQL are packed.
 // This keeps the reviewed multi-file source and deploys it without a GitHub repo.
@@ -43,10 +44,20 @@ const imports = Object.keys(manifest.dependencies).map((name) => {
   const version = lock.packages[`node_modules/${name}`].version;
   return `import ${JSON.stringify(`${name}@${version}`)};`;
 }).join("\n");
-const output = `// Generated from the reviewed NestJS source. No credentials included.\n${imports}\n${result.outputFiles[0].text}`;
-if (Buffer.byteLength(output) > 96 * 1024) throw Error("O bundle excede o limite de 96 KiB da função Railway.");
+const compiled = result.outputFiles[0].text;
+let output = `// Generated from the reviewed NestJS source. No credentials included.\n${imports}\n${compiled}`;
+let compressed = false;
+if (Buffer.byteLength(output) > 96 * 1024) {
+  // Keep all package imports visible to Railway's dependency scanner. Only our
+  // compiled source and migrations are compressed, without external downloads.
+  const payload = gzipSync(Buffer.from(compiled), { level: 9 });
+  if (gunzipSync(payload).toString("utf8") !== compiled) throw Error("Falha ao verificar o pacote da API.");
+  output = `// Generated from the reviewed NestJS source. Gzip is packaging, not encryption. No credentials included.\n${imports}\nimport {gunzipSync} from "node:zlib";\nimport {createRequire} from "node:module";\nconst source = gunzipSync(Buffer.from(${JSON.stringify(payload.toString("base64"))},"base64")).toString("utf8");\nconst module = {exports:{}};\nnew Function("require","module","exports",source)(createRequire(import.meta.url),module,module.exports);\n`;
+  compressed = true;
+}
+if (Buffer.byteLength(output) > 96 * 1024) throw Error("O pacote excede o limite de 96 KiB da função Railway.");
 const outputDir = resolve(apiRoot, "../outputs/railway");
 mkdirSync(outputDir, { recursive: true });
 writeFileSync(resolve(outputDir, "api.ts"), output);
 writeFileSync(resolve(outputDir, "api.cjs"), result.outputFiles[0].text);
-console.log(JSON.stringify({ file: "outputs/railway/api.ts", bytes: Buffer.byteLength(output), migrations: migrations.length }));
+console.log(JSON.stringify({ file: "outputs/railway/api.ts", bytes: Buffer.byteLength(output), sourceBytes: Buffer.byteLength(compiled), compressed, migrations: migrations.length }));

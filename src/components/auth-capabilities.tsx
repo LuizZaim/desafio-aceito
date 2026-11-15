@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { request } from "../core/api";
 
 export type AuthCapabilities = {
+  google?: boolean;
+  googleWebClientId?: string;
   passwordRecovery: boolean;
   emailChange: boolean;
   passwordChange: boolean;

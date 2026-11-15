@@ -20,6 +20,7 @@ import helmet from "helmet";
 import type { Database } from "./db";
 import { Service } from "./service";
 import type { EmailDelivery } from "./mail";
+import type { GoogleIdentityProvider } from "./google-identity";
 const TOKEN = "APP_SERVICE";
 const token = (r: Request) =>
   r.headers.authorization?.replace(/^Bearer /, "") || "";
@@ -54,7 +55,7 @@ class Errors implements ExceptionFilter {
 class API {
   constructor(@Inject(TOKEN) private readonly app: Service) {}
   @Get("health") health() {
-    return { status: "ok", app: "Desafio Aceito", version: "1.3.0" };
+    return { status: "ok", app: "Desafio Aceito", version: "1.4.0" };
   }
   @Post("auth/register") register(@Body() body: any) {
     return this.app.register(body);
@@ -62,6 +63,7 @@ class API {
   @Post("auth/login") @HttpCode(200) login(@Body() body: any) {
     return this.app.login(body);
   }
+  @Post("auth/google") @HttpCode(200) google(@Body() body:any) { return this.app.googleLogin(body); }
   @Get("auth/capabilities") capabilities() { return this.app.capabilities(); }
   @Post("auth/forgot-password") @HttpCode(202) forgot(@Body() body: any) { return this.app.forgot(body); }
   @Post("auth/reset-password") @HttpCode(200) reset(@Body() body: any) { return this.app.reset(body); }
@@ -100,10 +102,10 @@ class API {
     return this.app.update(await this.app.authenticate(token(req)), body);
   }
 }
-export async function createApp(db: Database, options: {emailDelivery?: EmailDelivery} = {}) {
+export async function createApp(db: Database, options: {emailDelivery?: EmailDelivery;googleIdentity?:GoogleIdentityProvider} = {}) {
   @Module({
     controllers: [API],
-    providers: [{ provide: TOKEN, useValue: new Service(db,options.emailDelivery) }],
+    providers: [{ provide: TOKEN, useValue: new Service(db,options.emailDelivery,options.googleIdentity) }],
   })
   class AppModule {}
   const app = await NestFactory.create(AppModule, {

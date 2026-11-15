@@ -33,7 +33,7 @@ export default function Account() {
         await logout(); router.replace({ pathname: "/", params: { aviso: "senha-alterada" } });
       } else if (kind === "email") {
         await request("/account/email", "POST", { currentPassword, newEmail: newEmail.trim() });
-        setMessage("Enviamos um link de confirmação para o novo endereço. O e-mail atual continua válido até a confirmação.");
+        setMessage("Solicitação registrada. Verifique o novo endereço para confirmar a alteração. O e-mail atual continua válido até a confirmação.");
         setCurrentPassword("");
       } else {
         const data = await request("/account/recovery-codes", "POST", { currentPassword });

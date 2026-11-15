@@ -13,7 +13,7 @@ import {
   useColors,
 } from "../components/ui";
 export default function Notifications() {
-  const { state: s, dispatch } = useStore();
+  const { state: s, dispatch, busy } = useStore();
   const c = useColors();
   return (
     <Screen>
@@ -24,6 +24,7 @@ export default function Notifications() {
       <Button
         title="Marcar todas como lidas"
         secondary
+        disabled={busy || !s.notifications.some((notice) => !notice.read)}
         icon="checkmark-done-outline"
         onPress={() => dispatch({ type: "read" })}
       />

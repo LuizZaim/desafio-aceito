@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Alert, Modal, Platform, ScrollView, View } from "react-native";
 import { Button, Txt, useColors } from "./ui";
+import { AlertQueue } from "./alert-queue";
 
 type AlertRequest = {
   title: string;
@@ -11,21 +12,23 @@ type AlertRequest = {
 /** React Native Web's Alert is a no-op; keep the native dialogs on Android/iOS. */
 export function AlertHost({ children }: { children: ReactNode }) {
   const c = useColors();
-  const queue = useRef<AlertRequest[]>([]);
+  const queue = useRef(new AlertQueue<AlertRequest>());
   const [current, setCurrent] = useState<AlertRequest | null>(null);
   useEffect(() => {
     if (Platform.OS !== "web") return;
     const previous = Alert.alert;
+    const pending = queue.current;
     Alert.alert = (title, message, buttons, options) => {
       const request = { title: title || "Aviso", message: message || undefined, buttons: buttons?.length ? buttons : [{ text: "OK" }], options };
-      queue.current.push(request);
-      if (queue.current.length === 1) setCurrent(request);
+      if (pending.enqueue(request)) setCurrent(request);
     };
-    return () => { Alert.alert = previous; queue.current = []; };
+    return () => { Alert.alert = previous; pending.clear(); };
   }, []);
   function choose(button?: AlertRequest["buttons"][number]) {
-    const request = queue.current.shift();
-    setCurrent(queue.current[0] || null);
+    if (!current) return;
+    const request = queue.current.consume(current);
+    if (!request) return;
+    setCurrent(queue.current.current);
     if (button?.onPress) button.onPress();
     else if (!button) request?.options?.onDismiss?.();
   }

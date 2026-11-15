@@ -11,9 +11,10 @@ export default function Cadastro() {
     [confirm, C] = useState(""),
     [busy, B] = useState(false);
   async function submit() {
+    if (busy) return;
     if (
       name.trim().length < 3 ||
-      !/^\S+@\S+\.\S+$/.test(email) ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
       pass.length < 8 ||
       pass !== confirm
     ) {
@@ -49,6 +50,7 @@ export default function Cadastro() {
         onChangeText={N}
         placeholder="Nome completo"
         maxLength={100}
+        editable={!busy}
       />
       <Input
         label="E-mail"
@@ -57,6 +59,8 @@ export default function Cadastro() {
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
+        maxLength={254}
+        editable={!busy}
       />
       <Input
         label="Senha"
@@ -64,12 +68,16 @@ export default function Cadastro() {
         value={pass}
         onChangeText={P}
         autoComplete="new-password"
+        maxLength={128}
+        editable={!busy}
         placeholder="Pelo menos 8 caracteres"
       />
       <Input
         label="Confirmar senha"
         secureTextEntry
         value={confirm}
+        maxLength={128}
+        editable={!busy}
         onChangeText={C}
       />
       <Button

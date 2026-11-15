@@ -15,12 +15,13 @@ import {
   setLocalSession,
   hasLocalTeam,
 } from "../storage/database";
-import { initialState, freshState, transition, teams as demoTeams, type State, type Team } from "./domain";
+import { initialState, freshState, teams as demoTeams, type State, type Team } from "./domain";
 import { getToken, setToken, request, ApiError } from "./api";
 import { WorkspaceSession, type WorkspaceSnapshot } from "./workspace-session";
 import type { ArbitrationState } from "./arbitration";
 import { protectedDestination } from "./navigation";
-import { emptyAcademic, localAcademic, academicTransition, ACADEMIC_ACTIONS, type AcademicState } from "./academic";
+import { emptyAcademic, localAcademic, type AcademicState } from "./academic";
+import { applyLocalAction } from "./local-actions";
 
 type Mode = "none" | "demo" | "online" | "local";
 interface Store {
@@ -42,6 +43,7 @@ interface Store {
   demo: () => Promise<void>;
   local: () => Promise<void>;
   login: (email: string, password: string, name?: string) => Promise<void>;
+  loginGoogle: (idToken: string, password?: string) => Promise<void>;
   logout: () => Promise<void>;
   reload: () => Promise<void>;
 }
@@ -234,16 +236,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
       }
       if (modeRef.current === "none")
         throw Error("Abra sua equipe ou entre na demonstração para continuar.");
-      let next: { state: State; message: string };
-      if (ACADEMIC_ACTIONS.includes(action?.type)) {
-        const current = stateRef.current;
-        if (["savePlayer", "removePlayer", "teamField", "priorityInterest"].includes(action.type) && (current.teamRegistered === false || current.deleted))
-          throw Error("Cadastre uma equipe ativa antes de continuar.");
-        const academic = academicTransition(localAcademic(current), action);
-        const base = action.type === "priorityInterest"
-          ? transition(current, { type: "interest", id: action.id }).state : current;
-        next = { state: { ...base, academic }, message: "Demonstração atualizada. Nenhuma cobrança foi realizada." };
-      } else next = transition(stateRef.current, action);
+      const next = applyLocalAction(stateRef.current, action);
       await saveState(next.state, modeRef.current === "local" ? "team-local-v1" : "demo-v1");
       if (epoch !== sessionEpoch.current) return false;
       applyLocal(next.state);
@@ -268,18 +261,14 @@ export function Provider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function login(email: string, password: string, name?: string) {
+  async function authenticate(path: string, body: unknown) {
     if (lock.current) throw Error("Aguarde a operação anterior terminar.");
     lock.current = true;
     setBusy(true);
     resetSession();
     const epoch = sessionEpoch.current;
     try {
-      const result = await request(
-        name ? "/auth/register" : "/auth/login",
-        "POST",
-        { email, password, name },
-      );
+      const result = await request(path, "POST", body);
       if (epoch !== sessionEpoch.current) throw Error("Operação cancelada. Entre novamente.");
       await setToken(result.token);
       await refreshOnline();
@@ -299,6 +288,14 @@ export function Provider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function login(email: string, password: string, name?: string) {
+    await authenticate(name ? "/auth/register" : "/auth/login", { email, password, name });
+  }
+
+  async function loginGoogle(idToken: string, password?: string) {
+    await authenticate("/auth/google", { idToken, password });
+  }
+
   async function logout() {
     if (lock.current) throw Error("Aguarde a operação anterior terminar.");
     lock.current = true;
@@ -311,12 +308,16 @@ export function Provider({ children }: { children: React.ReactNode }) {
     } catch {
       // Local sign-out still works offline; server sessions expire independently.
     } finally {
-      await setToken(null);
-      await setLocalSession(false);
-      changeMode("none");
-      applyLocal(freshState());
-      lock.current = false;
-      setBusy(false);
+      try {
+        const cleanup = await Promise.allSettled([setToken(null), setLocalSession(false)]);
+        if (cleanup.some((result) => result.status === "rejected"))
+          throw Error("Não foi possível remover a sessão salva neste aparelho. Tente sair novamente.");
+        changeMode("none");
+        applyLocal(freshState());
+      } finally {
+        lock.current = false;
+        if (mounted.current) setBusy(false);
+      }
     }
   }
   async function local() {
@@ -379,6 +380,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
       demo,
       local,
       login,
+      loginGoogle,
       logout,
       reload,
     }}>

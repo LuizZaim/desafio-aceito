@@ -18,11 +18,11 @@ import {
 export default function Schedule() {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const requestedId = routeId(params.id);
-  const { state: s, dispatch, busy, mode, teams, currentTeamId } = useStore();
+  const { state: s, dispatch, busy, mode, teams, currentTeamId, academic } = useStore();
   const [id, I] = useState(requestedId || s.matches[0]),
     [date, D] = useState(dateAfter(5).split("-").reverse().join("/")),
     [time, T] = useState("10:00"),
-    [field, F] = useState(mode !== "online" ? fields[0] : ""),
+    [field, F] = useState(mode !== "online" ? fields[0] : academic.preferredField.slice(0, 100)),
     [home, H] = useState(mode === "online" ? currentTeamId || "" : s.profile.name);
   const team = teams.find((t) => t.id === id);
   if (params.id !== undefined && !requestedId) return <Screen><Empty title="Link de agendamento inválido" text="Escolha uma equipe na aba Matches para criar uma proposta." /></Screen>;
@@ -36,6 +36,11 @@ export default function Schedule() {
       </Screen>
     );
   async function submit() {
+    if (busy) return;
+    if (!team || team.active === false || !s.matches.includes(id)) {
+      Alert.alert("Adversário indisponível", "Escolha uma equipe com match ativo antes de criar a proposta.");
+      return;
+    }
     if (
       !/^\d{2}\/\d{2}\/\d{4}$/.test(date) ||
       !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)
@@ -153,7 +158,7 @@ export default function Schedule() {
       </View>
       <Button
         title={busy ? "Criando proposta…" : "Criar proposta"}
-        disabled={busy}
+        disabled={busy || !team || team.active === false || !s.matches.includes(id)}
         icon="arrow-forward"
         onPress={submit}
       />

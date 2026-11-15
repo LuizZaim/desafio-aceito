@@ -1,10 +1,11 @@
 import { router } from "expo-router";
 import { useStore } from "../core/store";
+import type { Team } from "../core/domain";
 import { Card, Txt, Button, Note } from "./ui";
-export function TeamDetails({ id }: { id?: string }) {
+export function TeamDetails({ id, resolvedTeam }: { id?: string; resolvedTeam?: Team }) {
   const { academic, teams } = useStore();
   const own = !id;
-  const team = teams.find((item) => item.id === id);
+  const team = resolvedTeam || teams.find((item) => item.id === id);
   const players = own ? academic.players : team?.players || [];
   const field = own ? academic.preferredField : team?.preferredField;
   return <>

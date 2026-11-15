@@ -13,6 +13,7 @@ import { Redirect, router, useLocalSearchParams } from "expo-router";
 import { useStore } from "../core/store";
 import { postLoginDestination } from "../core/navigation";
 import { FieldArt, Button, Input, Note } from "../components/ui";
+import { GoogleAccess } from "../components/google-access";
 export default function Login() {
   const { aviso } = useLocalSearchParams<{ aviso?: string }>();
   const { mode, demo, local, login, state, arbitration, pendingDestination } = useStore();
@@ -21,7 +22,8 @@ export default function Login() {
     [busy, setBusy] = useState(false);
   if (mode !== "none") return <Redirect href={postLoginDestination({ mode, state, arbitration, pendingDestination })} />;
   async function submit() {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8) {
+    if (busy) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || password.length < 8) {
       Alert.alert(
         "Confira seus dados",
         "Informe um e-mail válido e uma senha com pelo menos 8 caracteres.",
@@ -144,6 +146,8 @@ export default function Login() {
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
+            maxLength={254}
+            editable={!busy}
             value={email}
             onChangeText={setEmail}
           />
@@ -152,12 +156,16 @@ export default function Login() {
             placeholder="Sua senha"
             secureTextEntry
             autoComplete="current-password"
+            maxLength={128}
+            editable={!busy}
             value={password}
             onChangeText={setPassword}
             onSubmitEditing={submit}
           />
           <Pressable
             onPress={() => router.push("/recuperar")}
+            disabled={busy}
+            accessibilityState={{ disabled: busy }}
             accessibilityRole="button"
             style={{
               alignSelf: "flex-end",
@@ -180,6 +188,8 @@ export default function Login() {
           />
           <Pressable
             onPress={() => router.push("/cadastro")}
+            disabled={busy}
+            accessibilityState={{ disabled: busy }}
             accessibilityRole="button"
             style={{ alignItems: "center", padding: 19, minHeight: 44 }}
           >
@@ -190,6 +200,7 @@ export default function Login() {
               </Text>
             </Text>
           </Pressable>
+          <GoogleAccess disabled={busy} onBusy={setBusy} />
           <Button
             title="Explorar demonstração"
             secondary

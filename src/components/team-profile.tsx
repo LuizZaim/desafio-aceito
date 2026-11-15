@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Share, Alert } from "react-native";
 import { router } from "expo-router";
 import { useStore } from "../core/store";
+import { request } from "../core/api";
+import type { Team } from "../core/domain";
+import { teamShareMessage } from "./team-sharing";
 import {
   Screen,
   Section,
@@ -21,18 +24,42 @@ import {
 import { GameCard } from "./game-card";
 import { TeamDetails } from "./team-details";
 export function TeamProfile({ id }: { id?: string }) {
-  const { state: s, dispatch, busy, mode, teams, academic } = useStore();
+  const { state: s, dispatch, busy, mode, teams, academic, currentTeamId } = useStore();
   const c = useColors();
   const [report, R] = useState(false),
     [reason, S] = useState("");
-  const own = !id,
-    t = teams.find((t) => t.id === id);
+  const [remote, setRemote] = useState<{ id: string; team?: Team; error?: string } | null>(null);
+  const [shareText, setShareText] = useState("");
+  const own = !id || mode === "online" && id === currentTeamId;
+  const catalogTeam = teams.find((team) => team.id === id);
+  const t = catalogTeam || (remote && remote.id === id ? remote.team : undefined);
+  useEffect(() => {
+    if (own || !id || mode !== "online" || catalogTeam || remote?.id === id) return;
+    let active = true;
+    request(`/teams/${encodeURIComponent(id)}`).then((team) => {
+      if (active) setRemote(team?.id === id ? { id, team } : { id, error: "O serviço retornou um perfil inválido. Tente novamente." });
+    }).catch((failure) => {
+      if (active) setRemote({ id, error: failure instanceof Error ? failure.message : "Não foi possível carregar este perfil." });
+    });
+    return () => { active = false; };
+  }, [id, mode, own, catalogTeam, remote]);
+  async function share() {
+    const message = teamShareMessage({ name: s.profile.name, category: s.profile.category, level: s.profile.level, location: [s.profile.district, s.profile.city, s.profile.state].filter(Boolean).join(", "), mode, teamId: currentTeamId });
+    try { await Share.share({ message }); }
+    catch (failure) {
+      if (failure instanceof Error && failure.name === "AbortError") return;
+      setShareText(message);
+    }
+  }
+  if (!own && !t && mode === "online" && remote?.id !== id) return <Screen><Empty title="Carregando equipe…" text="Buscando o perfil recebido no link." /></Screen>;
   if (!own && !t)
     return (
-      <Empty
+      <Screen><Empty
         title="Equipe não encontrada"
-        text="Volte à descoberta para escolher um adversário."
-      />
+        text={remote?.id === id && remote.error ? remote.error : "Volte à descoberta para escolher um adversário."}
+      >
+        {mode === "online" && <Button title="Tentar carregar novamente" secondary onPress={() => setRemote(null)} />}
+      </Empty></Screen>
     );
   const location = own ? [s.profile.district, s.profile.city, s.profile.state].filter(Boolean).join(", ") : [t!.district, t!.city, t!.state].filter(Boolean).join(", ");
   const name = own ? s.profile.name : t!.name;
@@ -93,12 +120,14 @@ export function TeamProfile({ id }: { id?: string }) {
                 title="Compartilhar equipe"
                 icon="share-social-outline"
                 secondary
-                onPress={() =>
-                  Share.share({
-                    message: `Conheça ${s.profile.name} no Desafio Aceito! ${s.profile.category} · ${s.profile.level} · ${location}.`,
-                  }).catch(() => Alert.alert("Compartilhamento não concluído"))
-                }
+                disabled={!!s.deleted}
+                onPress={share}
               />
+              {!!shareText && <>
+                <Txt style={{ fontSize: 12 }}>Não foi possível abrir o compartilhamento. Selecione e copie o texto abaixo:</Txt>
+                <Txt selectable style={{ fontSize: 13 }}>{shareText}</Txt>
+                <Button title="Ocultar texto de compartilhamento" secondary onPress={() => setShareText("")} />
+              </>}
             </View>
           ) : inactive ? (
             <Txt style={{ fontSize: 12, color: c.muted }}>Este perfil está disponível apenas para consulta do histórico.</Txt>
@@ -151,7 +180,7 @@ export function TeamProfile({ id }: { id?: string }) {
           )}
         </View>
       </Card>
-      <TeamDetails id={id} />
+      <TeamDetails id={own ? undefined : id} resolvedTeam={t} />
       {!own && !inactive && !s.matches.includes(id!) && !s.interests.includes(id!) && <Button
         title={academic.subscription.priorityCredits ? `Jogar com prioridade · ${academic.subscription.priorityCredits} crédito(s)` : "Conhecer créditos de prioridade"}
         secondary
@@ -230,7 +259,7 @@ export function TeamProfile({ id }: { id?: string }) {
         </View>
       )}
       <Note>
-        {mode === "online" ? "Seu time pode ser encontrado por outras contas conectadas. As conversas exigem interesse mútuo. Propostas de amistoso exigem aceite da outra equipe. A caução é simulada para a apresentação acadêmica, sem cobranças reais." : mode === "local" ? "Seu time está salvo neste aparelho. Os adversários, os interesses recebidos e as respostas de conversa deste modo são fictícios, para apresentar o fluxo sem internet. Nenhuma equipe real recebe seus dados." : "Os dados das equipes e os históricos desta demonstração são fictícios."} O compartilhamento envia um resumo textual.
+        {mode === "online" ? "Seu time pode ser encontrado por outras contas conectadas. As conversas exigem interesse mútuo. Propostas de amistoso exigem aceite da outra equipe. A caução é simulada para a apresentação acadêmica, sem cobranças reais." : mode === "local" ? "Seu time está salvo neste aparelho. Os adversários, os interesses recebidos e as respostas de conversa deste modo são fictícios, para apresentar o fluxo sem internet. Nenhuma equipe real recebe seus dados." : "Os dados das equipes e os históricos desta demonstração são fictícios."} O compartilhamento inclui um link para perfis conectados; cadastros locais enviam somente um resumo identificado como demonstração.
       </Note>
     </Screen>
   );

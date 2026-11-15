@@ -2,10 +2,11 @@ import { useState } from "react";
 import { View, KeyboardAvoidingView, Platform } from "react-native";
 import { Redirect, router } from "expo-router";
 import { useStore } from "../core/store";
+import { postLoginDestination } from "../core/navigation";
 import { brazilianStates, teamCategories, teamLevels } from "../core/domain";
 import { Screen, Section, Input, Txt, Chip, Button, Note, useColors } from "../components/ui";
 export default function Edit() {
-  const { state: s, dispatch, busy, mode, logout } = useStore();
+  const { state: s, dispatch, busy, mode, logout, arbitration, pendingDestination } = useStore();
   const c = useColors();
   const [creating] = useState(s.teamRegistered === false);
   const [name, N] = useState(s.profile.name),
@@ -32,7 +33,7 @@ export default function Edit() {
     const ok = await dispatch({ type: creating ? "registerTeam" : "profile", name: name.trim(), district: district.trim(), city: city.trim(), state: uf.trim().toUpperCase(), category, level, bio: bio.trim() });
     if (ok) S(true);
   }
-  if (saved) return <Screen><Section eyebrow="TUDO CERTO" title={creating ? "Seu time está cadastrado!" : "Equipe atualizada!"} text={`${name.trim()} já tem seu espaço no Desafio Aceito.`} /><Note>{mode === "online" ? "Seu cadastro foi salvo na sua conta." : mode === "local" ? "Seu time foi salvo neste aparelho e estará aqui quando você reabrir o app. Não há sincronização com outros aparelhos." : "Alterações salvas na demonstração."}</Note><Button title="Ver minha equipe" icon="shield-checkmark-outline" onPress={() => router.replace("/(tabs)/perfil")} style={{ marginTop: 20 }} /><Note>{mode === "online" ? "Outras equipes cadastradas podem encontrar seu time. O interesse mútuo libera a conversa." : mode === "local" ? "Você já pode demonstrar match, conversa, agendamento e caução com equipes fictícias. Seu time e seu progresso ficam neste aparelho, sem publicar dados para outros usuários." : "Os adversários, as conversas e as partidas desta demonstração são fictícios."}</Note></Screen>;
+  if (saved) return <Screen><Section eyebrow="TUDO CERTO" title={creating ? "Seu time está cadastrado!" : "Equipe atualizada!"} text={`${name.trim()} já tem seu espaço no Desafio Aceito.`} /><Note>{mode === "online" ? "Seu cadastro foi salvo na sua conta." : mode === "local" ? "Seu time foi salvo neste aparelho e estará aqui quando você reabrir o app. Não há sincronização com outros aparelhos." : "Alterações salvas na demonstração."}</Note>{!!pendingDestination && <Button title="Continuar para o link recebido" icon="arrow-forward" onPress={() => router.replace(postLoginDestination({ mode, state: s, arbitration, pendingDestination }))} style={{ marginTop: 20 }} />}<Button title="Ver minha equipe" icon="shield-checkmark-outline" onPress={() => router.replace("/(tabs)/perfil")} style={{ marginTop: 20 }} /><Note>{mode === "online" ? "Outras equipes cadastradas podem encontrar seu time. O interesse mútuo libera a conversa." : mode === "local" ? "Você já pode demonstrar match, conversa, agendamento e caução com equipes fictícias. Seu time e seu progresso ficam neste aparelho, sem publicar dados para outros usuários." : "Os adversários, as conversas e as partidas desta demonstração são fictícios."}</Note></Screen>;
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
     <Screen>

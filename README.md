@@ -1,3 +1,13 @@
+# Estado atual — 1.4.0
+
+API 1.4.0 publicada no Railway, com migrações 001–009 confirmadas no Neon. Foram aprovados 44 testes do aplicativo, 21 cenários de API, lint e tipos; exportações Android/iOS/web concluídas. Nenhum APK novo foi gerado nesta etapa, conforme solicitado.
+
+O código inclui Google nativo com verificação oficial no servidor, vínculo seguro por senha do aplicativo e testes criptográficos. Ainda é necessário cadastrar os clientes reais e configurar `GOOGLE_WEB_CLIENT_ID`. E-mail exige configuração SMTP privada; o transporte foi testado com TLS local, sem entrega externa. Veja [configuração das integrações](docs/CONFIGURAR_GOOGLE_EMAIL.md). O teste SMTP da suíte da API requer OpenSSL instalado.
+
+A comparação com o Figma, a matriz visual, a instalação em aparelho e o ensaio dos integrantes continuam sem comprovação. O APK 1.2.0 abaixo é histórico e não contém estas mudanças. GitHub permanece sem publicação.
+
+---
+
 # Desafio Aceito — aplicativo mobile
 
 Projeto acadêmico da FutTech/FECAP em React Native, TypeScript e Expo SDK 58. A API usa NestJS e PostgreSQL. A caução é sempre **simulada**, sem cobrança ou transferência real. Identificadores de cartão acadêmicos guardam somente apelido e quatro dígitos fictícios, sem PAN/CVV.

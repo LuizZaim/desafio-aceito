@@ -11,14 +11,17 @@ import {
 import { Network } from "./network";
 import { Arbitration } from "./arbitration";
 import { AccountSecurity } from "./account-security";
+import { GoogleAccount } from "./google-account";
+import { createGoogleIdentityProvider, type GoogleIdentityProvider } from "./google-identity";
 import { createEmailDelivery, type EmailDelivery } from "./mail";
 import { hashPassword, verifyPassword } from "./passwords";
 import type { Database } from "./db";
 const digest = (x: string) => createHash("sha256").update(x).digest("hex");
 export class Service {
   private readonly security: AccountSecurity;
-  constructor(private db: Database, mail: EmailDelivery = createEmailDelivery()) { this.security = new AccountSecurity(db,mail); }
-  capabilities() { return this.security.capabilities(); }
+  constructor(private db: Database, mail: EmailDelivery = createEmailDelivery(), private readonly googleProvider:GoogleIdentityProvider=createGoogleIdentityProvider()) { this.security = new AccountSecurity(db,mail); }
+  capabilities() { return {...this.security.capabilities(),google:this.googleProvider.available,...(this.googleProvider.available&&this.googleProvider.clientId?{googleWebClientId:this.googleProvider.clientId}:{})}; }
+  async googleLogin(body:any) { return this.session(await new GoogleAccount(this.db,this.googleProvider).authenticate(body)); }
   forgot(body: any) { return this.security.forgot(body); }
   reset(body: any) { return this.security.reset(body); }
   account(user: string) { return this.security.account(user); }

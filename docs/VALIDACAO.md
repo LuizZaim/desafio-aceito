@@ -1,5 +1,26 @@
 # Evidências de validação
 
+## Implementação 1.4.0 — Google, transporte TLS e correções de fluxo
+
+Registro do código atual; 1.3.0 e versões anteriores permanecem como histórico abaixo. Não houve geração de APK nesta etapa, conforme solicitado pelo usuário.
+
+| Verificação executada | Resultado / limite |
+|---|---|
+| `npm test` no aplicativo | 44 testes passaram. Incluem composição atômica de interesse prioritário local, preservação do estado após falha, links/retomada, compartilhamento e ações de diálogo executadas uma única vez. As verificações do Google estão na suíte da API. |
+| Tipos e lint | Passaram novamente no código 1.4.0 após a retomada. Nenhuma execução visual em celular é inferida desses comandos. |
+| API: testes e compilação | 21 cenários passaram e a API compilou. Incluem identidade Google/vínculo seguro e transporte SMTP TLS local, além das regras anteriores. |
+| Google no servidor | Biblioteca oficial verifica assinatura RS256, audiência configurada, emissor, expiração, e-mail verificado e identidade `sub`. Testes incluem assinatura real de teste e rejeição de token inválido. Sem ID Web real configurado, o provedor permanece indisponível. |
+| Vínculo Google | Primeiro vínculo/conta nova exige senha do aplicativo via HTTP 428; não há associação automática apenas por e-mail. Identidade vinculada permanece estável sem sobrescrever e-mail/dados da conta. Não houve login externo real no Google. |
+| Google no cliente | SDK nativo Android integrado por autolinking; carregamento protegido para web/Expo Go e ausência de configuração. Plugin iOS só é incluído com ID iOS real. Não foi gerado binário com esse módulo nem testado login nativo real. |
+| SMTP TLS local | Transporte real entregou ao servidor TLS local com certificado explicitamente confiável; certificado não confiável foi rejeitado. Requer CLI OpenSSL para a fixture. Nenhum e-mail foi enviado a provedor/caixa externa. |
+| Migração 009 | Testada em branch Neon isolada, com 25 tabelas. `google_identities` associa usuário/issuer/sub com unicidade e FK. Aplicação à base principal confirmada pelo ledger 001–009; deploy Railway `262c4c44-dc82-4bc8-bba7-e039c819a30a` concluído. |
+| Exportação | Android: 1.243 módulos; iOS: 1.236; web: 878. Bundles nativos de aproximadamente 2,9 MB. Exportação JavaScript/Hermes não comprova compilação nativa, APK ou execução visual. |
+| Ambiente publicado | `/auth/capabilities` confirmou troca de senha e códigos ativos; Google, recuperação por e-mail e alteração de e-mail desativados. Railway tem somente variáveis de banco/servidor, sem ID OAuth ou SMTP. |
+| Correções de fluxo | Compartilhamento/consulta de equipe fora do catálogo, perfil próprio, autodesafio recusado, campos durante gravação, retomada depois do cadastro, alerta único e desbloqueio após falha de armazenamento no logout tratados. Prioridade que falha não consome crédito nem dispensa match/cadastro. |
+| Artefato de deploy | Bundle Railway compilado e loader comprimido gerados; descompressão comparada com o conteúdo original. O deploy desse artefato terminou com sucesso; `/health` respondeu 200/1.4.0 na retomada. |
+
+**Pendências externas/manuais:** clientes Google reais/`GOOGLE_WEB_CLIENT_ID`, SMTP com credenciais de provedor e prova de entrega externa, acesso suficiente ao arquivo Figma, matriz visual, abertura de links/instalação física e ensaio/domínio dos integrantes. A instrução atual é terminar essas verificações antes de solicitar novo APK; não iniciar EAS ou declarar um binário 1.4.0 pronto. Setup: `CONFIGURAR_GOOGLE_EMAIL.md`.
+
 ## Implementação 1.3.0 — segurança, sitemap e navegação
 
 Esta seção registra a nova implementação sem substituir a evidência histórica 1.2.0 abaixo. O PDF acadêmico permaneceu intacto.
