@@ -4,6 +4,7 @@ import { Stack, usePathname } from "expo-router";
 import { destinationPath } from "../core/navigation";
 import { Provider, useStore } from "../core/store";
 import { AlertHost } from "../components/alert-host";
+import { LogoutButton } from "../components/logout-button";
 import { ConnectionNotice } from "../components/connection-notice";
 import { useColors, Busy, Empty, Button } from "../components/ui";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -32,6 +33,7 @@ function Navigator() {
         headerTintColor: c.text,
         headerTitleStyle: { fontSize: 15, fontWeight: "700" },
         headerShadowVisible: false,
+        headerRight: mode !== "none" ? () => <LogoutButton /> : undefined,
         contentStyle: { backgroundColor: c.bg },
       }}
     >

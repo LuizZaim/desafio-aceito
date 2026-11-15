@@ -19,7 +19,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.futtech.desafioaceito",
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "bundler": "metro",

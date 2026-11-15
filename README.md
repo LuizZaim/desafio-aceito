@@ -14,10 +14,46 @@ App de match entre times de futebol amador ("Tinder de equipes"), da empresa fic
 | Banco | Neon, migrações 001–009 em `api/migrations` |
 | Testes | 47 do app e 24 da API passam; tipos e lint sem erro |
 | APK | Build `preview` pelo Expo/EAS, a partir do branch `main` |
-| Google e e-mail | Implementados, mas **desativados**: faltam clientes OAuth e provedor de e-mail |
+| Google | Ativo no servidor, em modo de teste: só e-mails cadastrados como testadores entram. **Não verificado em aparelho** |
+| E-mail | **Desativado** (falta provedor): sem recuperação de senha por e-mail. Use os códigos de recuperação |
 | Verificação em celular | **Não concluída**: matriz visual, instalação em aparelho e ensaio dos integrantes |
 
 O Render gratuito dorme após inatividade. A primeira requisição pode levar cerca de 1 minuto, e o app mostra um contador de espera.
+
+## Para o avaliador
+
+**Caminho mais rápido (sem instalar nada): leia o código e rode os testes**
+
+```sh
+git clone https://github.com/LuizZaim/desafio-aceito.git
+cd desafio-aceito
+npm ci
+npm run typecheck && npm run lint && npm test
+```
+
+**Ver o app no celular Android**
+
+1. Baixe o APK pelo link do Expo: https://expo.dev/accounts/luizzaim/projects/desafio-aceito-app/builds/d3d9df13-ca0c-4916-a87d-e73e31bde16f (botão "Install"/"Download"). Se o link tiver expirado, peça um novo ao grupo ou gere outro (ver "Gerar o APK").
+2. Abra o arquivo no Android e permita "instalar apps de fontes desconhecidas" quando pedido.
+3. Na tela inicial há duas formas de usar:
+   - **Explorar demonstração** (embaixo): entra direto, sem conta e sem internet, com equipes, conversas e partidas **fictícias**. Ideal para ver todos os fluxos (descoberta, match, chat, agendamento, caução simulada, avaliação, ranking).
+   - **Conta real**: "Cadastre-se" com e-mail e senha (mín. 8 caracteres), depois cadastre o time. Duas contas diferentes podem dar match entre si. O login com Google só funciona para e-mails cadastrados como testadores.
+4. No canto superior direito há o botão de **sair da conta**.
+
+**Ver o app no computador (sem APK)**
+
+```sh
+npm ci
+npx expo start --web
+```
+
+Abre a versão web no navegador (o login com Google não funciona na web). Também dá para abrir pelo Expo Go (SDK 58) escaneando o QR code de `npx expo start`.
+
+**Avisos**
+
+- A API roda no plano gratuito do Render e dorme: a **primeira ação pode levar cerca de 1 minuto**. Teste antes com `curl -m 10 https://desafio-aceito-api.onrender.com/health` e repita se der timeout.
+- Pagamentos, caução e cartões são **simulados**; nenhum valor real é cobrado.
+- Ainda não foi feita a verificação completa em aparelho real nem o fluxo completo entre duas contas em dois celulares.
 
 ## Funcionalidades
 
@@ -28,7 +64,7 @@ O Render gratuito dorme após inatividade. A primeira requisição pode levar ce
 - Caução simulada (R$ 50), cancelamento comum e por clima, penalidades ilustrativas (R$ 10 / R$ 30).
 - Resultado após o início do jogo, avaliação em quatro critérios e ranking.
 - Área do árbitro: perfil, disponibilidade, convites e aceite.
-- Modo local sem internet (dados fictícios identificados) e modo demonstração.
+- Modo demonstração offline, com equipes fictícias identificadas.
 
 Limites conhecidos: a distância entre equipes não é calculada de verdade, e notificações push externas não existem.
 

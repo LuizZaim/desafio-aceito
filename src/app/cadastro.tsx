@@ -86,7 +86,7 @@ export default function Cadastro() {
         disabled={busy}
         icon="arrow-forward"
       />
-      <Note>Se o serviço de contas estiver indisponível, volte e escolha Cadastrar ou abrir meu time neste aparelho. Seu cadastro de equipe poderá ser feito sem uma conta.</Note>
+      <Note>O servidor gratuito pode levar cerca de 1 minuto para acordar na primeira vez. Se der erro, aguarde e tente de novo.</Note>
     </Screen>
   );
 }

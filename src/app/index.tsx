@@ -16,7 +16,7 @@ import { FieldArt, Button, Input, Note } from "../components/ui";
 import { GoogleAccess } from "../components/google-access";
 export default function Login() {
   const { aviso } = useLocalSearchParams<{ aviso?: string }>();
-  const { mode, demo, local, login, state, arbitration, pendingDestination } = useStore();
+  const { mode, demo, login, state, arbitration, pendingDestination } = useStore();
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false);
@@ -126,20 +126,8 @@ export default function Login() {
             Bora entrar em campo?
           </Text>
           <Text style={{ color: "#5e6d59", fontSize: 12, marginBottom: 25 }}>
-            Cadastre seu time neste aparelho ou entre na sua conta.
+            Entre na sua conta ou crie uma nova.
           </Text>
-          <Button
-            title="Cadastrar ou abrir meu time neste aparelho"
-            icon="shield-outline"
-            disabled={busy}
-            onPress={async () => {
-              setBusy(true);
-              try { await local(); }
-              catch { Alert.alert("Não foi possível abrir seu time", "Tente novamente."); }
-              finally { setBusy(false); }
-            }}
-          />
-          <Text style={{ color: "#5e6d59", fontSize: 11, marginVertical: 18, lineHeight: 18 }}>Seu time e seu progresso ficam salvos neste celular. Você pode apresentar os fluxos com adversários fictícios, sem internet e sem cobranças reais. O acesso por conta abaixo conecta equipes entre usuários quando o servidor está disponível.</Text>
           <Input
             label="E-mail"
             placeholder="voce@email.com"

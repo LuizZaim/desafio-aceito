@@ -2,6 +2,7 @@ import { Tabs, Redirect, router } from "expo-router";
 import { Pressable, View } from "react-native";
 import { useStore } from "../../core/store";
 import { useColors, Icon } from "../../components/ui";
+import { LogoutButton } from "../../components/logout-button";
 export default function Layout() {
   const { mode, state } = useStore();
   const c = useColors();
@@ -55,6 +56,7 @@ export default function Layout() {
             >
               <Icon name="options-outline" color={c.text} size={21} />
             </Pressable>
+            <LogoutButton />
           </View>
         ),
       }}
