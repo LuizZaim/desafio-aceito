@@ -51,7 +51,7 @@ export default function Settings() {
           >
             <View style={{ flex: 1 }}>
               <Txt style={{ fontWeight: "700", fontSize: 12 }}>{title}</Txt>
-              <Txt style={{ fontSize: 10, color: c.muted, marginTop: 5 }}>
+              <Txt style={{ fontSize: 12, color: c.muted, marginTop: 5 }}>
                 {desc}
               </Txt>
             </View>
@@ -65,20 +65,20 @@ export default function Settings() {
                   [key]: value,
                 });
               }}
-              trackColor={{ true: c.orange }}
+              trackColor={{ true: c.action }}
             />
           </Row>
         ))}
       </Card>
       <Card style={{ marginTop: 18, gap: 15 }}>
         <Txt style={{ fontWeight: "800", fontSize: 17 }}>Conta e perfil</Txt>
-        <Txt style={{ fontSize: 11, color: c.muted }}>
+        <Txt style={{ fontSize: 12, color: c.muted }}>
           Acesso atual:{" "}
           {mode === "demo"
             ? "demonstração offline · dados neste aparelho"
             : mode === "local" ? "meu time · salvo neste aparelho" : "conta conectada · dados por conta"}
         </Txt>
-        <Txt style={{ fontSize: 11, color: c.muted }}>
+        <Txt style={{ fontSize: 12, color: c.muted }}>
           Perfil: {s.profile.role === "organizador" ? "Organizador" : "Árbitro"}
         </Txt>
         <Button title="Editar dados da equipe" secondary icon="create-outline" onPress={() => router.push("/editar")} />
@@ -108,11 +108,11 @@ export default function Settings() {
         <Txt style={{ fontWeight: "800", fontSize: 17 }}>
           Desafio Aceito · FutTech
         </Txt>
-        <Txt style={{ fontSize: 11, color: c.muted, lineHeight: 20 }}>
+        <Txt style={{ fontSize: 12, color: c.muted, lineHeight: 20 }}>
           Aplicativo React Native para organizar amistosos, inspirado no projeto
           da FECAP. Versão {Constants.expoConfig?.version || "não informada"}.
         </Txt>
-        <Txt style={{ fontSize: 11, color: c.muted, lineHeight: 20 }}>
+        <Txt style={{ fontSize: 12, color: c.muted, lineHeight: 20 }}>
           {mode === "online" ? "Equipes cadastradas, interesses mútuos e mensagens são compartilhados entre contas conectadas ao mesmo servidor. Propostas compartilhadas exigem aceite do adversário. A caução simulada confirma o jogo; depois do horário de início, é possível registrar o placar e avaliar o adversário. Todas as cobranças são fictícias, para apresentação acadêmica." : mode === "local" ? "Seu time permanece neste aparelho. Os adversários, interesses recebidos e respostas de conversa são fictícios; você pode demonstrar matches, agenda, caução, resultado e avaliação sem internet. Nenhuma equipe real recebe seus dados." : "Os adversários, as respostas mútuas e as cauções desta demonstração são fictícios."} O acesso com Google e as notificações push não estão configurados. A recuperação por e-mail depende da disponibilidade do envio; códigos salvos permitem recuperar contas conectadas.
         </Txt>
       </Card>

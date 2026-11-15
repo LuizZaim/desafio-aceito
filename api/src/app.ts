@@ -35,6 +35,7 @@ class Errors implements ExceptionFilter {
       typeof error === "object" &&
       "type" in error &&
       ["entity.parse.failed", "entity.too.large"].includes(String(error.type));
+    const rawJson = known && /JSON|Unexpected token|position \d+/.test(error.message);
     const status = known
       ? error.getStatus()
       : parseError
@@ -49,7 +50,9 @@ class Errors implements ExceptionFilter {
     }
     response.status(status).json({
       statusCode: status,
-      message: known
+      message: rawJson
+        ? "Corpo da solicitação inválido."
+        : known
         ? error.message
         : parseError
           ? "Corpo da solicitação inválido."

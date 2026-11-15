@@ -54,12 +54,12 @@ export default function Matches() {
                   </Txt>
                   <Txt
                     numberOfLines={2}
-                    style={{ color: c.muted, fontSize: 10, marginTop: 5 }}
+                    style={{ color: c.muted, fontSize: 12, marginTop: 5 }}
                   >
                     {s.messages[t.id]?.at(-1)?.text ||
                       "É match! Comece a conversa."}
                   </Txt>
-                  <Txt style={{ fontSize: 8, color: c.orange, marginTop: 6 }}>
+                  <Txt style={{ fontSize: 12, color: c.orange, marginTop: 6 }}>
                     INTERESSE MÚTUO CONFIRMADO
                   </Txt>
                 </View>

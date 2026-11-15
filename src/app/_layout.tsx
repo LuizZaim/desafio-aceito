@@ -31,7 +31,7 @@ function Navigator() {
       screenOptions={{
         headerStyle: { backgroundColor: c.bg },
         headerTintColor: c.text,
-        headerTitleStyle: { fontSize: 15, fontWeight: "700" },
+        headerTitleStyle: { fontSize: 17, fontWeight: "800" },
         headerShadowVisible: false,
         headerRight: mode !== "none" ? () => <LogoutButton /> : undefined,
         contentStyle: { backgroundColor: c.bg },

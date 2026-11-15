@@ -330,7 +330,7 @@ export function transition(
       break;
     case "skip":
       need(team, "Equipe não encontrada.");
-      s.skipped.push(id);
+      if (!s.skipped.includes(id)) s.skipped.push(id);
       message = "Equipe pulada. Continue descobrindo.";
       break;
     case "resetDiscovery":

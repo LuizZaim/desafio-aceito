@@ -12,11 +12,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Redirect, router, useLocalSearchParams } from "expo-router";
 import { useStore } from "../core/store";
 import { postLoginDestination } from "../core/navigation";
-import { FieldArt, Button, Input, Note } from "../components/ui";
+import { FieldArt, Button, Input, Note, useColors } from "../components/ui";
 import { GoogleAccess } from "../components/google-access";
 export default function Login() {
   const { aviso } = useLocalSearchParams<{ aviso?: string }>();
   const { mode, demo, login, state, arbitration, pendingDestination } = useStore();
+  const c = useColors();
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false);
@@ -44,70 +45,52 @@ export default function Login() {
   }
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: "#f7f8f3" }}
+      style={{ flex: 1, backgroundColor: c.bg }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" automaticallyAdjustKeyboardInsets>
-        <View
-          style={{
-            minHeight: 330,
-            backgroundColor: "#193a32",
-            overflow: "hidden",
-          }}
-        >
+        <View style={{ minHeight: 300, backgroundColor: "#0c2e23", overflow: "hidden" }}>
           <FieldArt />
-          <SafeAreaView edges={["top"]} style={{ padding: 27 }}>
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-            >
+          <SafeAreaView edges={["top"]} style={{ padding: 24, paddingTop: 20 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
               <View
                 style={{
-                  width: 35,
-                  height: 39,
-                  borderRadius: 11,
-                  backgroundColor: "#ee6a3b",
+                  width: 34,
+                  height: 34,
+                  borderRadius: 17,
+                  backgroundColor: "#f2c230",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Text
-                  style={{ fontSize: 29, fontWeight: "900", color: "white" }}
-                >
-                  d
-                </Text>
+                <Text style={{ fontSize: 19, fontWeight: "900", color: "#0c2e23" }}>d</Text>
               </View>
-              <Text
-                style={{
-                  fontSize: 20,
-                  flexShrink: 1,
-                  fontWeight: "900",
-                  color: "white",
-                  letterSpacing: -0.8,
-                }}
-              >
-                desafio aceito.
+              <Text style={{ fontSize: 17, flexShrink: 1, fontWeight: "800", color: "#f3f0e6", letterSpacing: 0.2 }}>
+                desafio aceito
               </Text>
             </View>
             <Text
+              accessibilityRole="header"
               style={{
-                fontSize: 36,
-                lineHeight: 42,
-                color: "#f9f4de",
+                fontSize: 38,
+                lineHeight: 40,
+                color: "#fbfaf4",
                 fontWeight: "900",
-                marginTop: 38,
-                letterSpacing: -1,
+                marginTop: 56,
+                letterSpacing: -1.2,
               }}
             >
-              Seu próximo jogo{`\n`}começa aqui.
+              Marque o jogo.{`
+`}Bata o desafio.
             </Text>
-            <Text style={{ color: "#d5dec4", fontSize: 12, marginTop: 13 }}>
-              Encontre o adversário. Conecte seu time.
+            <Text style={{ color: "#dfe6d2", fontSize: 15, lineHeight: 21, marginTop: 10 }}>
+              Encontre o adversário, combine data e campo.
             </Text>
           </SafeAreaView>
         </View>
         <View
           style={{
-            padding: 26,
+            padding: 24,
             maxWidth: 530,
             width: "100%",
             alignSelf: "center",
@@ -117,15 +100,16 @@ export default function Login() {
           {aviso === "email-confirmado" && <Note>E-mail confirmado. Entre novamente com o novo endereço.</Note>}
           <Text
             style={{
-              fontSize: 23,
-              color: "#20372f",
+              fontSize: 24,
+              color: c.text,
               fontWeight: "800",
-              marginBottom: 7,
+              letterSpacing: -0.4,
+              marginBottom: 6,
             }}
           >
             Bora entrar em campo?
           </Text>
-          <Text style={{ color: "#5e6d59", fontSize: 12, marginBottom: 25 }}>
+          <Text style={{ color: c.muted, fontSize: 14, marginBottom: 22 }}>
             Entre na sua conta ou crie uma nova.
           </Text>
           <Input
@@ -164,7 +148,7 @@ export default function Login() {
               marginBottom: 12,
             }}
           >
-            <Text style={{ fontSize: 11, color: "#5e6d59" }}>
+            <Text style={{ fontSize: 13, fontWeight: "600", color: c.muted }}>
               Esqueci minha senha
             </Text>
           </Pressable>
@@ -179,11 +163,11 @@ export default function Login() {
             disabled={busy}
             accessibilityState={{ disabled: busy }}
             accessibilityRole="button"
-            style={{ alignItems: "center", padding: 19, minHeight: 44 }}
+            style={{ alignItems: "center", padding: 16, minHeight: 48 }}
           >
-            <Text style={{ fontSize: 12, color: "#5e6d59" }}>
+            <Text style={{ fontSize: 14, color: c.muted }}>
               Ainda não tem conta?{" "}
-              <Text style={{ color: "#b74a22", fontWeight: "700" }}>
+              <Text style={{ color: c.orange, fontWeight: "800" }}>
                 Cadastre-se
               </Text>
             </Text>
@@ -204,8 +188,8 @@ export default function Login() {
           <Text
             style={{
               textAlign: "center",
-              fontSize: 9,
-              color: "#5e6d59",
+              fontSize: 12,
+              color: c.muted,
               marginTop: 15,
               lineHeight: 17,
             }}

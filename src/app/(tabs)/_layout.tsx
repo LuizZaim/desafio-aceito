@@ -12,19 +12,21 @@ export default function Layout() {
     <Tabs
       screenOptions={{
         headerStyle: { backgroundColor: c.bg },
-        headerTitleStyle: { fontWeight: "800", fontSize: 18 },
+        headerTitleStyle: { fontWeight: "900", fontSize: 20, letterSpacing: -0.4 },
         headerTintColor: c.text,
         headerShadowVisible: false,
-        tabBarActiveTintColor: c.orange,
+        tabBarActiveTintColor: c.bg === "#0d1f18" ? c.yellow : c.action,
         tabBarInactiveTintColor: c.muted,
         tabBarStyle: {
           backgroundColor: c.panel,
           borderTopColor: c.border,
+          borderTopWidth: 1,
+          elevation: 0,
           paddingTop: 8,
           height: 80,
           paddingBottom: 17,
         },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
+        tabBarLabelStyle: { fontSize: 12, fontWeight: "700" },
         headerRight: () => (
           <View style={{ flexDirection: "row", gap: 8, paddingRight: 17 }}>
             <Pressable
@@ -42,7 +44,7 @@ export default function Layout() {
                     right: 10,
                     width: 6,
                     height: 6,
-                    backgroundColor: c.orange,
+                    backgroundColor: "#d93f1f",
                     borderRadius: 5,
                   }}
                 />

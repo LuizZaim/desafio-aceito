@@ -50,7 +50,7 @@ export default function Referee() {
                 <Txt style={{ fontWeight: "700", fontSize: 13 }}>
                   Disponível para apitar
                 </Txt>
-                <Txt style={{ color: c.muted, fontSize: 10, marginTop: 6 }}>
+                <Txt style={{ color: c.muted, fontSize: 12, marginTop: 6 }}>
                   Ative para aceitar convites.
                 </Txt>
               </View>
@@ -59,7 +59,7 @@ export default function Referee() {
                 onValueChange={async (value) => {
                   await dispatch({ type: "available", value });
                 }}
-                trackColor={{ true: c.orange }}
+                trackColor={{ true: c.action }}
               />
             </Row>
           </Card>
@@ -85,10 +85,10 @@ export default function Referee() {
                 >
                   {s.profile.name} × {teams.find((t) => t.id === g.team)?.name}
                 </Txt>
-                <Txt style={{ fontSize: 11, color: c.muted, marginTop: 15 }}>
+                <Txt style={{ fontSize: 12, color: c.muted, marginTop: 15 }}>
                   {formatDate(g.date)} · {g.time}
                 </Txt>
-                <Txt style={{ fontSize: 11, color: c.muted, marginTop: 6 }}>
+                <Txt style={{ fontSize: 12, color: c.muted, marginTop: 6 }}>
                   {g.field}
                 </Txt>
                 {g.referee === "Pendente" && (

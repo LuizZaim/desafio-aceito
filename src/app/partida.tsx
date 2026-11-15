@@ -98,7 +98,7 @@ export default function Partida() {
         <View style={{ marginTop: 20, gap: 12 }}>
           <Card style={{ alignItems: "center", gap: 9 }}>
             <Icon name="wallet-outline" size={35} color={c.orange} />
-            <Txt style={{ fontSize: 11, color: c.muted }}>
+            <Txt style={{ fontSize: 12, color: c.muted }}>
               CAUÇÃO ILUSTRATIVA
             </Txt>
             <Txt style={{ fontSize: 39, lineHeight: 48, fontWeight: "900" }}>
@@ -175,11 +175,11 @@ export default function Partida() {
               <Row
                 style={{ justifyContent: "space-between", marginBottom: 20 }}
               >
-                <Txt style={{ fontSize: 11 }}>Cancelamento por clima</Txt>
+                <Txt style={{ fontSize: 12 }}>Cancelamento por clima</Txt>
                 <Switch
                   value={weather}
                   onValueChange={W}
-                  trackColor={{ true: c.orange }}
+                  trackColor={{ true: c.action }}
                 />
               </Row>
               <Button

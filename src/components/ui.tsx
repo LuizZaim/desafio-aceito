@@ -13,30 +13,31 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import { useStore } from "../core/store";
 import { type Team } from "../core/domain";
 export const light = {
-  bg: "#f7f8f3",
-  panel: "#ffffff",
-  text: "#20372f",
-  muted: "#5e6d59",
-  border: "#e6eadf",
-  soft: "#eef1e7",
-  orange: "#b74a22",
-  action: "#b7471f",
-  navy: "#193a32",
+  bg: "#f3f0e6",
+  panel: "#fbfaf4",
+  text: "#10261e",
+  muted: "#57614f",
+  border: "#dad6c3",
+  soft: "#e8e4d2",
+  orange: "#a63a12",
+  action: "#0b5d3f",
+  navy: "#0c2e23",
+  yellow: "#f2c230",
 };
 export const dark = {
-  bg: "#142a24",
-  panel: "#20382f",
-  text: "#eef2e5",
-  muted: "#a6b79e",
-  border: "#355043",
-  soft: "#2a4437",
-  orange: "#f58151",
-  action: "#b7471f",
-  navy: "#193a32",
+  bg: "#0d1f18",
+  panel: "#16302a",
+  text: "#f1efe2",
+  muted: "#a9b7a0",
+  border: "#2b4a3d",
+  soft: "#1f3d33",
+  orange: "#f4a259",
+  action: "#14805a",
+  navy: "#0c2e23",
+  yellow: "#f2c230",
 };
 export const useColors = () => (useStore().state.settings.dark ? dark : light);
 export function Icon({
@@ -59,7 +60,7 @@ export function Txt({
   return (
     <Text
       {...props}
-      style={[{ color: c.text, fontSize: 14, lineHeight: 21, flexShrink: 1 }, style]}
+      style={[{ color: c.text, fontSize: 15, lineHeight: 22, flexShrink: 1 }, style]}
     >
       {children}
     </Text>
@@ -92,18 +93,22 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => [
         {
-          minHeight: 50,
-          backgroundColor: danger ? "#fff0e8" : secondary ? c.soft : c.action,
+          minHeight: 52,
+          backgroundColor: danger ? "#fbe3d8" : secondary ? "transparent" : c.action,
+          borderWidth: secondary ? 1.5 : 0,
+          borderColor: secondary ? c.text : "transparent",
           maxWidth: "100%",
           minWidth: 0,
-          borderRadius: 12,
-          paddingHorizontal: 18,
+          borderRadius: 10,
+          paddingHorizontal: 20,
           paddingVertical: 13,
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "row",
           gap: 8,
-          opacity: disabled ? 0.45 : pressed ? 0.75 : 1,
+          opacity: disabled ? 0.45 : 1,
+          transform: [{ translateY: pressed ? 1 : 0 }],
+          ...(pressed && !secondary ? { backgroundColor: danger ? "#f3cdbb" : c.navy } : null),
         },
         style,
       ]}
@@ -118,8 +123,9 @@ export function Button({
       <Text
         style={{
           color: danger ? "#a23d24" : secondary ? c.text : "white",
-          fontWeight: "700",
-          fontSize: 13,
+          fontWeight: "800",
+          fontSize: 15,
+          letterSpacing: 0.2,
           flexShrink: 1,
           textAlign: "center",
         }}
@@ -147,20 +153,22 @@ export function Chip({
       style={{
         maxWidth: "100%",
         flexShrink: 1,
-        backgroundColor: selected ? c.navy : c.soft,
+        backgroundColor: selected ? c.navy : "transparent",
         paddingVertical: 9,
-        paddingHorizontal: 14,
-        borderRadius: 9,
+        paddingHorizontal: 16,
+        borderRadius: 22,
+        borderWidth: 1.5,
+        borderColor: selected ? c.navy : c.border,
         minHeight: 44,
         justifyContent: "center",
       }}
     >
       <Txt
         style={{
-          fontSize: 12,
+          fontSize: 13,
           lineHeight: 18,
-          color: selected ? "#fff" : c.muted,
-          fontWeight: "600",
+          color: selected ? "#fff" : c.text,
+          fontWeight: "700",
         }}
       >
         {title}
@@ -198,108 +206,53 @@ export function Crest({ team, size = 65 }: { team?: Team; size?: number }) {
       >
         {team?.short || initials || "DA"}
       </Text>
-      <Text
-        style={{ fontSize: size * 0.075, color: "#fff3cc", letterSpacing: 1 }}
-      >
-        FUTEBOL CLUBE
-      </Text>
+      {size * 0.075 >= 12 && (
+        <Text
+          style={{ fontSize: size * 0.075, color: "#fff3cc", letterSpacing: 1 }}
+        >
+          FUTEBOL CLUBE
+        </Text>
+      )}
     </View>
   );
 }
 export function FieldArt() {
+  const line = "#f3f0e6aa";
   return (
-    <LinearGradient
-      colors={["#46695a", "#b9a178", "#173b31"]}
-      style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}
-    >
-      <View
-        style={{
-          height: "38%",
-          marginTop: "25%",
-          backgroundColor: "#2d4b36",
-          opacity: 0.7,
-        }}
-      />
-      <View
-        style={{
-          position: "absolute",
-          left: -15,
-          right: -15,
-          bottom: -80,
-          height: 240,
-          backgroundColor: "#2e604a",
-          transform: [{ perspective: 500 }, { rotateX: "55deg" }],
-          borderWidth: 2,
-          borderColor: "#eef2cb80",
-        }}
-      >
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#0f4a35" }]}>
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <View
+          key={i}
+          style={{
+            position: "absolute",
+            left: `${i * 12.5}%`,
+            width: "12.5%",
+            top: 0,
+            bottom: 0,
+            backgroundColor: i % 2 ? "#0c3f2d" : "#115238",
+          }}
+        />
+      ))}
+      <View style={{ position: "absolute", left: 16, right: 16, top: 70, bottom: -2, borderWidth: 2, borderColor: line }}>
+        <View style={{ position: "absolute", left: 0, right: 0, top: "50%", borderTopWidth: 2, borderColor: line }} />
         <View
           style={{
             position: "absolute",
             left: "50%",
-            top: 0,
-            bottom: 0,
-            borderLeftWidth: 2,
-            borderColor: "#eef2cb70",
-          }}
-        />
-        <View
-          style={{
-            position: "absolute",
-            left: "36%",
-            top: "25%",
-            width: "28%",
-            height: "50%",
+            top: "50%",
+            width: 110,
+            height: 110,
+            marginLeft: -55,
+            marginTop: -55,
+            borderRadius: 55,
             borderWidth: 2,
-            borderColor: "#eef2cb70",
-            borderRadius: 100,
+            borderColor: line,
           }}
         />
-        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-          <View
-            key={i}
-            style={{
-              position: "absolute",
-              left: `${i * 15}%`,
-              width: "7%",
-              top: 0,
-              bottom: 0,
-              backgroundColor: "#aec695",
-              opacity: 0.12,
-            }}
-          />
-        ))}
+        <View style={{ position: "absolute", left: "28%", right: "28%", top: 0, height: 44, borderWidth: 2, borderTopWidth: 0, borderColor: line }} />
       </View>
-      <LinearGradient
-        colors={["transparent", "#102a23f5"]}
-        style={StyleSheet.absoluteFill}
-      />
-      {[20, 85].map((x) => (
-        <View
-          key={x}
-          style={{
-            position: "absolute",
-            left: `${x}%`,
-            top: 28,
-            height: 95,
-            width: 2,
-            backgroundColor: "#d0c99e",
-            opacity: 0.5,
-          }}
-        >
-          <View
-            style={{
-              position: "absolute",
-              top: -2,
-              left: -12,
-              width: 26,
-              height: 4,
-              backgroundColor: "#fff6c8",
-            }}
-          />
-        </View>
-      ))}
-    </LinearGradient>
+      <View style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 120, backgroundColor: "#0c2e23", opacity: 0.55 }} />
+    </View>
   );
 }
 export function Card({
@@ -317,8 +270,8 @@ export function Card({
           backgroundColor: c.panel,
           borderWidth: 1,
           borderColor: c.border,
-          borderRadius: 17,
-          padding: 20,
+          borderRadius: 14,
+          padding: 18,
           minWidth: 0,
         },
         style,
@@ -341,32 +294,36 @@ export function Section({
 }) {
   const c = useColors();
   return (
-    <View style={{ gap: 10, marginBottom: 24 }}>
+    <View style={{ gap: 8, marginBottom: 24 }}>
       {eyebrow && (
-        <Txt
-          style={{
-            fontSize: 11,
-            fontWeight: "800",
-            letterSpacing: 2,
-            color: c.orange,
-          }}
-        >
-          {eyebrow}
-        </Txt>
+        <Row style={{ gap: 8 }}>
+          <View style={{ width: 18, height: 4, borderRadius: 2, backgroundColor: c.yellow }} />
+          <Txt
+            style={{
+              fontSize: 12,
+              fontWeight: "800",
+              letterSpacing: 1.6,
+              color: c.orange,
+              textTransform: "uppercase",
+            }}
+          >
+            {eyebrow}
+          </Txt>
+        </Row>
       )}
       <Txt
         accessibilityRole="header"
         style={{
-          fontSize: 30,
-          lineHeight: 37,
-          fontWeight: "900",
-          letterSpacing: -1,
+          fontSize: 28,
+          lineHeight: 33,
+          fontWeight: "800",
+          letterSpacing: -0.6,
         }}
       >
         {title}
       </Txt>
       {text && (
-        <Txt style={{ color: c.muted, fontSize: 12, lineHeight: 20 }}>
+        <Txt style={{ color: c.muted, fontSize: 14, lineHeight: 21 }}>
           {text}
         </Txt>
       )}
@@ -428,7 +385,7 @@ export function Input({ label, ...props }: TextInputProps & { label: string }) {
   const c = useColors();
   return (
     <View style={{ gap: 8, marginBottom: 17 }}>
-      <Txt style={{ fontSize: 12, fontWeight: "700" }}>{label}</Txt>
+      <Txt style={{ fontSize: 13, fontWeight: "700", letterSpacing: 0.2 }}>{label}</Txt>
       <TextInput
         accessibilityLabel={label}
         autoCapitalize={props.secureTextEntry ? "none" : undefined}
@@ -438,12 +395,12 @@ export function Input({ label, ...props }: TextInputProps & { label: string }) {
         {...props}
         style={[
           {
-            borderWidth: 1,
-            borderColor: c.border,
-            borderRadius: 10,
+            borderWidth: 1.5,
+            borderColor: c.muted,
+            borderRadius: 8,
             backgroundColor: c.panel,
             color: c.text,
-            minHeight: 49,
+            minHeight: 52,
             paddingHorizontal: 15,
             paddingVertical: 12,
             fontSize: 16,
@@ -462,7 +419,9 @@ export function Note({ children }: { children: React.ReactNode }) {
     <View
       style={{
         padding: 14,
-        borderRadius: 10,
+        borderRadius: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: c.yellow,
         backgroundColor: c.soft,
         flexDirection: "row",
         gap: 9,
@@ -470,7 +429,7 @@ export function Note({ children }: { children: React.ReactNode }) {
       }}
     >
       <Icon name="information-circle-outline" size={18} color={c.muted} />
-      <Txt style={{ fontSize: 12, lineHeight: 19, color: c.muted, flex: 1 }}>
+      <Txt style={{ fontSize: 13, lineHeight: 20, color: c.text, flex: 1 }}>
         {children}
       </Txt>
     </View>
@@ -487,17 +446,18 @@ export function Empty({
 }) {
   const c = useColors();
   return (
-    <Card style={{ alignItems: "center", gap: 15, paddingVertical: 40 }}>
-      <Icon name="football-outline" color={c.muted} size={40} />
-      <Txt style={{ fontWeight: "800", fontSize: 19, textAlign: "center" }}>
+    <Card style={{ alignItems: "flex-start", gap: 12, paddingVertical: 28, borderStyle: "dashed", borderWidth: 1.5, backgroundColor: "transparent" }}>
+      <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: c.soft, alignItems: "center", justifyContent: "center" }}>
+        <Icon name="football-outline" color={c.action} size={28} />
+      </View>
+      <Txt style={{ fontWeight: "800", fontSize: 20, lineHeight: 25 }}>
         {title}
       </Txt>
       <Txt
         style={{
-          fontSize: 12,
+          fontSize: 14,
           color: c.muted,
-          textAlign: "center",
-          maxWidth: 320,
+          maxWidth: 340,
         }}
       >
         {text}
@@ -523,8 +483,8 @@ export function Busy() {
         gap: 18,
       }}
     >
-      <ActivityIndicator size="large" color={c.orange} />
-      <Text style={{ color: c.muted }}>Preparando o campo…</Text>
+      <ActivityIndicator size="large" color={c.action} />
+      <Text style={{ color: c.muted, fontSize: 15, fontWeight: "600" }}>Preparando o campo…</Text>
       {seconds >= 5 && (
         <Text
           accessibilityLiveRegion="polite"
@@ -555,20 +515,20 @@ export function DemoLabel() {
   return (
     <View style={{ marginBottom: 20, gap: 9 }}>
       <Row style={{ gap: 6 }}>
-        <View style={{ width: 5, height: 5, borderRadius: 5, backgroundColor: mode === "online" ? "#73975d" : c.orange }} />
-        <Txt style={{ fontSize: 12, color: c.muted, flex: 1 }}>{text}</Txt>
+        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: mode === "online" ? "#3f9a5f" : c.yellow }} />
+        <Txt style={{ fontSize: 12, fontWeight: "600", color: c.muted, flex: 1 }}>{text}</Txt>
       </Row>
       {mode === "online" && (
         <>
           <Row style={{ justifyContent: "space-between" }}>
-            <Txt style={{ fontSize: 10, color: c.muted, flex: 1 }}>
+            <Txt style={{ fontSize: 12, color: c.muted, flex: 1 }}>
               {syncing ? "Atualizando equipes e mensagens…" : lastSyncedAt ? `Atualizado às ${new Date(lastSyncedAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}` : "Aguardando atualização"}
             </Txt>
             <Pressable accessibilityRole="button" accessibilityLabel="Atualizar equipes e conversas" disabled={syncing} onPress={reload} style={{ padding: 10, minHeight: 44, justifyContent: "center" }}>
-              <Txt style={{ color: c.orange, fontSize: 11, fontWeight: "700" }}>{syncing ? "Atualizando…" : "Atualizar"}</Txt>
+              <Txt style={{ color: c.orange, fontSize: 13, fontWeight: "800" }}>{syncing ? "Atualizando…" : "Atualizar"}</Txt>
             </Pressable>
           </Row>
-          {!!syncError && <Txt accessibilityRole="alert" style={{ fontSize: 11, color: "#ba573b" }}>{syncError} Seus dados exibidos podem estar desatualizados. Toque em Atualizar para tentar novamente.</Txt>}
+          {!!syncError && <Txt accessibilityRole="alert" style={{ fontSize: 12, color: "#ba573b" }}>{syncError} Seus dados exibidos podem estar desatualizados. Toque em Atualizar para tentar novamente.</Txt>}
         </>
       )}
     </View>

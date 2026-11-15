@@ -49,7 +49,7 @@ export default function Edit() {
       <Txt style={{ fontWeight: "700", marginBottom: 12 }}>Nível técnico *</Txt>
       <View style={{ flexDirection: "row", gap: 7, flexWrap: "wrap", marginBottom: 23 }}>{teamLevels.map(x => <Chip title={x} key={x} selected={x === level} onPress={() => !busy && L(x)} />)}</View>{error("level")}
       <Input label="Sobre o time (opcional)" value={bio} onChangeText={B} multiline maxLength={500} placeholder="Conte a história do time e quando vocês costumam jogar." editable={!busy} />
-      <Txt style={{ color: c.muted, fontSize: 11, marginBottom: 20 }}>{bio.length}/500 caracteres</Txt>
+      <Txt style={{ color: c.muted, fontSize: 12, marginBottom: 20 }}>{bio.length}/500 caracteres</Txt>
       <Button title={busy ? "Salvando equipe…" : creating ? "Cadastrar meu time" : "Salvar alterações"} icon="checkmark" disabled={busy} onPress={submit} />
       {creating && mode === "online" && <Button title="Sou árbitro ou bandeirinha" secondary disabled={busy} style={{ marginTop: 12 }} onPress={() => router.push("/arbitragem")} />}
       {creating && <Button title="Continuar depois" secondary disabled={busy} style={{ marginTop: 12 }} onPress={async () => { await logout(); router.replace("/"); }} />}

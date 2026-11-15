@@ -64,7 +64,7 @@ export default function Chat() {
         <Crest team={t} size={40} />
         <View style={{ flex: 1 }}>
           <Txt style={{ fontSize: 14, fontWeight: "800" }}>{t.name}</Txt>
-          <Txt style={{ fontSize: 9, color: c.muted }}>
+          <Txt style={{ fontSize: 12, color: c.muted }}>
             {mode === "online" ? "Conversa entre equipes · match confirmado" : "Conversa de demonstração · match confirmado"}
           </Txt>
         </View>
@@ -90,7 +90,7 @@ export default function Chat() {
         <Txt
           style={{
             textAlign: "center",
-            fontSize: 9,
+            fontSize: 12,
             color: c.muted,
             marginBottom: 12,
           }}
@@ -123,7 +123,7 @@ export default function Chat() {
             </Txt>
             <Txt
               style={{
-                fontSize: 8,
+                fontSize: 12,
                 color: m.own ? "#ffe4cf" : c.muted,
                 textAlign: "right",
                 marginTop: 5,
@@ -145,7 +145,7 @@ export default function Chat() {
               router.push({ pathname: "/agendar", params: { id } })
             }
           />
-          {mode === "online" && <Txt style={{ color: c.muted, fontSize: 11, textAlign: "center" }}>A proposta será enviada à outra equipe. Depois do aceite, a caução é simulada para confirmar o jogo. Nenhum valor é cobrado.</Txt>}
+          {mode === "online" && <Txt style={{ color: c.muted, fontSize: 12, textAlign: "center" }}>A proposta será enviada à outra equipe. Depois do aceite, a caução é simulada para confirmar o jogo. Nenhum valor é cobrado.</Txt>}
         </View>
       </ScrollView>
       <Row

@@ -73,7 +73,7 @@ export default function Discover() {
       <Row style={{ justifyContent: "space-between", marginBottom: 18 }}>
         <Row style={{ flex: 1 }}>
           <Icon name="location-outline" size={15} color={c.muted} />
-          <Txt style={{ fontSize: 11, color: c.muted }}>
+          <Txt style={{ fontSize: 12, color: c.muted }}>
             {mode !== "online" ? `Distâncias ilustrativas · até ${f.radius} km` : [s.profile.city, s.profile.state].filter(Boolean).join(" · ") || "Sua região"}
           </Txt>
         </Row>
@@ -126,7 +126,7 @@ export default function Discover() {
           />
         </Empty>
       ) : t ? (
-        <Card style={{ padding: 0, overflow: "hidden" }}>
+        <Card style={{ padding: 0, overflow: "hidden", borderRadius: 16 }}>
           <View style={{ height: 265, backgroundColor: "#264a3d" }}>
             <FieldArt />
             <Row
@@ -140,17 +140,18 @@ export default function Discover() {
             >
               <View
                 style={{
-                  backgroundColor: "#ffffee",
-                  padding: 7,
-                  borderRadius: 5,
+                  backgroundColor: "#f2c230",
+                  paddingVertical: 6,
+                  paddingHorizontal: 9,
+                  borderRadius: 4,
                 }}
               >
                 <Txt
                   style={{
-                    fontSize: 7,
+                    fontSize: 12,
                     fontWeight: "800",
                     letterSpacing: 1,
-                    color: "#3b6c45",
+                    color: "#0c2e23",
                   }}
                 >
                   ● BUSCANDO AMISTOSO
@@ -187,7 +188,7 @@ export default function Discover() {
               <Crest team={t} size={68} />
               <View style={{ flex: 1 }}>
                 <Txt
-                  style={{ fontSize: 7, letterSpacing: 1.7, color: "#d3d9b7" }}
+                  style={{ fontSize: 12, letterSpacing: 1.7, color: "#d3d9b7" }}
                 >
                   FUTEBOL QUE CONECTA
                 </Txt>
@@ -203,7 +204,7 @@ export default function Discover() {
                 >
                   {t.name}
                 </Txt>
-                <Txt style={{ fontSize: 10, color: "#d4dfc7", marginTop: 5 }}>
+                <Txt style={{ fontSize: 12, color: "#d4dfc7", marginTop: 5 }}>
                   {t.district}{t.distance === null ? " · distância não calculada" : ` · ${t.distance} km`}
                 </Txt>
               </View>
@@ -217,13 +218,13 @@ export default function Discover() {
               </Row>
               <Row style={{ gap: 3 }}>
                 <Icon name="star" size={12} color={c.muted} />
-                <Txt style={{ fontSize: 11, color: c.muted }}>{(mode === "online" ? (t.reviewCount ?? (t.rating > 0 ? 1 : 0)) > 0 : t.games > 0) ? t.rating.toFixed(1) : "Sem avaliações"}</Txt>
+                <Txt style={{ fontSize: 12, color: c.muted }}>{(mode === "online" ? (t.reviewCount ?? (t.rating > 0 ? 1 : 0)) > 0 : t.games > 0) ? t.rating.toFixed(1) : "Sem avaliações"}</Txt>
               </Row>
             </Row>
             <Txt
               style={{
-                fontSize: 12,
-                color: c.muted,
+                fontSize: 15,
+                color: c.text,
                 lineHeight: 22,
                 marginTop: 17,
                 marginBottom: 20,
@@ -242,11 +243,11 @@ export default function Discover() {
             >
               <Row style={{ gap: 5 }}>
                 <Icon name="calendar-outline" size={14} color={c.muted} />
-                <Txt style={{ fontSize: 9, color: c.muted }}>
+                <Txt style={{ fontSize: 12, color: c.muted }}>
                   {mode !== "online" ? "Finais de semana" : "Combine pelo chat"}
                 </Txt>
               </Row>
-              <Txt style={{ fontSize: 8, color: c.muted }}>
+              <Txt style={{ fontSize: 12, color: c.muted }}>
                 {mode !== "online" ? "● Disponível para jogar" : "Equipe cadastrada"}
               </Txt>
             </Row>
@@ -274,7 +275,7 @@ export default function Discover() {
               style={{ marginTop: 12 }}
               onPress={() => academic.subscription.priorityCredits ? void like(true) : router.push("/assinaturas")}
             />
-            {t.priority && <Txt style={{ fontSize: 11, color: c.muted, marginTop: 12 }}>Esta equipe enviou interesse prioritário para você.</Txt>}
+            {t.priority && <Txt style={{ fontSize: 12, color: c.muted, marginTop: 12 }}>Esta equipe enviou interesse prioritário para você.</Txt>}
           </View>
         </Card>
       ) : (
@@ -301,7 +302,7 @@ export default function Discover() {
       )}
       <Row style={{ justifyContent: "center", marginVertical: 20, gap: 5 }}>
         <Icon name="shield-checkmark-outline" size={14} color={c.muted} />
-        <Txt style={{ fontSize: 9, color: c.muted }}>
+        <Txt style={{ fontSize: 12, color: c.muted }}>
           O chat é liberado somente com interesse mútuo.
         </Txt>
       </Row>
@@ -315,7 +316,7 @@ export default function Discover() {
         <Txt style={{ fontWeight: "800", fontSize: 15 }}>
           Mais times, mais resenha
         </Txt>
-        <Txt style={{ fontSize: 9, color: c.muted }}>Comunidade</Txt>
+        <Txt style={{ fontSize: 12, color: c.muted }}>Comunidade</Txt>
       </Row>
       {activeTeams
         .filter((x) => x.id !== t?.id && !s.skipped.includes(x.id))
@@ -332,10 +333,10 @@ export default function Discover() {
               <Row>
                 <Crest team={x} size={39} />
                 <View style={{ flex: 1, gap: 3 }}>
-                  <Txt style={{ fontSize: 12, fontWeight: "800" }}>
+                  <Txt style={{ fontSize: 15, fontWeight: "800" }}>
                     {x.name}
                   </Txt>
-                  <Txt style={{ fontSize: 9, color: c.muted }}>
+                  <Txt style={{ fontSize: 12, color: c.muted }}>
                     {x.district}{x.distance === null ? " · distância não calculada" : ` · ${x.distance} km`}
                   </Txt>
                 </View>

@@ -26,15 +26,15 @@ export function GameCard({ game: g }: { game: Game }) {
     <Card style={{ marginBottom: 16 }}>
       <Row style={{ justifyContent: "space-between" }}>
         <Chip title={g.status} />
-        <Txt style={{ fontSize: 8, color: c.muted }}>
+        <Txt style={{ fontSize: 12, color: c.muted }}>
           {g.payment === "Simulada" ? "Caução simulada" : g.payment}
         </Txt>
       </Row>
-      {g.simulated && <Txt style={{ fontSize: 10, color: c.muted, marginTop: 10 }}>Pós-jogo simulado para apresentação</Txt>}
+      {g.simulated && <Txt style={{ fontSize: 12, color: c.muted, marginTop: 10 }}>Pós-jogo simulado para apresentação</Txt>}
       <Row style={{ justifyContent: "space-around", paddingVertical: 24 }}>
         <View style={{ alignItems: "center", gap: 9, width: "40%" }}>
           <Crest size={45} />
-          <Txt style={{ fontWeight: "700", fontSize: 11, textAlign: "center" }}>
+          <Txt style={{ fontWeight: "700", fontSize: 12, textAlign: "center" }}>
             {s.profile.name}
           </Txt>
         </View>
@@ -49,7 +49,7 @@ export function GameCard({ game: g }: { game: Game }) {
         </Txt>
         <View style={{ alignItems: "center", gap: 9, width: "40%" }}>
           <Crest team={t} size={45} />
-          <Txt style={{ fontWeight: "700", fontSize: 11, textAlign: "center" }}>
+          <Txt style={{ fontWeight: "700", fontSize: 12, textAlign: "center" }}>
             {t?.name}
           </Txt>
         </View>
@@ -57,13 +57,13 @@ export function GameCard({ game: g }: { game: Game }) {
       <View style={{ gap: 8 }}>
         <Row style={{ gap: 6 }}>
           <Icon name="calendar-outline" size={14} color={c.muted} />
-          <Txt style={{ fontSize: 10, color: c.muted }}>
+          <Txt style={{ fontSize: 12, color: c.muted }}>
             {formatDate(g.date)} · {g.time}
           </Txt>
         </Row>
         <Row style={{ gap: 6 }}>
           <Icon name="location-outline" size={14} color={c.muted} />
-          <Txt style={{ fontSize: 10, color: c.muted, flex: 1 }}>{g.field}</Txt>
+          <Txt style={{ fontSize: 12, color: c.muted, flex: 1 }}>{g.field}</Txt>
         </Row>
       </View>
       <Line />
@@ -78,7 +78,7 @@ export function GameCard({ game: g }: { game: Game }) {
       ) : g.review ? (
         <Row>
           <Icon name="checkmark-circle" color="#86a176" size={16} />
-          <Txt style={{ fontSize: 11, color: c.muted }}>
+          <Txt style={{ fontSize: 12, color: c.muted }}>
             Avaliação enviada ·{" "}
             {reviewAverage(g.review)?.toFixed(1) ?? "Sem nota"}
           </Txt>

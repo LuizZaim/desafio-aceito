@@ -60,6 +60,7 @@ export function GoogleAccess({ disabled, onBusy }: { disabled: boolean; onBusy: 
     <Button title={working ? "Conectando ao Google…" : idToken ? "Confirmar vínculo e entrar" : "Continuar com Google"} secondary icon="logo-google" disabled={working || (disabled && !working) || !capabilities?.google || !!unavailable} onPress={enter} />
     {!!idToken && <Button title="Cancelar vínculo" secondary disabled={working} onPress={() => { setIdToken(null); setPassword(""); setConfirmation(""); setError(""); }} />}
     {!!unavailable && <Txt style={{ fontSize: 12, lineHeight: 18 }}>{unavailable}</Txt>}
+    {!loadingError && !capabilities && !unavailable && <Txt style={{ fontSize: 12, lineHeight: 18 }}>Conectando ao servidor… pode levar cerca de 1 minuto na primeira vez. O botão libera sozinho.</Txt>}
     {!loadingError && capabilities && !capabilities.google && <Txt style={{ fontSize: 12, lineHeight: 18 }}>O provedor Google ainda não foi configurado neste ambiente.</Txt>}
   </View>;
 }

@@ -96,7 +96,7 @@ export function TeamProfile({ id }: { id?: string }) {
               >
                 {name}
               </Txt>
-              <Txt style={{ fontSize: 9, color: c.muted, marginTop: 5 }}>
+              <Txt style={{ fontSize: 12, color: c.muted, marginTop: 5 }}>
                 {location}
               </Txt>
             </View>
@@ -198,13 +198,13 @@ export function TeamProfile({ id }: { id?: string }) {
               <Txt style={{ fontSize: 28, lineHeight: 34, fontWeight: "900" }}>
                 {s.games.filter((g) => g.status === "Concluída").length}
               </Txt>
-              <Txt style={{ fontSize: 9, color: c.muted }}>jogo concluído</Txt>
+              <Txt style={{ fontSize: 12, color: c.muted }}>jogo concluído</Txt>
             </Card>
             <Card style={{ flex: 1, alignItems: "center" }}>
               <Txt style={{ fontSize: 28, lineHeight: 34, fontWeight: "900" }}>
                 {s.matches.length}
               </Txt>
-              <Txt style={{ fontSize: 9, color: c.muted }}>conexões</Txt>
+              <Txt style={{ fontSize: 12, color: c.muted }}>conexões</Txt>
             </Card>
           </Row>
           <Button

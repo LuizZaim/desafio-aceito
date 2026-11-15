@@ -64,7 +64,7 @@ export function ConnectedReferee() {
           <Input label="Apresentação (opcional)" value={bio} onChangeText={setBio} maxLength={500} multiline editable={!busy} />
           <Row style={{ justifyContent: "space-between", marginBottom: 14 }}>
             <Txt style={{ flex: 1, fontSize: 12 }}>Disponível para receber convites</Txt>
-            <Switch accessibilityLabel="Disponível para receber convites" value={available} disabled={busy} onValueChange={setAvailable} trackColor={{ true: c.orange }} />
+            <Switch accessibilityLabel="Disponível para receber convites" value={available} disabled={busy} onValueChange={setAvailable} trackColor={{ true: c.action }} />
           </Row>
           <Button title={busy ? "Salvando perfil…" : "Salvar perfil de arbitragem"} disabled={busy} onPress={save} />
           {!!profile && <Button title="Cancelar edição" secondary disabled={busy} onPress={() => setEditing(false)} />}
@@ -76,7 +76,7 @@ export function ConnectedReferee() {
           {!!profile.bio && <Txt style={{ fontSize: 12 }}>{profile.bio}</Txt>}
           <Row style={{ justifyContent: "space-between" }}>
             <Txt style={{ flex: 1, fontSize: 12 }}>Disponível para apitar</Txt>
-            <Switch accessibilityLabel="Disponível para apitar" value={profile.available} disabled={busy} onValueChange={(value) => void dispatch({ type: "refereeAvailable", value })} trackColor={{ true: c.orange }} />
+            <Switch accessibilityLabel="Disponível para apitar" value={profile.available} disabled={busy} onValueChange={(value) => void dispatch({ type: "refereeAvailable", value })} trackColor={{ true: c.action }} />
           </Row>
           <Button title="Editar perfil de arbitragem" secondary disabled={busy} onPress={edit} />
         </Card>
@@ -88,9 +88,9 @@ export function ConnectedReferee() {
           <Txt style={{ fontWeight: "800", fontSize: 17 }}>{invite.teamAName} × {invite.teamBName}</Txt>
           <Txt style={{ fontSize: 12, color: c.muted }}>{formatDate(invite.date)} · {invite.time} · Brasília</Txt>
           <Txt style={{ fontSize: 12, color: c.muted }}>{invite.field}</Txt>
-          <Txt style={{ fontSize: 11, color: c.muted }}>Partida: {invite.gameStatus}</Txt>
+          <Txt style={{ fontSize: 12, color: c.muted }}>Partida: {invite.gameStatus}</Txt>
           {invite.canRespond && <>
-            {!profile?.available && <Txt style={{ color: c.muted, fontSize: 11 }}>Ative sua disponibilidade para aceitar este convite.</Txt>}
+            {!profile?.available && <Txt style={{ color: c.muted, fontSize: 12 }}>Ative sua disponibilidade para aceitar este convite.</Txt>}
             <Button title="Aceitar atuação" disabled={busy || !profile?.available} icon="checkmark" onPress={() => Alert.alert("Aceitar este convite?", "Seu horário será verificado para evitar conflito com outra atuação.", [{ text: "Voltar", style: "cancel" }, { text: "Aceitar", onPress: () => dispatch({ type: "respondReferee", id: invite.id, accept: true }) }])} />
             <Button title="Recusar convite" secondary disabled={busy} onPress={() => Alert.alert("Recusar convite?", "O organizador poderá convidar outro profissional.", [{ text: "Voltar", style: "cancel" }, { text: "Recusar", onPress: () => dispatch({ type: "respondReferee", id: invite.id, accept: false }) }])} />
           </>}

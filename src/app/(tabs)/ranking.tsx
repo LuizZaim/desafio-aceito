@@ -52,7 +52,7 @@ export default function Ranking() {
             <Txt style={{ fontSize: 15, fontWeight: "800" }}>
               A rivalidade fica só no campo.
             </Txt>
-            <Txt style={{ fontSize: 10, color: c.muted, marginTop: 7 }}>
+            <Txt style={{ fontSize: 12, color: c.muted, marginTop: 7 }}>
               {mode !== "online" ? "Ranking demonstrativo de avaliações de 1 a 5." : "As equipes começam sem notas. Somente avaliações recebidas após jogos concluídos compõem o ranking."}
             </Txt>
           </View>
@@ -81,10 +81,10 @@ export default function Ranking() {
                 </Txt>
                 <Crest team={t} size={33} />
                 <View style={{ flex: 1, gap: 3 }}>
-                  <Txt style={{ fontSize: 11, fontWeight: "800" }}>
+                  <Txt style={{ fontSize: 12, fontWeight: "800" }}>
                     {t.name}
                   </Txt>
-                  <Txt style={{ fontSize: 8, color: c.muted }}>
+                  <Txt style={{ fontSize: 12, color: c.muted }}>
                     {t.district} · {t.level}
                   </Txt>
                 </View>

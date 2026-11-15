@@ -36,7 +36,7 @@ export function RefereeInvitation({ game }: { game: Game }) {
       {(game.refereeAssignments || []).map((assignment) => (
         <View key={assignment.id} style={{ gap: 5 }}>
           <Txt style={{ fontSize: 12, fontWeight: "700" }}>{assignment.name}</Txt>
-          <Txt style={{ fontSize: 11, color: c.muted }}>{roles.find((item) => item.id === assignment.role)?.label} · {assignment.status}</Txt>
+          <Txt style={{ fontSize: 12, color: c.muted }}>{roles.find((item) => item.id === assignment.role)?.label} · {assignment.status}</Txt>
         </View>
       ))}
       {game.status === "Confirmada" && future ? <>
@@ -51,7 +51,7 @@ export function RefereeInvitation({ game }: { game: Game }) {
         </>}
       </> : <Note>Convites podem ser enviados em partidas confirmadas antes do horário de início.</Note>}
       <Button title="Meu perfil e convites de arbitragem" secondary onPress={() => router.push("/arbitragem")} />
-      <Txt style={{ fontSize: 10, color: c.muted }}>Perfis autodeclarados para apresentação acadêmica. A própria equipe não pode contratar seu organizador como árbitro.</Txt>
+      <Txt style={{ fontSize: 12, color: c.muted }}>Perfis autodeclarados para apresentação acadêmica. A própria equipe não pode contratar seu organizador como árbitro.</Txt>
     </Card>
   );
 }
