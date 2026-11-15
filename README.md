@@ -1,28 +1,52 @@
-# Desafio Aceito
+# ⚽ Desafio Aceito
 
-App de match entre times de futebol amador ("Tinder de equipes"), da empresa fictícia FutTech. Projeto da faculdade de Ciência da Computação da FECAP.
+> O "Tinder de equipes" do futebol amador: encontre um adversário, combine data e campo, marque o jogo.
 
-- **App:** React Native + TypeScript, Expo SDK 58, expo-router. Entrega por **APK Android**.
-- **API:** Node + TypeScript (NestJS), PostgreSQL no Neon, hospedada no Render (plano gratuito).
-- **Caução e pagamentos:** sempre **simulados**. Não há cobrança nem gateway. Cartões guardam só apelido e 4 dígitos fictícios.
+Projeto da faculdade de **Ciência da Computação da FECAP**, da empresa fictícia **FutTech**.
 
-## Estado atual (1.5.0)
+![Expo SDK](https://img.shields.io/badge/Expo-SDK%2058-000020?logo=expo)
+![React Native](https://img.shields.io/badge/React%20Native-0.88-61dafb?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6?logo=typescript&logoColor=white)
+![NestJS](https://img.shields.io/badge/API-NestJS-e0234e?logo=nestjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL%20(Neon)-336791?logo=postgresql&logoColor=white)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.5.1-green)
 
-| Item | Situação |
-|---|---|
-| API | https://desafio-aceito-api.onrender.com (`/health` responde 200, HTTPS obrigatório) |
-| Banco | Neon, migrações 001–009 em `api/migrations` |
-| Testes | 47 do app e 24 da API passam; tipos e lint sem erro |
-| APK | Build `preview` pelo Expo/EAS, a partir do branch `main` |
-| Google | Ativo no servidor, em modo de teste: só e-mails cadastrados como testadores entram. **Não verificado em aparelho** |
-| E-mail | **Desativado** (falta provedor): sem recuperação de senha por e-mail. Use os códigos de recuperação |
-| Verificação em celular | **Não concluída**: matriz visual, instalação em aparelho e ensaio dos integrantes |
+---
 
-O Render gratuito dorme após inatividade. A primeira requisição pode levar cerca de 1 minuto, e o app mostra um contador de espera.
+## 📌 Índice
 
-## Para o avaliador
+1. [O que é](#-o-que-é)
+2. [Como testar em 2 minutos (avaliador)](#-como-testar-em-2-minutos-avaliador)
+3. [O que funciona e o que não funciona](#-o-que-funciona-e-o-que-não-funciona)
+4. [Funcionalidades](#-funcionalidades)
+5. [Como o sistema é montado](#-como-o-sistema-é-montado)
+6. [Mapa do código](#-mapa-do-código)
+7. [Rodar no seu computador](#-rodar-no-seu-computador)
+8. [Publicar (API e APK)](#-publicar-api-e-apk)
+9. [Testes e verificações](#-testes-e-verificações)
+10. [Guia para quem usa IA para corrigir ou evoluir](#-guia-para-quem-usa-ia-para-corrigir-ou-evoluir)
+11. [Documentação](#-documentação)
+12. [Equipe](#-equipe)
 
-**Caminho mais rápido (sem instalar nada): leia o código e rode os testes**
+---
+
+## 🎯 O que é
+
+Times de futebol amador têm dificuldade de achar adversário. O **Desafio Aceito** resolve assim:
+
+1. Você cadastra sua equipe (categoria, nível, campo, elenco).
+2. Vê outras equipes e demonstra interesse. Se o interesse for **mútuo**, vira **match**.
+3. Conversam no chat e combinam o amistoso (data, local, mando de campo).
+4. Uma **caução simulada** garante o compromisso.
+5. Depois do jogo: resultado, avaliação do adversário e **ranking**.
+
+> 💳 **Pagamentos, caução e cartões são sempre simulados.** Não existe cobrança real nem gateway de pagamento.
+
+---
+
+## 🚀 Como testar em 2 minutos (avaliador)
+
+### Opção A: só ler e rodar os testes (sem instalar app)
 
 ```sh
 git clone https://github.com/LuizZaim/desafio-aceito.git
@@ -31,109 +55,193 @@ npm ci
 npm run typecheck && npm run lint && npm test
 ```
 
-**Ver o app no celular Android**
+### Opção B: instalar o app no Android (recomendado)
 
-1. Baixe o APK pelo link do Expo: https://expo.dev/accounts/luizzaim/projects/desafio-aceito-app/builds/d3d9df13-ca0c-4916-a87d-e73e31bde16f (botão "Install"/"Download"). Se o link tiver expirado, peça um novo ao grupo ou gere outro (ver "Gerar o APK").
-2. Abra o arquivo no Android e permita "instalar apps de fontes desconhecidas" quando pedido.
-3. Na tela inicial há duas formas de usar:
-   - **Explorar demonstração** (embaixo): entra direto, sem conta e sem internet, com equipes, conversas e partidas **fictícias**. Ideal para ver todos os fluxos (descoberta, match, chat, agendamento, caução simulada, avaliação, ranking).
-   - **Conta real**: "Cadastre-se" com e-mail e senha (mín. 8 caracteres), depois cadastre o time. Duas contas diferentes podem dar match entre si. O login com Google só funciona para e-mails cadastrados como testadores.
-4. No canto superior direito há o botão de **sair da conta**.
+1. **Baixe o APK.** Aba **Releases** do repositório (quando publicado) ou o link do Expo:
+   [build no Expo](https://expo.dev/accounts/luizzaim/projects/desafio-aceito-app/builds/d3d9df13-ca0c-4916-a87d-e73e31bde16f).
+   ⚠️ Links do Expo expiram (cerca de 2 semanas). Se não abrir, veja [Gerar o APK](#-publicar-api-e-apk).
+2. Abra o arquivo no Android e permita **"instalar de fontes desconhecidas"** quando pedido.
+3. Na tela inicial, escolha **uma** destas entradas:
 
-**Ver o app no computador (sem APK)**
+| Entrada | Precisa de internet? | Para que serve |
+|---|---|---|
+| **Explorar demonstração** | Não | Entra direto, com equipes, conversas e partidas **fictícias**. A forma mais rápida de ver todos os fluxos. |
+| **Cadastre-se** (e-mail + senha de 8+ caracteres) | Sim | Conta real no servidor. Duas contas diferentes podem dar match entre si. |
+| **Continuar com Google** | Sim | Login com Google (ver [limitações](#-o-que-funciona-e-o-que-não-funciona)). |
+
+4. Para sair da conta, use o botão no canto superior direito.
+
+### Opção C: ver no computador (sem APK)
 
 ```sh
 npm ci
 npx expo start --web
 ```
 
-Abre a versão web no navegador (o login com Google não funciona na web). Também dá para abrir pelo Expo Go (SDK 58) escaneando o QR code de `npx expo start`.
+Abre no navegador. O login com Google **não** funciona na web.
 
-**Avisos**
+### ⏳ Aviso importante: o servidor "dorme"
 
-- A API roda no plano gratuito do Render e dorme: a **primeira ação pode levar cerca de 1 minuto**. Teste antes com `curl -m 10 https://desafio-aceito-api.onrender.com/health` e repita se der timeout.
-- Pagamentos, caução e cartões são **simulados**; nenhum valor real é cobrado.
-- Ainda não foi feita a verificação completa em aparelho real nem o fluxo completo entre duas contas em dois celulares.
+A API roda no plano **gratuito** do Render, que adormece após inatividade. **A primeira ação pode levar cerca de 1 minuto.** O app mostra um aviso de espera e tenta de novo sozinho. Para acordar antes:
 
-## Funcionalidades
+```sh
+curl -m 15 https://desafio-aceito-api.onrender.com/health
+```
 
-- Cadastro, login, troca de senha e códigos de recuperação de uso único.
-- Cadastro e edição da equipe (categoria, nível, campo preferido, elenco).
-- Descoberta com filtros, interesse mútuo, matches e chat entre contas.
-- Propostas de amistoso com data, local e mando de campo; verificação de conflito de agenda.
-- Caução simulada (R$ 50), cancelamento comum e por clima, penalidades ilustrativas (R$ 10 / R$ 30).
-- Resultado após o início do jogo, avaliação em quatro critérios e ranking.
-- Área do árbitro: perfil, disponibilidade, convites e aceite.
-- Modo demonstração offline, com equipes fictícias identificadas.
+Resposta `200` = servidor acordado. Se der timeout, repita em 30 segundos.
 
-Limites conhecidos: a distância entre equipes não é calculada de verdade, e notificações push externas não existem.
+---
 
-## Rodar o app (desenvolvimento)
+## ✅ O que funciona e o que não funciona
 
-Requer Node.js 24.
+Honestidade primeiro. Estado na versão **1.5.1**:
+
+| Item | Situação |
+|---|---|
+| API no ar | https://desafio-aceito-api.onrender.com (`/health`, HTTPS obrigatório) |
+| Banco | Neon (PostgreSQL), migrações 001–009 em `api/migrations` |
+| Testes automáticos | Passam no app e na API; tipos e lint sem erro (rode para conferir) |
+| Modo demonstração | Funciona, sem internet |
+| Cadastro/login por e-mail | Funciona |
+| Login com Google | Configurado e publicado como "Em produção" no Google, só com escopos básicos (e-mail e id). **Ainda não foi testado em celular real nem com conta que não seja do autor.** Se falhar, use e-mail e senha |
+| Recuperação de senha por e-mail | **Desativada** (falta provedor de e-mail). Use os **códigos de recuperação** gerados na conta |
+| Teste em celular real | **Parcial**: ainda falta a verificação completa e o fluxo entre duas contas em dois aparelhos |
+| Notificações push | Não existem (só notificações dentro do app) |
+| Distância entre equipes | Não é calculada de verdade |
+| Pagamentos | Sempre simulados |
+
+A política de privacidade está em https://luizzaim.github.io/desafio-aceito/ (fonte em `docs/index.html`).
+
+---
+
+## ⚽ Funcionalidades
+
+- **Conta:** cadastro, login, troca de senha, códigos de recuperação de uso único.
+- **Equipe:** cadastro e edição (categoria, nível, campo preferido), elenco de jogadores.
+- **Descoberta:** filtros, interesse mútuo, matches.
+- **Chat** entre equipes com match.
+- **Amistosos:** proposta com data, local e mando de campo; checagem de conflito de agenda.
+- **Caução simulada** (R$ 50), cancelamento comum e por clima, penalidades ilustrativas (R$ 10 / R$ 30).
+- **Pós-jogo:** resultado, avaliação em quatro critérios, ranking.
+- **Árbitro:** perfil, disponibilidade, convites e aceite.
+- **Demonstração offline** com equipes fictícias identificadas como tal.
+
+---
+
+## 🧩 Como o sistema é montado
+
+```
+┌──────────────┐   HTTPS    ┌──────────────────┐    SQL    ┌────────────────┐
+│  App Android │ ─────────► │  API (NestJS)    │ ────────► │  PostgreSQL    │
+│  Expo / RN   │            │  Render (grátis) │           │  Neon (grátis) │
+└──────────────┘            └──────────────────┘           └────────────────┘
+       │  login Google                │ valida o token do Google
+       └──────────────► Google ◄──────┘
+```
+
+- **App:** React Native + TypeScript, rotas por arquivo (expo-router). Tokens de sessão guardados com `expo-secure-store`.
+- **API:** NestJS sobre Express. Senhas com `scrypt`, `helmet`, limite de requisições em memória, filtro global de erros (`Errors`).
+- **Banco:** migrações numeradas e executadas no início do servidor.
+- **Modos do app** (`src/core/store`): `none` (deslogado), `demo` (offline, dados fictícios), `online` (conta real). Existe código de modo `local`, mas o botão de entrada foi removido.
+
+---
+
+## 🗺️ Mapa do código
+
+```
+.
+├── src/
+│   ├── app/            Telas (uma por arquivo, expo-router). (tabs)/ = abas principais
+│   ├── components/     Componentes visuais (ui.tsx = paleta, botões, campos, escudo)
+│   ├── core/           Regras de domínio, estado (store), cliente da API, filtros
+│   └── storage/        Persistência local (SQLite) usada no modo demo
+├── api/
+│   ├── src/            app.ts (rotas/erros), service.ts (regras), db.ts, passwords.ts,
+│   │                   google-*.ts (login Google), arbitration.ts, mail.ts
+│   ├── migrations/     Esquema do banco, 001 a 009, em ordem
+│   └── tests/          Testes da API (usam PGlite, sem precisar de Postgres)
+├── tests/              Testes do app (node --test)
+├── docs/               Requisitos, auditoria, validação, guias, política de privacidade
+├── app.json            Versão e configuração do Expo/Android
+├── eas.json            Perfis de build do APK
+└── render.yaml         Definição do serviço no Render
+```
+
+Telas principais: `index.tsx` (entrada), `cadastro.tsx`, `(tabs)/descobrir`, `matches`, `agenda`, `ranking`, `perfil`, `chat.tsx`, `agendar.tsx`, `partida.tsx`, `avaliar.tsx`, `arbitragem.tsx`.
+
+---
+
+## 💻 Rodar no seu computador
+
+Requer **Node.js 24**.
+
+**App**
 
 ```sh
 git clone https://github.com/LuizZaim/desafio-aceito.git
 cd desafio-aceito
 npm ci
-cp .env.example .env
+cp .env.example .env     # só traz a URL pública da API (EXPO_PUBLIC_API_URL)
 npx expo start
 ```
 
-Abra pelo Expo Go (SDK 58) no Android, na mesma rede do computador. O `.env` traz só a URL pública da API (`EXPO_PUBLIC_API_URL`).
+Abra com o Expo Go (SDK 58) na mesma rede, ou pressione `a` para emulador Android, ou `w` para web.
 
-## Rodar a API local
-
-Com Docker:
+**API local, com Docker**
 
 ```sh
 # defina POSTGRES_PASSWORD no .env da raiz
 docker compose up --build
 ```
 
-Sem Docker, com PostgreSQL instalado:
+**API local, sem Docker (precisa de PostgreSQL)**
 
 ```sh
 cd api
 npm ci
-cp .env.example .env   # configure DATABASE_URL
+cp .env.example .env     # configure DATABASE_URL
 npm run migrate
 npm run start:dev
 ```
 
-Variáveis da API em `api/.env.example`. Nunca versione o `.env`.
+Variáveis da API: `api/.env.example`. **Nunca versione o `.env`.**
 
-## Publicar a API no Render
+---
 
-O arquivo `render.yaml` define o serviço (plano gratuito, região Oregon). No Render, crie um Blueprint a partir deste repositório e informe `DATABASE_URL` (Neon) no campo secreto. O build instala também as devDependencies (`npm ci --include=dev`) e a migração roda no início.
+## 📦 Publicar (API e APK)
 
-Para e-mail no plano gratuito (SMTP é bloqueado), use `MAIL_PROVIDER=brevo` com `BREVO_API_KEY` e `MAIL_FROM`. Veja `docs/CONFIGURAR_GOOGLE_EMAIL.md` para Google e e-mail.
+**API no Render.** O `render.yaml` define o serviço (plano gratuito, região Oregon). Crie um Blueprint a partir do repositório e informe `DATABASE_URL` (Neon) como segredo. Variáveis novas só valem após **Manual Deploy**. O build usa `npm ci --include=dev` e a migração roda no início.
 
-## Gerar o APK
+**E-mail (opcional).** SMTP é bloqueado no plano gratuito; use `MAIL_PROVIDER=brevo` com `BREVO_API_KEY` e `MAIL_FROM`. Detalhes em `docs/CONFIGURAR_GOOGLE_EMAIL.md`.
+
+**Gerar o APK.**
 
 ```sh
 npx eas-cli@latest login
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-O perfil `preview` aponta para a API do Render. Suba o `versionCode` em `app.json` antes de cada build, ou o Android pode recusar a instalação por cima de uma versão igual. Se recusar, desinstale o app antigo.
+Também dá para disparar o build pelo site do Expo ("Build from GitHub", perfil `preview`, branch `main`). Suba o `versionCode` em `app.json` antes de cada build; se o Android recusar instalar por cima, desinstale a versão antiga.
 
-## Versão web (opcional)
-
-O app é nativo, mas a exportação web usa modo SPA (`web.output = single`). Todas as rotas caem em `index.html`, então recarregar uma página não gera 404.
+**Versão web (opcional).**
 
 ```sh
 npx expo export --platform web --output-dir dist-web
 ```
 
-Em qualquer hospedagem estática, configure o fallback para `index.html`.
+Em hospedagem estática, configure fallback para `index.html` (modo SPA).
 
-## Verificações
+---
+
+## 🧪 Testes e verificações
 
 ```sh
+# app (na raiz)
 npm run typecheck
 npm run lint
 npm test
+
+# API
 cd api
 npm run build
 npm test
@@ -141,19 +249,46 @@ npm test
 
 Os testes da API usam PostgreSQL embutido (PGlite). O teste de SMTP exige OpenSSL.
 
-## Estrutura
+---
 
-```
-src/app          telas (expo-router)
-src/components   componentes
-src/core         domínio, estado, cliente da API
-src/storage      persistência local (SQLite)
-api/src          API (controllers, serviços, banco)
-api/migrations   esquema do banco, em ordem
-docs             requisitos, auditoria, validação e guias
-```
+## 🤖 Guia para quem usa IA para corrigir ou evoluir
 
-## Documentação
+Cole este bloco no início da conversa com a IA:
+
+> Projeto Expo (React Native + TypeScript) com API NestJS em `api/`. Leia o README antes de editar. Rode `npm run typecheck && npm test` na raiz e `cd api && npm test` depois de mudar algo. Não leia `node_modules/`, `.expo/`, `dist/`. Não invente funcionalidades: pagamentos são simulados e e-mail está desativado.
+
+**Onde mexer em cada tipo de problema**
+
+| Problema | Comece por |
+|---|---|
+| Tela feia ou quebrada | `src/app/<tela>.tsx` e `src/components/ui.tsx` (cores, botões, campos) |
+| Navegação / redirecionamento errado | `src/app/_layout.tsx`, `src/app/(tabs)/_layout.tsx`, `src/core/navigation.ts` |
+| Estado, login, modos (`none`/`demo`/`online`) | `src/core/store` |
+| Regra de negócio (match, agenda, caução, ranking) | `src/core/domain.ts` (app/demo) e `api/src/service.ts` (servidor) |
+| Chamadas à API | `src/core/api-client.ts`, `src/core/api.ts` |
+| Erro 4xx/5xx, validação, rate limit | `api/src/app.ts` |
+| Login com Google | `src/core/google-signin.ts`, `src/components/google-access.tsx`, `api/src/google-*.ts` |
+| Banco / nova coluna | nova migração em `api/migrations/` (nunca edite as antigas) |
+| Senhas e segurança de conta | `api/src/passwords.ts`, `api/src/account-security.ts` |
+
+**Regras para a IA não quebrar o projeto**
+
+1. **Duas implementações da regra:** o modo demo usa `src/core/domain.ts` e o modo online usa `api/src/service.ts`. Se mudar uma regra, mude e teste as duas.
+2. **Migrações são só para frente.** Crie `010_...`, não altere `001`–`009`.
+3. **Aumente o `versionCode`** em `app.json` a cada APK novo.
+4. **Segredos nunca entram no Git** (`.env`, `DATABASE_URL`, chaves). O repositório é público.
+5. **Metro com cache preso** (tela antiga aparecendo): `npx expo start --clear`, ou outra porta.
+6. **Teste antes de dizer que está pronto.** Rode typecheck, lint e testes; não declare funcionando o que só foi escrito.
+
+**Checklist de diagnóstico rápido**
+
+- App não conecta → `curl -m 15 https://desafio-aceito-api.onrender.com/health` (pode estar dormindo).
+- Google não entra → o app busca o ID do cliente em `/auth/capabilities`; confirme que a API responde e que o OAuth está "Em produção".
+- Teste falha após mexer em regra → veja se mudou só o app ou só a API (regra 1).
+
+---
+
+## 📚 Documentação
 
 - [Requisitos](docs/REQUISITOS.md)
 - [Auditoria dos critérios](docs/AUDITORIA.md)
@@ -161,12 +296,16 @@ docs             requisitos, auditoria, validação e guias
 - [Plano de conclusão](docs/PLANO_CONCLUSAO.md)
 - [Guia de leitura do código](docs/GUIA_CODIGO.md)
 - [Roteiro entre contas](docs/HOMOLOGACAO_ENTRE_CONTAS.md)
+- [Roteiro de demonstração](docs/ROTEIRO_DEMONSTRACAO.md)
+- [Configurar Google e e-mail](docs/CONFIGURAR_GOOGLE_EMAIL.md)
 - [PDF técnico](docs/referencias/Documentacao_Tecnica_Desafio_Aceito.pdf)
 
-## Integrantes
+---
 
-Luiz Henrique Zaim da Cruz, Guilherme Monteiro da Silva, Murilo Angelo Pimentel Braggio, Enzo Henrique, Vitor Kolle.
+## 👥 Equipe
 
-## Licença
+**FutTech** — Luiz Henrique Zaim da Cruz, Guilherme Monteiro da Silva, Murilo Angelo Pimentel Braggio, Enzo Henrique, Vitor Kolle.
+
+## 📄 Licença
 
 Veja [LICENSE](LICENSE).

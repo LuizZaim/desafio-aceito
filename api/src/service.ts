@@ -15,6 +15,7 @@ import { GoogleAccount } from "./google-account";
 import { createGoogleIdentityProvider, type GoogleIdentityProvider } from "./google-identity";
 import { createEmailDelivery, type EmailDelivery } from "./mail";
 import { hashPassword, verifyPassword } from "./passwords";
+import { emailError, nameError, passwordError } from "./validation";
 import type { Database } from "./db";
 const digest = (x: string) => createHash("sha256").update(x).digest("hex");
 export class Service {
@@ -38,17 +39,8 @@ export class Service {
         .toLowerCase(),
       name = String(body.name || "").trim(),
       password = String(body.password || "");
-    if (
-      !/^\S+@\S+\.\S+$/.test(email) ||
-      email.length > 254 ||
-      name.length < 3 ||
-      name.length > 100 ||
-      password.length < 8 ||
-      password.length > 128
-    )
-      throw new BadRequestException(
-        "Informe nome, e-mail válido e senha de 8 a 128 caracteres.",
-      );
+    const invalid = nameError(name) || emailError(email) || passwordError(password);
+    if (invalid) throw new BadRequestException(invalid);
     const hash = await hashPassword(password);
     let row;
     try {

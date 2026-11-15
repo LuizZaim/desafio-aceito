@@ -20,6 +20,7 @@ import {
   Empty,
   useColors,
   DemoLabel,
+  useKeyboardInset,
 } from "../components/ui";
 export default function Chat() {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
@@ -27,6 +28,7 @@ export default function Chat() {
   const { state: s, dispatch, busy, mode, teams } = useStore();
   const c = useColors();
   const insets = useSafeAreaInsets();
+  const keyboard = useKeyboardInset();
   const [text, T] = useState("");
   const scroll = useRef<React.ComponentRef<typeof ScrollView>>(null);
   const t = teams.find((t) => t.id === id);
@@ -46,7 +48,7 @@ export default function Chat() {
   }
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: c.bg }}
+      style={{ flex: 1, backgroundColor: c.bg, paddingBottom: keyboard }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={95}
     >

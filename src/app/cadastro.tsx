@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import { useStore } from "../core/store";
+import { nameError, emailError, passwordError } from "../core/validation";
 import { Screen, Section, Input, Button, Note } from "../components/ui";
 export default function Cadastro() {
   const { login } = useStore();
@@ -12,16 +13,9 @@ export default function Cadastro() {
     [busy, B] = useState(false);
   async function submit() {
     if (busy) return;
-    if (
-      name.trim().length < 3 ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
-      pass.length < 8 ||
-      pass !== confirm
-    ) {
-      Alert.alert(
-        "Revise o cadastro",
-        "Informe seu nome, e-mail válido e senhas iguais de pelo menos 8 caracteres.",
-      );
+    const invalid = nameError(name) || emailError(email) || passwordError(pass) || (pass !== confirm ? "As senhas não são iguais." : null);
+    if (invalid) {
+      Alert.alert("Revise o cadastro", invalid);
       return;
     }
     B(true);

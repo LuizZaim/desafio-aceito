@@ -351,6 +351,36 @@ export function transition(
       });
       message = "Mensagem salva nesta demonstração.";
       break;
+    case "sim_reply": {
+      // Resposta automática da demonstração; nunca usada no modo online.
+      need(s.matches.includes(id), "Chat indisponível.");
+      const replies = [
+        "Fechado! Qual horário fica melhor pra vocês?",
+        "Bora marcar esse amistoso. Temos o time completo.",
+        "Show! Pode propor a data pelo app que a gente confirma.",
+        "Perfeito, topamos. Levamos camisa reserva.",
+      ];
+      const list = (s.messages[id] ??= []);
+      list.push({
+        text: `[Demonstração] ${replies[list.length % replies.length]}`,
+        own: false,
+        at: new Date().toLocaleTimeString("pt-BR", {
+          timeZone: "America/Sao_Paulo",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      });
+      break;
+    }
+    case "sim_accept": {
+      const g = s.games.find((g) => g.id === id);
+      const t = teams.find((t) => t.id === g?.team);
+      need(g, "Partida não encontrada.");
+      notify(
+        `[Demonstração] ${t?.name ?? "O time adversário"} aceitou a proposta. Falta a caução simulada.`,
+      );
+      break;
+    }
     case "schedule": {
       need(s.teamRegistered !== false, "Cadastre sua equipe antes de agendar.");
       need(

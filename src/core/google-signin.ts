@@ -1,9 +1,9 @@
-import Constants from "expo-constants";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 import { Platform } from "react-native";
 
 export function googleNativeAvailability(): string | null {
   if (Platform.OS === "web") return "O acesso Google está disponível no aplicativo Android/iOS configurado. Na prévia web, use seu e-mail e senha.";
-  if (Constants.expoGoConfig) return "O acesso Google precisa da versão instalada do aplicativo; ele não funciona no Expo Go.";
+  if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) return "O acesso Google precisa da versão instalada do aplicativo; ele não funciona no Expo Go.";
   if (Platform.OS === "ios" && !Constants.expoConfig?.extra?.googleIosClientId)
     return "O cliente Google para iOS ainda não foi configurado.";
   return null;

@@ -12,23 +12,23 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Redirect, router, useLocalSearchParams } from "expo-router";
 import { useStore } from "../core/store";
 import { postLoginDestination } from "../core/navigation";
-import { FieldArt, Button, Input, Note, useColors } from "../components/ui";
+import { FieldArt, Button, Input, Note, useColors, useKeyboardInset } from "../components/ui";
+import { emailError } from "../core/validation";
 import { GoogleAccess } from "../components/google-access";
 export default function Login() {
   const { aviso } = useLocalSearchParams<{ aviso?: string }>();
   const { mode, demo, login, state, arbitration, pendingDestination } = useStore();
   const c = useColors();
+  const keyboard = useKeyboardInset();
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false);
   if (mode !== "none") return <Redirect href={postLoginDestination({ mode, state, arbitration, pendingDestination })} />;
   async function submit() {
     if (busy) return;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || password.length < 8) {
-      Alert.alert(
-        "Confira seus dados",
-        "Informe um e-mail válido e uma senha com pelo menos 8 caracteres.",
-      );
+    const invalid = emailError(email) || (password.length < 8 ? "A senha tem pelo menos 8 caracteres." : null);
+    if (invalid) {
+      Alert.alert("Confira seus dados", invalid);
       return;
     }
     setBusy(true);
@@ -45,7 +45,7 @@ export default function Login() {
   }
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: c.bg }}
+      style={{ flex: 1, backgroundColor: c.bg, paddingBottom: keyboard }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" automaticallyAdjustKeyboardInsets>

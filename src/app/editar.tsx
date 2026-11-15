@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, KeyboardAvoidingView, Platform } from "react-native";
+import { View } from "react-native";
 import { Redirect, router } from "expo-router";
 import { useStore } from "../core/store";
 import { postLoginDestination } from "../core/navigation";
@@ -35,7 +35,6 @@ export default function Edit() {
   }
   if (saved) return <Screen><Section eyebrow="TUDO CERTO" title={creating ? "Seu time está cadastrado!" : "Equipe atualizada!"} text={`${name.trim()} já tem seu espaço no Desafio Aceito.`} /><Note>{mode === "online" ? "Seu cadastro foi salvo na sua conta." : mode === "local" ? "Seu time foi salvo neste aparelho e estará aqui quando você reabrir o app. Não há sincronização com outros aparelhos." : "Alterações salvas na demonstração."}</Note>{!!pendingDestination && <Button title="Continuar para o link recebido" icon="arrow-forward" onPress={() => router.replace(postLoginDestination({ mode, state: s, arbitration, pendingDestination }))} style={{ marginTop: 20 }} />}<Button title="Ver minha equipe" icon="shield-checkmark-outline" onPress={() => router.replace("/(tabs)/perfil")} style={{ marginTop: 20 }} /><Note>{mode === "online" ? "Outras equipes cadastradas podem encontrar seu time. O interesse mútuo libera a conversa." : mode === "local" ? "Você já pode demonstrar match, conversa, agendamento e caução com equipes fictícias. Seu time e seu progresso ficam neste aparelho, sem publicar dados para outros usuários." : "Os adversários, as conversas e as partidas desta demonstração são fictícios."}</Note></Screen>;
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
     <Screen>
       <Section eyebrow={creating ? "SUA EQUIPE • DADOS DO TIME" : "SEU TIME, DO SEU JEITO"} title={creating ? "Cadastre seu time." : "Mostre quem vocês são."} text={creating ? "Preencha os dados para criar o perfil da sua equipe. Os campos com * são obrigatórios." : "Mantenha os dados da equipe atualizados."} />
       <Note>{mode === "local" ? "Cadastro neste aparelho. Você poderá voltar e editar seus dados depois." : mode === "online" ? "Este cadastro fica vinculado à sua conta." : "Você está editando a equipe da demonstração."}</Note>
@@ -55,6 +54,5 @@ export default function Edit() {
       {creating && <Button title="Continuar depois" secondary disabled={busy} style={{ marginTop: 12 }} onPress={async () => { await logout(); router.replace("/"); }} />}
       </View>
     </Screen>
-    </KeyboardAvoidingView>
   );
 }

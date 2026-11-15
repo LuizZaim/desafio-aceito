@@ -224,6 +224,26 @@ export function Provider({ children }: { children: React.ReactNode }) {
     };
   }, [mode, refreshOnline]);
 
+  /** Demonstração: o time adversário "responde" depois de alguns segundos. */
+  function simulateOpponent(action: any, state: any) {
+    let followUp: any = null;
+    if (action.type === "send") followUp = { type: "sim_reply", id: action.id };
+    else if (action.type === "schedule") {
+      const game = state.games?.[0];
+      if (game) followUp = { type: "sim_accept", id: game.id };
+    }
+    if (!followUp) return;
+    const epoch = sessionEpoch.current;
+    setTimeout(async () => {
+      if (!mounted.current || epoch !== sessionEpoch.current || modeRef.current !== "demo") return;
+      try {
+        const next = applyLocalAction(stateRef.current, followUp);
+        await saveState(next.state, "demo-v1");
+        if (epoch === sessionEpoch.current) applyLocal(next.state);
+      } catch {}
+    }, 2500);
+  }
+
   async function dispatch(action: any) {
     if (lock.current) return false;
     lock.current = true;
@@ -240,6 +260,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
       await saveState(next.state, modeRef.current === "local" ? "team-local-v1" : "demo-v1");
       if (epoch !== sessionEpoch.current) return false;
       applyLocal(next.state);
+      if (modeRef.current === "demo") simulateOpponent(action, next.state);
       return true;
     } catch (failure) {
       if (epoch !== sessionEpoch.current) return false;
