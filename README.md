@@ -1,5 +1,15 @@
 # Estado atual — 1.4.0
 
+## Acesso do professor — somente Android
+
+A entrega do aplicativo será por **APK para celular ou tablet Android**. Não será publicada uma versão web. O APK não funciona em iPhone/iPad nem abre diretamente no navegador do computador.
+
+Depois que o APK atualizado estiver disponível, basta baixá-lo, instalar e abrir. O professor não precisa instalar Node.js, Expo Go, configurar banco ou executar a API. **Explorar demonstração** permite avaliar dados fictícios sem conta e sem internet. Para cadastrar uma conta e usar equipes/dados compartilhados, é necessária conexão com a internet e a API disponível.
+
+O GitHub e a documentação oficial destinam-se à análise do código e dos requisitos. A publicação no GitHub permanece para a etapa posterior autorizada pelo usuário. As instruções técnicas abaixo são para desenvolvimento, não pré-requisitos para abrir o APK.
+
+**Estado da entrega:** o APK atualizado ainda não foi gerado. O APK 1.2.0 citado neste README é histórico e não contém as mudanças 1.4.0.
+
 API 1.4.0 publicada no Railway, com migrações 001–009 confirmadas no Neon. Foram aprovados 44 testes do aplicativo, 21 cenários de API, lint e tipos; exportações Android/iOS/web concluídas. Nenhum APK novo foi gerado nesta etapa, conforme solicitado.
 
 O código inclui Google nativo com verificação oficial no servidor, vínculo seguro por senha do aplicativo e testes criptográficos. Ainda é necessário cadastrar os clientes reais e configurar `GOOGLE_WEB_CLIENT_ID`. E-mail exige configuração SMTP privada; o transporte foi testado com TLS local, sem entrega externa. Veja [configuração das integrações](docs/CONFIGURAR_GOOGLE_EMAIL.md). O teste SMTP da suíte da API requer OpenSSL instalado.
