@@ -1,137 +1,96 @@
-# Preparação 1.5.0 — API gratuita no Render
+# Desafio Aceito
 
-Entrega somente por APK Android. A configuração `render.yaml` define apenas a API, com `plan: free`, sem banco Render, discos, serviços web de interface ou recursos pagos. O banco permanece no Neon.
+App de match entre times de futebol amador ("Tinder de equipes"), da empresa fictícia FutTech. Projeto da faculdade de Ciência da Computação da FECAP.
 
-**Ainda não houve migração:** a API publicada continua na versão 1.4.0 no Railway e o app ainda aponta para essa URL. Não foi criado serviço Render nem publicado repositório GitHub. Para o deploy, faltam confirmar o workspace Render e disponibilizar o código em um repositório remoto autorizado; o Render também aceita imagem Docker publicada, que este projeto ainda não possui. A preferência anterior de adiar o GitHub foi preservada.
+- **App:** React Native + TypeScript, Expo SDK 58, expo-router. Entrega por **APK Android**.
+- **API:** Node + TypeScript (NestJS), PostgreSQL no Neon, hospedada no Render (plano gratuito).
+- **Caução e pagamentos:** sempre **simulados**. Não há cobrança nem gateway. Cartões guardam só apelido e 4 dígitos fictícios.
 
-O app permite até 90 segundos por requisição, exibe aviso após 4 segundos de espera e não repete mutações automaticamente. Se uma gravação perder a resposta, orienta conferir os dados antes de reenviar. Isso prepara o primeiro acesso após o servidor gratuito adormecer, sem robôs de keep-alive.
+## Estado atual (1.5.0)
 
-Para e-mail no Render Free, selecionar `MAIL_PROVIDER=brevo` e configurar `BREVO_API_KEY` e `MAIL_FROM` somente no ambiente privado do servidor. O adaptador usa HTTPS, pois SMTP é bloqueado no Render Free. O remetente precisa ser verificado e o plano Free respeitado; não houve cadastro/ativação de provedor nem envio externo. Sem configuração completa, recuperação por e-mail continua indisponível. O adaptador SMTP existente permanece opcional para outros ambientes.
+| Item | Situação |
+|---|---|
+| API | https://desafio-aceito-api.onrender.com (`/health` responde 200, HTTPS obrigatório) |
+| Banco | Neon, migrações 001–009 em `api/migrations` |
+| Testes | 47 do app e 24 da API passam; tipos e lint sem erro |
+| APK | Build `preview` pelo Expo/EAS, a partir do branch `main` |
+| Google e e-mail | Implementados, mas **desativados**: faltam clientes OAuth e provedor de e-mail |
+| Verificação em celular | **Não concluída**: matriz visual, instalação em aparelho e ensaio dos integrantes |
 
-O professor recebe o APK e não precisa configurar a infraestrutura. Antes de gerar o APK final, publicar e verificar o Render, atualizar a URL pública no app e no perfil EAS e validar os fluxos conectados. Google e entrega externa de e-mail ainda dependem de configuração real; testes visuais/no aparelho ainda não foram concluídos.
+O Render gratuito dorme após inatividade. A primeira requisição pode levar cerca de 1 minuto, e o app mostra um contador de espera.
 
-Referências: [Render Free](https://render.com/docs/free), [Blueprint](https://render.com/docs/blueprint-spec), [Brevo Free](https://help.brevo.com/hc/en-us/articles/208580669-FAQs-What-are-the-limits-of-the-Free-plan).
+## Funcionalidades
 
----
+- Cadastro, login, troca de senha e códigos de recuperação de uso único.
+- Cadastro e edição da equipe (categoria, nível, campo preferido, elenco).
+- Descoberta com filtros, interesse mútuo, matches e chat entre contas.
+- Propostas de amistoso com data, local e mando de campo; verificação de conflito de agenda.
+- Caução simulada (R$ 50), cancelamento comum e por clima, penalidades ilustrativas (R$ 10 / R$ 30).
+- Resultado após o início do jogo, avaliação em quatro critérios e ranking.
+- Área do árbitro: perfil, disponibilidade, convites e aceite.
+- Modo local sem internet (dados fictícios identificados) e modo demonstração.
 
-# Estado atual — 1.4.0
+Limites conhecidos: a distância entre equipes não é calculada de verdade, e notificações push externas não existem.
 
-## Acesso do professor — somente Android
+## Rodar o app (desenvolvimento)
 
-A entrega do aplicativo será por **APK para celular ou tablet Android**. Não será publicada uma versão web. O APK não funciona em iPhone/iPad nem abre diretamente no navegador do computador.
-
-Depois que o APK atualizado estiver disponível, basta baixá-lo, instalar e abrir. O professor não precisa instalar Node.js, Expo Go, configurar banco ou executar a API. **Explorar demonstração** permite avaliar dados fictícios sem conta e sem internet. Para cadastrar uma conta e usar equipes/dados compartilhados, é necessária conexão com a internet e a API disponível.
-
-O GitHub e a documentação oficial destinam-se à análise do código e dos requisitos. A publicação no GitHub permanece para a etapa posterior autorizada pelo usuário. As instruções técnicas abaixo são para desenvolvimento, não pré-requisitos para abrir o APK.
-
-**Estado da entrega:** o APK atualizado ainda não foi gerado. O APK 1.2.0 citado neste README é histórico e não contém as mudanças 1.4.0.
-
-API 1.4.0 publicada no Railway, com migrações 001–009 confirmadas no Neon. Foram aprovados 44 testes do aplicativo, 21 cenários de API, lint e tipos; exportações Android/iOS/web concluídas. Nenhum APK novo foi gerado nesta etapa, conforme solicitado.
-
-O código inclui Google nativo com verificação oficial no servidor, vínculo seguro por senha do aplicativo e testes criptográficos. Ainda é necessário cadastrar os clientes reais e configurar `GOOGLE_WEB_CLIENT_ID`. E-mail exige configuração SMTP privada; o transporte foi testado com TLS local, sem entrega externa. Veja [configuração das integrações](docs/CONFIGURAR_GOOGLE_EMAIL.md). O teste SMTP da suíte da API requer OpenSSL instalado.
-
-A comparação com o Figma, a matriz visual, a instalação em aparelho e o ensaio dos integrantes continuam sem comprovação. O APK 1.2.0 abaixo é histórico e não contém estas mudanças. GitHub permanece sem publicação.
-
----
-
-# Desafio Aceito — aplicativo mobile
-
-Projeto acadêmico da FutTech/FECAP em React Native, TypeScript e Expo SDK 58. A API usa NestJS e PostgreSQL. A caução é sempre **simulada**, sem cobrança ou transferência real. Identificadores de cartão acadêmicos guardam somente apelido e quatro dígitos fictícios, sem PAN/CVV.
-
-## Código e API 1.3.0
-
-- Contas e cadastro/edição da própria equipe.
-- Descoberta e filtros, interesse mútuo, matches e chat privado entre contas.
-- Propostas com aceite/recusa adversária, mando por ID e agenda compartilhada.
-- Verificação de conflitos das equipes e do local informado em intervalos de duas horas.
-- Caução simulada de R$ 50 após aceite, confirmação, cancelamento e estorno simulados. Penalidades ilustrativas de R$ 10/R$ 30; o PDF não define valores.
-- Resultado após o início, avaliação única por participante em quatro critérios e ranking agregado no servidor.
-- Cadastro separado de árbitro/bandeirinha, disponibilidade, convites privados e aceite/recusa. O servidor impede atuação na própria equipe e conflito de horário.
-- Persistência local isolada da demonstração, notificações internas e modo escuro.
-- Minha conta, troca de senha e códigos de recuperação de uso único; recuperação/confirmação por e-mail com transporte SMTP configurável.
-- Pagamentos/cartões/planos acadêmicos, elenco, campo preferido e interesse prioritário sem dispensar reciprocidade.
-- Tratamento de links e retomada segura de destino após autenticação, com validação de rotas, IDs e tokens.
-
-## API e banco online
-
-API: https://desafio-aceito-api-production.up.railway.app
-
-- API NestJS publicada no Railway, executada no runtime Bun a partir do mesmo código compilado e testado.
-- PostgreSQL no Neon, com migrações versionadas, chaves e integridades.
-- A conexão do banco fica somente nas variáveis privadas do servidor. O aplicativo recebe apenas a URL pública da API.
-- A publicação foi feita sem criar/publicar um repositório no GitHub.
-
-A área de acesso permite criar contas conectadas ao mesmo servidor. Cadastre duas equipes independentes para demonstrar interesse mútuo, mensagens e propostas. O perfil profissional pode existir sem equipe.
-
-A caução serve apenas à apresentação acadêmica: todos os registros financeiros são identificados como simulações. O local digitado verifica a agenda interna do aplicativo e não reserva um estabelecimento. Distância geográfica, login Google e push externo não estão implementados/configurados como serviços reais. O código de recuperação/confirmação por e-mail existe, mas o ambiente publicado está sem SMTP; códigos de recuperação previamente salvos permitem redefinir a senha sem e-mail. Não há envio fictício de mensagens.
-
-## Abrir pelo Expo Go
-
-Instale Node.js 24 e Expo Go compatível com SDK 58. Na pasta do projeto:
+Requer Node.js 24.
 
 ```sh
+git clone https://github.com/LuizZaim/desafio-aceito.git
+cd desafio-aceito
 npm ci
-# Copie .env.example para .env. A URL da API publicada já consta no exemplo.
+cp .env.example .env
 npx expo start
 ```
 
-Computador e celular devem estar na mesma rede para carregar o código do Expo. Leia o QR code pelo Expo Go no Android. As contas usam a API HTTPS publicada, independentemente do banco local.
+Abra pelo Expo Go (SDK 58) no Android, na mesma rede do computador. O `.env` traz só a URL pública da API (`EXPO_PUBLIC_API_URL`).
 
-## Apresentação sem internet
-
-Use **Cadastrar ou abrir meu time neste aparelho**. O perfil da equipe é seu; os adversários, reciprocidades, conversas e pagamentos são fictícios e identificados nas telas. O cadastro começa sem partidas e matches anteriores, e o fluxo fica salvo em SQLite no aparelho. É possível criar um amistoso, simular caução e simular imediatamente o jogo para demonstrar placar e avaliação, sem esperar a data marcada.
-
-**Explorar demonstração** abre um espaço separado com dados fictícios já preparados. Os dois espaços não substituem as contas conectadas nem publicam seus dados na internet.
-
-## API local para desenvolvimento
+## Rodar a API local
 
 Com Docker:
 
 ```sh
-# Configure POSTGRES_PASSWORD no .env da raiz.
+# defina POSTGRES_PASSWORD no .env da raiz
 docker compose up --build
 ```
 
-Sem Docker, instale PostgreSQL e execute:
+Sem Docker, com PostgreSQL instalado:
 
 ```sh
 cd api
 npm ci
-# Copie .env.example para .env e configure DATABASE_URL.
+cp .env.example .env   # configure DATABASE_URL
 npm run migrate
 npm run start:dev
 ```
 
-As migrações 001–008 são aplicadas em ordem sob transação/trava, com registro em schema_migrations. A API no Docker aplica as migrações antes de iniciar, inclusive em banco existente. Cadastros antigos válidos são preservados; incompletos mantêm rascunhos; matches fictícios não são importados para relações reais.
+Variáveis da API em `api/.env.example`. Nunca versione o `.env`.
 
-## Recuperação e manutenção da conta
+## Publicar a API no Render
 
-Abra **Configurações → Minha conta** com uma conta conectada. A senha atual autoriza trocar senha e gerar seis códigos de recuperação; guarde-os antes de perder o acesso. Eles são mostrados uma vez, usados uma única vez e regenerá-los invalida os anteriores. Recuperar/trocar credenciais encerra as sessões da conta.
+O arquivo `render.yaml` define o serviço (plano gratuito, região Oregon). No Render, crie um Blueprint a partir deste repositório e informe `DATABASE_URL` (Neon) no campo secreto. O build instala também as devDependencies (`npm ci --include=dev`) e a migração roda no início.
 
-Para habilitar entrega de e-mail, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` e `SMTP_FROM` somente no servidor. O adaptador exige TLS ou STARTTLS com certificado verificado. Sem configuração, a API informa indisponibilidade e a interface não declara envio. Tokens de recuperação/confirmação duram 20 minutos e só seus hashes ficam no banco. Testes com adaptador injetado não comprovam entrega por um provedor externo.
+Para e-mail no plano gratuito (SMTP é bloqueado), use `MAIL_PROVIDER=brevo` com `BREVO_API_KEY` e `MAIL_FROM`. Veja `docs/CONFIGURAR_GOOGLE_EMAIL.md` para Google e e-mail.
 
-Os planos e créditos são escolhas da demonstração, sem preços: ativação acadêmica libera um crédito fictício uma vez e a recarga gratuita permite até dez. Prioridade não garante match. Esses números não foram definidos pelo PDF.
-
-## Atualizar a API no Railway sem GitHub
+## Gerar o APK
 
 ```sh
-cd api
-npm ci
-npm run build:railway
-```
-
-O gerador cria `outputs/railway/api.ts` na raiz, com o código NestJS compilado, dependências fixadas nas versões do lockfile e migrações. O arquivo não contém credenciais. O Railway executa esse arquivo no runtime Bun. Alterações podem ser aplicadas na função `desafio-aceito-api`; as variáveis de conexão continuam privadas no serviço. O Dockerfile também permanece disponível para uma distribuição tradicional.
-
-## APK Android
-
-O perfil preview já configura a URL HTTPS da API. Para gerar a versão atual:
-
-```sh
-npx eas-cli@latest login --device
+npx eas-cli@latest login
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-O ZIP contém o projeto executável e não é um APK. O APK anterior, gerado em 12/11/2026, não incorpora automaticamente alterações posteriores. O APK anterior 1.2.0 já foi gerado: [baixar APK 1.2.0](https://expo.dev/artifacts/eas/9XNjPamhqQQm1NlGjO9TcO9aNbIAHRsIe4svpbIkDIA.apk). Ele não contém as novidades 1.3.0. O APK 1.3.0 ainda não foi gerado; a sessão Expo/EAS precisa ser autenticada novamente. Instalação e homologação no celular continuam necessárias.
+O perfil `preview` aponta para a API do Render. Suba o `versionCode` em `app.json` antes de cada build, ou o Android pode recusar a instalação por cima de uma versão igual. Se recusar, desinstale o app antigo.
+
+## Versão web (opcional)
+
+O app é nativo, mas a exportação web usa modo SPA (`web.output = single`). Todas as rotas caem em `index.html`, então recarregar uma página não gera 404.
+
+```sh
+npx expo export --platform web --output-dir dist-web
+```
+
+Em qualquer hospedagem estática, configure o fallback para `index.html`.
 
 ## Verificações
 
@@ -139,33 +98,39 @@ O ZIP contém o projeto executável e não é um APK. O APK anterior, gerado em 
 npm run typecheck
 npm run lint
 npm test
-npx expo export --platform android --output-dir outputs/android
 cd api
 npm run build
 npm test
-SMOKE_API_URL=https://desafio-aceito-api-production.up.railway.app node scripts/smoke-online.mjs
 ```
 
-O último comando cria cadastros técnicos temporários na API publicada, verifica o fluxo entre contas, desativa as equipes de teste e encerra as sessões. Não executa cobranças. Os demais testes usam domínio, SQLite e PostgreSQL embutido/PGlite; não substituem homologação no aparelho.
+Os testes da API usam PostgreSQL embutido (PGlite). O teste de SMTP exige OpenSSL.
 
-## Código e checklist
+## Estrutura
 
-O histórico Git local acompanha `repositorio.bundle` dentro do ZIP:
-
-```sh
-git clone repositorio.bundle desafio-aceito
+```
+src/app          telas (expo-router)
+src/components   componentes
+src/core         domínio, estado, cliente da API
+src/storage      persistência local (SQLite)
+api/src          API (controllers, serviços, banco)
+api/migrations   esquema do banco, em ordem
+docs             requisitos, auditoria, validação e guias
 ```
 
-A publicação do repositório no GitHub fica para uma etapa posterior, conforme solicitado. O README descreve execução e configuração; o PDF acadêmico original foi preservado.
+## Documentação
 
-- [Evidências executadas](docs/VALIDACAO.md).
-- [Guia de leitura do código](docs/GUIA_CODIGO.md).
-- [Conferência dos 50 critérios](docs/AUDITORIA.md).
-- [Checklist de código e critérios de aceite](docs/PLANO_CONCLUSAO.md).
-- [Roteiro entre contas](docs/HOMOLOGACAO_ENTRE_CONTAS.md).
-- [PDF técnico fornecido](docs/referencias/Documentacao_Tecnica_Desafio_Aceito.pdf).
-- [Auditoria original](docs/referencias/auditoria_original_2026-11-11.txt).
+- [Requisitos](docs/REQUISITOS.md)
+- [Auditoria dos critérios](docs/AUDITORIA.md)
+- [Evidências de validação](docs/VALIDACAO.md)
+- [Plano de conclusão](docs/PLANO_CONCLUSAO.md)
+- [Guia de leitura do código](docs/GUIA_CODIGO.md)
+- [Roteiro entre contas](docs/HOMOLOGACAO_ENTRE_CONTAS.md)
+- [PDF técnico](docs/referencias/Documentacao_Tecnica_Desafio_Aceito.pdf)
 
-Integrantes: Luiz Henrique Zaim da Cruz; Guilherme Monteiro da Silva; Murilo Angelo Pimentel Braggio; Enzo Henrique; Vitor Kolle.
+## Integrantes
 
-Verificação 1.3.0: **37 testes mobile e 15 cenários de API passaram**, além de tipos, lint, compilação e exportação Android. API publicada confirmou `/health` 200/1.3.0 e capacidades coerentes com SMTP indisponível. Permanecem sem evidência: fidelidade ao Figma (permissão do arquivo negada), nova matriz visual, APK 1.3.0/instalação, deep link entregue pelo Android e ensaio dos integrantes. Não se declara 100% do checklist.
+Luiz Henrique Zaim da Cruz, Guilherme Monteiro da Silva, Murilo Angelo Pimentel Braggio, Enzo Henrique, Vitor Kolle.
+
+## Licença
+
+Veja [LICENSE](LICENSE).
