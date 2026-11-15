@@ -508,6 +508,11 @@ export function Empty({
 }
 export function Busy() {
   const c = useColors();
+  const [seconds, setSeconds] = React.useState(0);
+  React.useEffect(() => {
+    const timer = setInterval(() => setSeconds((value) => value + 1), 1000);
+    return () => clearInterval(timer);
+  }, []);
   return (
     <View
       style={{
@@ -520,6 +525,14 @@ export function Busy() {
     >
       <ActivityIndicator size="large" color={c.orange} />
       <Text style={{ color: c.muted }}>Preparando o campo…</Text>
+      {seconds >= 5 && (
+        <Text
+          accessibilityLiveRegion="polite"
+          style={{ color: c.muted, textAlign: "center", maxWidth: 300, fontSize: 14 }}
+        >
+          {`Acordando o servidor gratuito (${seconds} s). Na primeira vez do dia isso pode levar cerca de 1 minuto. Não feche o app.`}
+        </Text>
+      )}
     </View>
   );
 }

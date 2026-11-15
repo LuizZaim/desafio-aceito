@@ -27,7 +27,8 @@ const token = (r: Request) =>
 @Catch()
 class Errors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
-    const response = host.switchToHttp().getResponse<Response>();
+    const http = host.switchToHttp();
+    const response = http.getResponse<Response>();
     const known = error instanceof HttpException;
     const parseError =
       !!error &&
@@ -41,6 +42,11 @@ class Errors implements ExceptionFilter {
           ? 413
           : 400
         : 500;
+    if (status >= 500) {
+      const req = http.getRequest<Request>();
+      // Sem corpo, cabeçalhos ou token: só método, rota e código do erro.
+      console.error("erro-500", req.method, String(req.url).split("?")[0], (error as any)?.code || (error as any)?.name || "desconhecido");
+    }
     response.status(status).json({
       statusCode: status,
       message: known
@@ -112,6 +118,8 @@ export async function createApp(db: Database, options: {emailDelivery?: EmailDel
     logger: false,
     bodyParser: false,
   });
+  // Atrás do proxy do Render, req.ip precisa ser o IP real do cliente para o limite não ser global.
+  (app.getHttpAdapter().getInstance() as any).set("trust proxy", 1);
   app.use(helmet());
   app.use(json({ limit: "16kb" }));
   const origins = (process.env.CORS_ORIGINS || "").split(",").filter(Boolean);

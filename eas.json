@@ -19,6 +19,7 @@
     },
     "production": {
       "autoIncrement": true,
+      "env": { "EXPO_PUBLIC_API_URL": "https://desafio-aceito-api.onrender.com" },
       "android": {
         "buildType": "app-bundle"
       }
