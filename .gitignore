@@ -49,3 +49,5 @@ api/.env
 outputs/
 
 .openai/
+
+AGENTS.md

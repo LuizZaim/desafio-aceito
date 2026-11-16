@@ -46,43 +46,35 @@ Times de futebol amador têm dificuldade de achar adversário. O **Desafio Aceit
 
 ## 🚀 Como testar (avaliador)
 
-### Passo 1: instalar o app no Android
+**Em 3 passos, no celular Android:**
 
-1. Baixe o APK (versão 1.5.3): [desafio-aceito-1.5.3.apk](https://github.com/LuizZaim/desafio-aceito/releases/download/v1.5.3/desafio-aceito-1.5.3.apk) (aba **Releases** do repositório).
-2. Abra o arquivo no celular e permita **instalar de fontes desconhecidas** quando pedido.
+1. **Instale o app:** baixe o [APK 1.5.3](https://github.com/LuizZaim/desafio-aceito/releases/download/v1.5.3/desafio-aceito-1.5.3.apk), abra o arquivo e permita instalar de fontes desconhecidas.
+2. **Entre com a conta de teste:**
 
-### Passo 2: entrar com a conta de teste
+   | E-mail | Senha |
+   |---|---|
+   | `avaliador@desafioaceito.test` | `Avaliador2026` |
 
-Na tela inicial, digite e toque em **Entrar**:
+3. **Teste com as equipes `[Demo]`.** Elas reagem sozinhas, então uma conta e um aparelho bastam:
 
-| | |
-|---|---|
-| **E-mail** | `avaliador@desafioaceito.test` |
-| **Senha** | `Avaliador2026` |
+   | Você faz | A equipe [Demo] responde |
+   |---|---|
+   | Curte uma equipe em **Descobrir** | Curte de volta: **match** na hora |
+   | Escreve no **chat** | Responde conforme o assunto (horário, campo, valor, elenco, uniforme, chuva, árbitro...) |
+   | Propõe um **amistoso** (data futura, local, mando) | Aceita sozinha |
+   | Paga a **caução** (simulada) | Partida confirmada |
+   | Registra o **resultado** e **avalia** | A nota entra no **ranking** |
 
-A conta já tem a equipe **[Demo] Avaliador FC** e outras 5 equipes **[Demo]** para descobrir. As equipes **[Demo]** reagem sozinhas, para dar para testar tudo com **uma conta e um aparelho**:
-
-| Você faz | A equipe [Demo] responde |
-|---|---|
-| Curte uma equipe na aba **Descobrir** | Curte de volta: **match** na hora |
-| Manda mensagem no **chat** | Responde pelo assunto (horário, campo, valor, elenco, saudação). Mensagens marcadas `[Demonstração]` |
-| Propõe um **amistoso** (data futura, local, mando de campo) | Aceita sozinha |
-| Paga a **caução** (simulada) | Partida confirmada |
-| Registra o **resultado** e **avalia** o adversário | A nota entra no **ranking** |
-
-> ⏳ O servidor gratuito dorme. O **primeiro acesso pode levar cerca de 1 minuto**; o app mostra um aviso de espera e tenta de novo sozinho. Para acordar antes: `curl -m 15 https://desafio-aceito-api.onrender.com/health` (resposta 200 = acordado).
+> ⏳ O servidor gratuito dorme: o **primeiro acesso pode levar cerca de 1 minuto**. O app avisa e tenta de novo sozinho.
 
 ### Outras formas de entrar
 
-| Entrada | Internet? | Descrição |
-|---|---|---|
-| **Explorar demonstração** | Não | Sem cadastro nem senha. Equipes, conversas e partidas fictícias, tudo guardado só no celular. Mostra todos os fluxos, inclusive o de árbitro. |
-| **Cadastre-se** | Sim | Cria uma conta real (e-mail válido; senha com 8+ caracteres, letras e números) e depois o seu time. A conta começa **vazia**: sem adversários, conversas nem partidas. |
-| **Continuar com Google** | Sim | Login real com conta Google. Também cria uma conta vazia. |
+- **Explorar demonstração:** sem cadastro, sem internet. Dados fictícios guardados só no celular; mostra todos os fluxos, inclusive o de árbitro.
+- **Cadastre-se** ou **Continuar com Google:** criam uma conta real, que começa **vazia** (sem adversários, conversas ou partidas).
 
-Para sair da conta, use o botão no canto superior direito.
+> 💳 Pagamentos, caução e cartões são **sempre simulados**.
 
-### Só ler o código e rodar os testes (sem instalar nada no celular)
+### Só ler o código e rodar os testes
 
 ```sh
 git clone https://github.com/LuizZaim/desafio-aceito.git
@@ -90,8 +82,6 @@ cd desafio-aceito
 npm ci
 npm run typecheck && npm run lint && npm test
 ```
-
-> 💳 Pagamentos, caução e cartões são **sempre simulados**. Não existe cobrança real.
 
 ---
 
@@ -142,6 +132,7 @@ npm run typecheck && npm run lint && npm test
 │   ├── migrations/     Esquema do banco, 001 a 009, em ordem
 │   └── tests/          Testes da API (usam PGlite, sem precisar de Postgres)
 ├── tests/              Testes do app (node --test)
+├── documentacao/       Documento técnico completo (PDF, ABNT)
 ├── docs/               Requisitos, auditoria, validação, guias, política de privacidade
 ├── app.json            Versão e configuração do Expo/Android
 ├── eas.json            Perfis de build do APK
@@ -243,7 +234,7 @@ Os testes da API usam PostgreSQL embutido (PGlite). O teste de SMTP exige OpenSS
 - [Roteiro entre contas](docs/HOMOLOGACAO_ENTRE_CONTAS.md)
 - [Roteiro de demonstração](docs/ROTEIRO_DEMONSTRACAO.md)
 - [Configurar Google e e-mail](docs/CONFIGURAR_GOOGLE_EMAIL.md)
-- [**Documento técnico completo (PDF, ABNT)**](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf) e [versão editável (.docx)](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.docx): wireframes, arquitetura, requisitos, diagramas, banco e prints do app (itens 1 a 28 do checklist)
+- [**Documento técnico completo (PDF, ABNT)**](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf): wireframes, arquitetura, requisitos, diagramas, banco e prints do app
 
 ---
 
