@@ -14,7 +14,6 @@ import { useStore } from "../core/store";
 import { postLoginDestination } from "../core/navigation";
 import { FieldArt, Button, Input, Note, useColors, useKeyboardInset } from "../components/ui";
 import { emailError } from "../core/validation";
-import { GoogleAccess } from "../components/google-access";
 export default function Login() {
   const { aviso } = useLocalSearchParams<{ aviso?: string }>();
   const { mode, demo, login, state, arbitration, pendingDestination } = useStore();
@@ -172,7 +171,6 @@ export default function Login() {
               </Text>
             </Text>
           </Pressable>
-          <GoogleAccess disabled={busy} onBusy={setBusy} />
           <Button
             title="Explorar demonstração"
             secondary
