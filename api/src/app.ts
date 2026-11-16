@@ -20,7 +20,6 @@ import helmet from "helmet";
 import type { Database } from "./db";
 import { Service } from "./service";
 import type { EmailDelivery } from "./mail";
-import type { GoogleIdentityProvider } from "./google-identity";
 const TOKEN = "APP_SERVICE";
 const token = (r: Request) =>
   r.headers.authorization?.replace(/^Bearer /, "") || "";
@@ -72,7 +71,6 @@ class API {
   @Post("auth/login") @HttpCode(200) login(@Body() body: any) {
     return this.app.login(body);
   }
-  @Post("auth/google") @HttpCode(200) google(@Body() body:any) { return this.app.googleLogin(body); }
   @Get("auth/capabilities") capabilities() { return this.app.capabilities(); }
   @Post("auth/forgot-password") @HttpCode(202) forgot(@Body() body: any) { return this.app.forgot(body); }
   @Post("auth/reset-password") @HttpCode(200) reset(@Body() body: any) { return this.app.reset(body); }
@@ -111,10 +109,10 @@ class API {
     return this.app.update(await this.app.authenticate(token(req)), body);
   }
 }
-export async function createApp(db: Database, options: {emailDelivery?: EmailDelivery;googleIdentity?:GoogleIdentityProvider} = {}) {
+export async function createApp(db: Database, options: {emailDelivery?: EmailDelivery} = {}) {
   @Module({
     controllers: [API],
-    providers: [{ provide: TOKEN, useValue: new Service(db,options.emailDelivery,options.googleIdentity) }],
+    providers: [{ provide: TOKEN, useValue: new Service(db,options.emailDelivery) }],
   })
   class AppModule {}
   const app = await NestFactory.create(AppModule, {

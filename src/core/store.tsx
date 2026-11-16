@@ -43,7 +43,6 @@ interface Store {
   demo: () => Promise<void>;
   local: () => Promise<void>;
   login: (email: string, password: string, name?: string) => Promise<void>;
-  loginGoogle: (idToken: string, password?: string) => Promise<void>;
   logout: () => Promise<void>;
   reload: () => Promise<void>;
 }
@@ -313,9 +312,6 @@ export function Provider({ children }: { children: React.ReactNode }) {
     await authenticate(name ? "/auth/register" : "/auth/login", { email, password, name });
   }
 
-  async function loginGoogle(idToken: string, password?: string) {
-    await authenticate("/auth/google", { idToken, password });
-  }
 
   async function logout() {
     if (lock.current) throw Error("Aguarde a operação anterior terminar.");
@@ -401,7 +397,6 @@ export function Provider({ children }: { children: React.ReactNode }) {
       demo,
       local,
       login,
-      loginGoogle,
       logout,
       reload,
     }}>

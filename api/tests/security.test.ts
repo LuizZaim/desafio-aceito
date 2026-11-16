@@ -32,7 +32,7 @@ test("segurança sem SMTP: códigos privados de uso único e alteração de senh
   try {
     const a=await f.register("alice@example.com"), b=await f.register("bob@example.com");
     const caps=await request(f.http).get("/auth/capabilities").expect(200);
-    assert.deepEqual(caps.body,{passwordRecovery:false,emailChange:false,passwordChange:true,recoveryCodes:true,google:false});
+    assert.deepEqual(caps.body,{passwordRecovery:false,emailChange:false,passwordChange:true,recoveryCodes:true});
     const unavailable=await request(f.http).post("/auth/forgot-password").send({email:"alice@example.com"}).expect(503);
     const unknown=await request(f.http).post("/auth/forgot-password").send({email:"unknown@example.com"}).expect(503);
     assert.deepEqual(unavailable.body,unknown.body);

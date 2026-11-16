@@ -41,7 +41,7 @@ Referência: tabela de requisitos e casos de uso da documentação técnica revi
 
 | Caso de uso do PDF | Situação que ainda precisa ser concluída |
 |---|---|
-| UC-L02 / UC-L04 | Login e cadastro por Google com validação do provedor e vínculo de conta no servidor. |
+| UC-L02 / UC-L04 | Recuperar acesso por código de uso único e alterar a senha. |
 | UC-E05 | Alteração de e-mail e senha com verificação de identidade e política de sessões. |
 | UC-R03 / UC-R05 | Pontualidade e organização no formulário, domínio e avaliação compartilhada; homologação em aparelho ainda pendente. |
 | UC-C02 / UC-C03 / UC-C04 | Pagamentos da atividade simulados; gestão real de cartões/assinaturas não incluída. Não é necessário gateway para apresentar o fluxo acadêmico. |

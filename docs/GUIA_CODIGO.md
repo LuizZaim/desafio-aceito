@@ -24,4 +24,4 @@ Cada integrante deve conseguir executar uma parte e responder, apontando o trech
 5. O que acontece com as sessões ao recuperar a conta, e por que os códigos devem ser guardados antes de perder o acesso?
 6. Quais resultados foram testados localmente, quais foram verificados no servidor hospedado e quais ainda precisam de celular/Figma/ensaio humano?
 
-Use `VALIDACAO.md` para citar evidências realmente executadas e `AUDITORIA.md` para declarar limites. Não apresentar integração Google, entrega de e-mail, pagamento real ou teste físico como concluídos sem evidência.
+Use `VALIDACAO.md` para citar evidências realmente executadas e `AUDITORIA.md` para declarar limites. Não apresentar entrega de e-mail, pagamento real ou teste físico como concluídos sem evidência.
