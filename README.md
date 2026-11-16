@@ -57,17 +57,29 @@ npm run typecheck && npm run lint && npm test
 
 ### Opção B: instalar o app no Android (recomendado)
 
-1. **Baixe o APK.** Aba **Releases** do repositório (quando publicado) ou o link do Expo:
-   [build no Expo](https://expo.dev/accounts/luizzaim/projects/desafio-aceito-app/builds/d3d9df13-ca0c-4916-a87d-e73e31bde16f).
+1. **Baixe o APK (versão 1.5.3).** Aba **Releases** do repositório (quando publicado) ou o link direto do Expo:
+   [Desafio Aceito 1.5.3 (APK)](https://expo.dev/artifacts/eas/REnRqCK9ex18nZ21Cyvn0lOOw01_GCjfbHhmaq3B8EI.apk).
    ⚠️ Links do Expo expiram (cerca de 2 semanas). Se não abrir, veja [Gerar o APK](#-publicar-api-e-apk).
 2. Abra o arquivo no Android e permita **"instalar de fontes desconhecidas"** quando pedido.
 3. Na tela inicial, escolha **uma** destas entradas:
 
 | Entrada | Precisa de internet? | Para que serve |
 |---|---|---|
-| **Explorar demonstração** | Não | Entra direto, com equipes, conversas e partidas **fictícias**. A forma mais rápida de ver todos os fluxos. |
-| **Cadastre-se** (e-mail + senha de 8+ caracteres) | Sim | Conta real no servidor. Duas contas diferentes podem dar match entre si. |
+| **Explorar demonstração** (conta de demonstração) | Não | **Não precisa de cadastro nem senha.** Entra direto, com **várias equipes**, conversas e partidas **fictícias**. O time adversário "responde" sozinho (mensagens marcadas como `[Demonstração]`). É a forma mais rápida de ver todos os fluxos. |
+| **Cadastre-se** (conta real) | Sim | Cria **a sua própria conta** no servidor, com e-mail válido e senha de 8+ caracteres (letras e números), e depois o seu time. |
 | **Continuar com Google** | Sim | Login com Google (ver [limitações](#-o-que-funciona-e-o-que-não-funciona)). |
+
+#### 🧪 Conta de demonstração × conta real
+
+| | Demonstração | Conta real |
+|---|---|---|
+| Como entrar | Botão **Explorar demonstração** | **Cadastre-se** ou Google |
+| Equipes para dar match | **Várias** (fictícias, ilustrativas) | **Apenas 1 time real cadastrado** no momento (mais equipes só se outras pessoas se cadastrarem) |
+| Onde ficam os dados | Só no seu celular | No servidor (banco Neon) |
+| Resposta do adversário | Simulada, automática | Só existe se outra pessoa real responder |
+| Pagamento/caução | Simulado | Simulado |
+
+> Por isso, **para ver o app "cheio" (Descobrir, match, chat, amistoso, resultado, ranking), use a demonstração.** Use a conta real para ver o cadastro, o login e o time salvo no servidor. Para testar match e chat reais, é preciso **duas contas** (dois aparelhos ou duas pessoas).
 
 4. Para sair da conta, use o botão no canto superior direito.
 
@@ -94,7 +106,7 @@ Resposta `200` = servidor acordado. Se der timeout, repita em 30 segundos.
 
 ## ✅ O que funciona e o que não funciona
 
-Honestidade primeiro. Estado na versão **1.5.1**:
+Honestidade primeiro. Estado na versão **1.5.3**:
 
 | Item | Situação |
 |---|---|
@@ -105,7 +117,7 @@ Honestidade primeiro. Estado na versão **1.5.1**:
 | Cadastro/login por e-mail | Funciona |
 | Login com Google | Configurado e publicado como "Em produção" no Google, só com escopos básicos (e-mail e id). **Ainda não foi testado em celular real nem com conta que não seja do autor.** Se falhar, use e-mail e senha |
 | Recuperação de senha por e-mail | **Desativada** (falta provedor de e-mail). Use os **códigos de recuperação** gerados na conta |
-| Teste em celular real | **Parcial**: ainda falta a verificação completa e o fluxo entre duas contas em dois aparelhos |
+| Teste em celular real | **Parcial**: demonstração, cadastro/login por e-mail, teclado e validações testados em um Galaxy A56. Ainda falta o fluxo entre duas contas em dois aparelhos e o login Google com outra conta |
 | Notificações push | Não existem (só notificações dentro do app) |
 | Distância entre equipes | Não é calculada de verdade |
 | Pagamentos | Sempre simulados |
