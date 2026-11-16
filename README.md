@@ -71,6 +71,12 @@ A conta começa **sem matches e sem conversas**: as 5 equipes [Demo] aparecem em
 
 > ⏳ O servidor gratuito dorme: o **primeiro acesso pode levar cerca de 1 minuto**. O app avisa e tenta de novo sozinho.
 
+### Sem celular Android?
+
+- **Vídeo da demonstração (2 min):** [assistir](docs/demo-desafio-aceito.mp4). Mostra o fluxo completo no app: descobrir, match, chat, amistoso, caução simulada e ranking.
+- **Prints de cada tela:** seção 2.4 do [PDF da documentação](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf).
+- **Emulador (opcional):** instale o Android Studio, crie um aparelho virtual em *Device Manager* (Pixel, Android 14), arraste o APK para a janela do emulador, abra o app e entre com a conta de teste acima. Não testado por nós; o login com Google pode não funcionar no emulador.
+
 ### Outras formas de entrar
 
 - **Explorar demonstração:** sem cadastro, sem internet. Dados fictícios guardados só no celular; mostra todos os fluxos, inclusive o de árbitro.
