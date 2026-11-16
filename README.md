@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.png" width="220" alt="Desafio Aceito, FutTech"></p>
+
 # ⚽ Desafio Aceito
 
 > O "Tinder de equipes" do futebol amador: encontre um adversário, combine data e campo, marque o jogo.
