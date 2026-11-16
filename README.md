@@ -63,7 +63,7 @@ npm run typecheck && npm run lint && npm test
 |---|---|---|
 | **Explorar demonstração** (conta de demonstração) | Não | **Não precisa de cadastro nem senha.** Entra direto, com **várias equipes**, conversas e partidas **fictícias**. O time adversário "responde" sozinho (mensagens marcadas como `[Demonstração]`). É a forma mais rápida de ver todos os fluxos. |
 | **Cadastre-se** (conta real) | Sim | Cria **a sua própria conta** no servidor, com e-mail válido e senha de 8+ caracteres (letras e números), e depois o seu time. |
-| **Continuar com Google** | Sim | Login com Google (ver [limitações](#-o-que-funciona-e-o-que-não-funciona)). |
+| **Continuar com Google** | Sim | Login com Google. |
 
 #### 🧪 Conta de demonstração × conta real
 
