@@ -65,7 +65,7 @@ Times de futebol amador têm dificuldade de achar adversário. O **Desafio Aceit
    | Paga a **caução** (simulada) | Partida confirmada |
    | Registra o **resultado** e **avalia** | A nota entra no **ranking** |
 
-As equipes **Tigres do Bixiga**, **Leoas da Liberdade** e **Estrela da Mooca** já começam em match (dá para conversar na hora). **Real Pinheiros** e **Unidos do Tatuapé** aparecem em **Descobrir** para você curtir.
+A conta começa **sem matches e sem conversas**: as 5 equipes [Demo] aparecem em **Descobrir** para você curtir.
 
 > ⏳ O servidor gratuito dorme: o **primeiro acesso pode levar cerca de 1 minuto**. O app avisa e tenta de novo sozinho.
 

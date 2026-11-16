@@ -1,4 +1,5 @@
 // Carga inicial para teste: conta do avaliador + 5 equipes "[Demo]" na API real.
+// Nenhum match é criado aqui: o avaliador curte as equipes em Descobrir e o servidor responde.
 // Usa só os endpoints públicos (mesmas regras de validação do app). Idempotente.
 // Uso: SEED_API_URL=https://desafio-aceito-api.onrender.com node api/scripts/seed-demo.mjs
 import { createHash } from "node:crypto";
@@ -53,7 +54,5 @@ for (const [n, district, category, level] of DEMOS) {
   const token = await account({ email, password, name: `Responsável ${n}` });
   const id = await team(token, { name: `[Demo] ${n}`, district, city: "São Paulo", state: "SP", category, level, bio });
   ids.push(id);
-  // As 3 primeiras já demonstram interesse no time do avaliador (basta curtir de volta para dar match).
-  if (ids.length <= 3) { try { await act(token, { type: "interest", id: evalTeam }); } catch {} }
 }
 console.log(JSON.stringify({ avaliador: EVALUATOR.email, equipes: ids.length + 1 }));
