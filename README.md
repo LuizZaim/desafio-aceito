@@ -17,16 +17,14 @@ Projeto da faculdade de **Ciência da Computação da FECAP**, da empresa fictí
 
 1. [O que é](#-o-que-é)
 2. [Como testar em 2 minutos (avaliador)](#-como-testar-em-2-minutos-avaliador)
-3. [O que funciona e o que não funciona](#-o-que-funciona-e-o-que-não-funciona)
-4. [Funcionalidades](#-funcionalidades)
-5. [Como o sistema é montado](#-como-o-sistema-é-montado)
-6. [Mapa do código](#-mapa-do-código)
-7. [Rodar no seu computador](#-rodar-no-seu-computador)
-8. [Publicar (API e APK)](#-publicar-api-e-apk)
-9. [Testes e verificações](#-testes-e-verificações)
-10. [Guia para quem usa IA para corrigir ou evoluir](#-guia-para-quem-usa-ia-para-corrigir-ou-evoluir)
-11. [Documentação](#-documentação)
-12. [Equipe](#-equipe)
+3. [Funcionalidades](#-funcionalidades)
+4. [Como o sistema é montado](#-como-o-sistema-é-montado)
+5. [Mapa do código](#-mapa-do-código)
+6. [Rodar no seu computador](#-rodar-no-seu-computador)
+7. [Publicar (API e APK)](#-publicar-api-e-apk)
+8. [Testes e verificações](#-testes-e-verificações)
+9. [Documentação](#-documentação)
+10. [Equipe](#-equipe)
 
 ---
 
@@ -104,25 +102,7 @@ Resposta `200` = servidor acordado. Se der timeout, repita em 30 segundos.
 
 ---
 
-## ✅ O que funciona e o que não funciona
 
-Honestidade primeiro. Estado na versão **1.5.3**:
-
-| Item | Situação |
-|---|---|
-| API no ar | https://desafio-aceito-api.onrender.com (`/health`, HTTPS obrigatório) |
-| Banco | Neon (PostgreSQL), migrações 001–009 em `api/migrations` |
-| Testes automáticos | Passam no app e na API; tipos e lint sem erro (rode para conferir) |
-| Modo demonstração | Funciona, sem internet |
-| Cadastro/login por e-mail | Funciona |
-| Login com Google | Configurado e publicado como "Em produção" no Google, só com escopos básicos (e-mail e id). **Ainda não foi testado em celular real nem com conta que não seja do autor.** Se falhar, use e-mail e senha |
-| Recuperação de senha por e-mail | **Desativada** (falta provedor de e-mail). Use os **códigos de recuperação** gerados na conta |
-| Teste em celular real | **Parcial**: demonstração, cadastro/login por e-mail, teclado e validações testados em um Galaxy A56. Ainda falta o fluxo entre duas contas em dois aparelhos e o login Google com outra conta |
-| Notificações push | Não existem (só notificações dentro do app) |
-| Distância entre equipes | Não é calculada de verdade |
-| Pagamentos | Sempre simulados |
-
-A política de privacidade está em https://luizzaim.github.io/desafio-aceito/ (fonte em `docs/index.html`).
 
 ---
 
@@ -263,42 +243,7 @@ Os testes da API usam PostgreSQL embutido (PGlite). O teste de SMTP exige OpenSS
 
 ---
 
-## 🤖 Guia para quem usa IA para corrigir ou evoluir
 
-Cole este bloco no início da conversa com a IA:
-
-> Projeto Expo (React Native + TypeScript) com API NestJS em `api/`. Leia o README antes de editar. Rode `npm run typecheck && npm test` na raiz e `cd api && npm test` depois de mudar algo. Não leia `node_modules/`, `.expo/`, `dist/`. Não invente funcionalidades: pagamentos são simulados e e-mail está desativado.
-
-**Onde mexer em cada tipo de problema**
-
-| Problema | Comece por |
-|---|---|
-| Tela feia ou quebrada | `src/app/<tela>.tsx` e `src/components/ui.tsx` (cores, botões, campos) |
-| Navegação / redirecionamento errado | `src/app/_layout.tsx`, `src/app/(tabs)/_layout.tsx`, `src/core/navigation.ts` |
-| Estado, login, modos (`none`/`demo`/`online`) | `src/core/store` |
-| Regra de negócio (match, agenda, caução, ranking) | `src/core/domain.ts` (app/demo) e `api/src/service.ts` (servidor) |
-| Chamadas à API | `src/core/api-client.ts`, `src/core/api.ts` |
-| Erro 4xx/5xx, validação, rate limit | `api/src/app.ts` |
-| Login com Google | `src/core/google-signin.ts`, `src/components/google-access.tsx`, `api/src/google-*.ts` |
-| Banco / nova coluna | nova migração em `api/migrations/` (nunca edite as antigas) |
-| Senhas e segurança de conta | `api/src/passwords.ts`, `api/src/account-security.ts` |
-
-**Regras para a IA não quebrar o projeto**
-
-1. **Duas implementações da regra:** o modo demo usa `src/core/domain.ts` e o modo online usa `api/src/service.ts`. Se mudar uma regra, mude e teste as duas.
-2. **Migrações são só para frente.** Crie `010_...`, não altere `001`–`009`.
-3. **Aumente o `versionCode`** em `app.json` a cada APK novo.
-4. **Segredos nunca entram no Git** (`.env`, `DATABASE_URL`, chaves). O repositório é público.
-5. **Metro com cache preso** (tela antiga aparecendo): `npx expo start --clear`, ou outra porta.
-6. **Teste antes de dizer que está pronto.** Rode typecheck, lint e testes; não declare funcionando o que só foi escrito.
-
-**Checklist de diagnóstico rápido**
-
-- App não conecta → `curl -m 15 https://desafio-aceito-api.onrender.com/health` (pode estar dormindo).
-- Google não entra → o app busca o ID do cliente em `/auth/capabilities`; confirme que a API responde e que o OAuth está "Em produção".
-- Teste falha após mexer em regra → veja se mudou só o app ou só a API (regra 1).
-
----
 
 ## 📚 Documentação
 
