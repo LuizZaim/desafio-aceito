@@ -345,8 +345,21 @@ export class Network {
     if (/campo|local|onde|endere[cç]o/.test(t)) return "Pode ser no campo de vocês ou em um campo neutro. Manda a proposta pelo app.";
     if (/valor|cau[cç][aã]o|pagamento|pagar/.test(t)) return "Sem problema, a caução simulada de R$ 50 é tranquila pra nós.";
     if (/jogadores|elenco|time completo|quantos/.test(t)) return "Temos o time completo e reservas. Vamos nessa!";
+    if (/uniforme|camisa|colete|chuteira/.test(t)) return "Temos uniforme completo e camisa reserva, pode ficar tranquilo.";
+    if (/chuva|chove|chover|clima|tempo ruim|temporal/.test(t)) return "Se chover, a gente combina o cancelamento por clima pelo app, sem penalidade.";
+    if (/[aá]rbitro|juiz|apito|arbitragem/.test(t)) return "Por nós tudo bem com árbitro. Dá pra convidar um pelo app na hora de confirmar a partida.";
+    if (/cancel|desmarc|remarc|adiar/.test(t)) return "Se precisar remarcar, avisa com antecedência que a gente ajusta. Lembra que o cancelamento tem penalidade simulada.";
+    if (/n[ií]vel|categoria|forte|fraco|ranking|nota/.test(t)) return "Somos um time amador e jogamos pela resenha. Deve ser um jogo equilibrado.";
+    if (/obrigad|brigad|valeu|vlw|show/.test(t)) return "Nós que agradecemos! Bora jogar.";
+    if (/tchau|at[eé] mais|at[eé] logo|falou|flw|abra[cç]o/.test(t)) return "Até mais! Ficamos no aguardo da proposta pelo app.";
     if (/\boi\b|ol[aá]|e a[ií]|fala|bom dia|boa tarde|boa noite/.test(t)) return "Fala! Bora marcar esse amistoso?";
-    return "Fechado! Propõe a data pelo app que a gente confirma.";
+    const neutral = [
+      "Fechado! Propõe a data pelo app que a gente confirma.",
+      "Boa! Isso a gente acerta na hora. O importante é marcar o amistoso.",
+      "Entendido! Qualquer detalhe a gente resolve por aqui mesmo.",
+      "Beleza! Quando quiser, manda a proposta de data e local pelo app.",
+    ];
+    return neutral[[...t].reduce((n, c) => n + c.charCodeAt(0), 0) % neutral.length];
   }
   private async notify(team: string, text: string) {
     const preference = (await this.db.query("SELECT w.data FROM workspaces w JOIN teams t ON t.organizer_id=w.user_id WHERE t.id=$1", [team])).rows[0];

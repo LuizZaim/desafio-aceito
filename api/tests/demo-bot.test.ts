@@ -66,8 +66,8 @@ test("equipe Demo responde no chat por palavra-chave; normal não responde; sem 
       ["Quantos jogadores vocês têm?", /time completo/],
       ["Olá, tudo bem?", /Bora marcar/],
       ["Bom dia!", /Bora marcar/],
-      ["Depois a gente combina", /Fechado!/],
-      ["Vamos jogar sábado", /^\[Demonstração\] Fechado!/],
+      ["Depois a gente combina", /Boa! Isso a gente acerta/], // soma %4 = 1
+      ["Vamos jogar sábado", /^\[Demonstração\] Beleza! Quando quiser/], // soma %4 = 3
     ];
     for (const [text, re] of cases) {
       await user.act({type:"send",id:bot.id,text});
@@ -90,6 +90,69 @@ test("equipe Demo responde no chat por palavra-chave; normal não responde; sem 
       const m = chat(await user.state(), other.id);
       assert.equal(m.length, 1); assert.equal(m[0].own, true);
     }
+  } finally { await close(); }
+});
+
+test("equipe Demo: cada assunto, precedência entre assuntos e os 4 padrões neutros", async () => {
+  const { create, demo, close } = await harness();
+  try {
+    const user = await create("user"), bot = await demo("bot");
+    await user.act({type:"interest",id:bot.id});
+    const cases: [string, RegExp][] = [
+      ["Qual a data?", /Qualquer horário/],
+      ["Que horas começa?", /Qualquer horário/],
+      ["Tem endereço?", /campo de vocês/],
+      ["Quem paga a caução?", /caução simulada/],
+      ["Vocês têm elenco cheio?", /time completo/],
+      ["Qual a cor da camisa?", /uniforme completo/],
+      ["Vai ter colete?", /uniforme completo/],
+      ["E se chover?", /cancelamento por clima/],
+      ["Tem previsão de temporal?", /cancelamento por clima/],
+      ["Vai ter árbitro?", /com árbitro/],
+      ["Chamamos um juiz", /com árbitro/],
+      ["Precisamos desmarcar", /remarcar, avisa/],
+      ["Podemos adiar?", /remarcar, avisa/],
+      ["Qual o nível de vocês?", /time amador/],
+      ["Vocês são fortes?", /time amador/],
+      ["Obrigado!", /Nós que agradecemos/],
+      ["Valeu", /Nós que agradecemos/],
+      ["Tchau", /Até mais/],
+      ["Abraço", /Até mais/],
+      ["Oi", /Bora marcar/],
+      ["Boa tarde", /Bora marcar/],
+      // precedência: o primeiro ramo da cadeia vence
+      ["Qual o horário e onde é o campo?", /Qualquer horário/],
+      ["Onde pagar a caução?", /campo de vocês/],
+      ["Quanto custa o pagamento dos jogadores?", /caução simulada/],
+      ["Jogadores de colete?", /time completo/],
+      ["Camisa para chover?", /uniforme completo/],
+      ["Se chover vamos cancelar?", /cancelamento por clima/],
+      ["Árbitro ou remarcar?", /com árbitro/],
+      ["Cancelar por nível?", /remarcar, avisa/],
+      ["Nível forte, valeu", /time amador/],
+      ["Valeu, tchau", /Nós que agradecemos/],
+      ["Tchau, oi", /Até mais/],
+      // "Bom dia" é saudação (não cai em "dia" de data); "Depois a gente combina" é neutro
+      ["Bom dia", /Bora marcar/],
+      ["Depois a gente combina", /Boa! Isso a gente acerta/],
+      // padrões neutros: soma dos char codes % 4 (d=100→0, a=97→1, b=98→2, c=99→3)
+      ["d", /^\[Demonstração\] Fechado!/],
+      ["a", /^\[Demonstração\] Boa! Isso a gente acerta/],
+      ["b", /^\[Demonstração\] Entendido!/],
+      ["c", /^\[Demonstração\] Beleza! Quando quiser/],
+    ];
+    for (const [text] of cases) await user.act({type:"send",id:bot.id,text});
+    await new Promise((r) => setTimeout(r, 1300)); // respostas usam created_at +1s
+    const msgs = chat(await user.state(), bot.id);
+    const replies = msgs.filter((m) => !m.own);
+    assert.equal(msgs.filter((m) => m.own).length, cases.length);
+    assert.equal(replies.length, cases.length);
+    cases.forEach(([text, re], i) => {
+      assert.ok(replies[i].text.startsWith("[Demonstração] "), `prefixo: ${text}`);
+      assert.match(replies[i].text, re, `entrada: ${text}`);
+    });
+    const neutral = replies.slice(-4).map((r) => r.text);
+    assert.equal(new Set(neutral).size, 4);
   } finally { await close(); }
 });
 
