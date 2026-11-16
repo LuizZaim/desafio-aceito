@@ -55,9 +55,7 @@ npm run typecheck && npm run lint && npm test
 
 ### Opção B: instalar o app no Android (recomendado)
 
-1. **Baixe o APK (versão 1.5.3).** Aba **Releases** do repositório (quando publicado) ou o link direto do Expo:
-   [Desafio Aceito 1.5.3 (APK)](https://expo.dev/artifacts/eas/REnRqCK9ex18nZ21Cyvn0lOOw01_GCjfbHhmaq3B8EI.apk).
-   ⚠️ Links do Expo expiram (cerca de 2 semanas). Se não abrir, veja [Gerar o APK](#-publicar-api-e-apk).
+1. **Baixe o APK (versão 1.5.3):** [desafio-aceito-1.5.3.apk](https://github.com/LuizZaim/desafio-aceito/releases/download/v1.5.3/desafio-aceito-1.5.3.apk) (link permanente, aba Releases).
 2. Abra o arquivo no Android e permita **"instalar de fontes desconhecidas"** quando pedido.
 3. Na tela inicial, escolha **uma** destas entradas:
 
