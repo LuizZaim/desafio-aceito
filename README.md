@@ -57,13 +57,16 @@ npm run typecheck && npm run lint && npm test
 
 1. **Baixe o APK (versão 1.5.3):** [desafio-aceito-1.5.3.apk](https://github.com/LuizZaim/desafio-aceito/releases/download/v1.5.3/desafio-aceito-1.5.3.apk) (link permanente, aba Releases).
 2. Abra o arquivo no Android e permita **"instalar de fontes desconhecidas"** quando pedido.
-3. Na tela inicial, escolha **uma** destas entradas:
+3. Na tela inicial há **quatro formas de entrar**. Escolha **uma**:
 
-| Entrada | Precisa de internet? | Para que serve |
+| Entrada | Internet? | Para que serve |
 |---|---|---|
-| **Explorar demonstração** (conta de demonstração) | Não | **Não precisa de cadastro nem senha.** Entra direto, com **várias equipes**, conversas e partidas **fictícias**. O time adversário "responde" sozinho (mensagens marcadas como `[Demonstração]`). É a forma mais rápida de ver todos os fluxos. |
-| **Cadastre-se** (conta real) | Sim | Cria **a sua própria conta** no servidor, com e-mail válido e senha de 8+ caracteres (letras e números), e depois o seu time. |
-| **Continuar com Google** | Sim | Login com Google. |
+| **Entrar** com e-mail e senha (**recomendado ao avaliador**) | Sim | Use a **conta de teste do avaliador** (abaixo). Já vem com equipe e adversários no servidor. |
+| **Explorar demonstração** | Não | Sem cadastro nem senha. Entra direto, com várias equipes, conversas e partidas **fictícias**. O adversário "responde" sozinho (mensagens marcadas como `[Demonstração]`). Forma mais rápida de ver todos os fluxos. |
+| **Cadastre-se** | Sim | Cria a sua própria conta no servidor (e-mail válido, senha de 8+ caracteres com letras e números) e depois o seu time. |
+| **Continuar com Google** | Sim | Login com a conta Google. É a **segunda forma de login real** (além de e-mail e senha). Foi configurado e publicado, mas ainda não foi testado em celular com contas diferentes da do autor; se falhar, use e-mail e senha. |
+
+> **Conta de teste do avaliador (e-mail e senha):** `avaliador@desafioaceito.test` / `Avaliador2026`. Digite na tela inicial e toque em **Entrar**. O servidor gratuito dorme: o **primeiro acesso pode levar cerca de 1 minuto**, é normal.
 
 #### 🧪 Conta de demonstração × conta real
 
