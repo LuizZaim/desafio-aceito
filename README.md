@@ -13,7 +13,7 @@ Projeto da faculdade de **Ciência da Computação da FECAP**, da empresa fictí
 ![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL%20(Neon)-336791?logo=postgresql&logoColor=white)
 ![Versão](https://img.shields.io/badge/vers%C3%A3o-1.5.3-green)
 
-> 📄 **Documentação técnica completa:** [abrir o PDF](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf) (48 páginas, ABNT). Demais documentos em [Documentação](#-documentação).
+> 📄 **Documentação técnica completa:** [abrir o PDF](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf) (49 páginas, ABNT). Demais documentos em [Documentação](#-documentação).
 
 ---
 
