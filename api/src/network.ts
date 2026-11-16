@@ -168,6 +168,7 @@ export class Network {
       const match = (await this.db.query("SELECT id FROM team_matches WHERE team_a_id=$1 AND team_b_id=$2 AND active=TRUE", [a, b])).rows[0];
       if (action.type === "interest") {
         await this.db.query("INSERT INTO team_interests(from_team_id,to_team_id) VALUES($1,$2) ON CONFLICT DO NOTHING", [own.id, id]);
+        if (await this.isDemo(id)) await this.db.query("INSERT INTO team_interests(from_team_id,to_team_id) VALUES($1,$2) ON CONFLICT DO NOTHING", [id, own.id]);
         const reciprocal = (await this.db.query("SELECT 1 FROM team_interests WHERE from_team_id=$1 AND to_team_id=$2", [id, own.id])).rows.length > 0;
         if (reciprocal) {
           const created = await this.db.query("INSERT INTO team_matches(id,team_a_id,team_b_id) VALUES($1,$2,$3) ON CONFLICT(team_a_id,team_b_id) DO UPDATE SET active=TRUE,created_at=CURRENT_TIMESTAMP WHERE team_matches.active=FALSE RETURNING id", [randomUUID(), a, b]);
@@ -180,6 +181,10 @@ export class Network {
         await this.db.query("INSERT INTO messages(id,match_id,sender_team_id,text) VALUES($1,$2,$3,$4)", [randomUUID(), match.id, own.id, action.text.trim()]);
         await this.notify(id, `Nova mensagem de ${own.name}.`);
         message = "Mensagem enviada.";
+        if (await this.isDemo(id)) {
+          await this.db.query("INSERT INTO messages(id,match_id,sender_team_id,text,created_at) VALUES($1,$2,$3,$4,CURRENT_TIMESTAMP + INTERVAL '1 second')", [randomUUID(), match.id, id, `[Demonstração] ${this.demoReply(action.text)}`]);
+          await this.notify(own.id, `${other.name} respondeu no chat.`);
+        }
       } else if (action.type === "unmatch") {
         if (!match) throw new NotFoundException("Match não encontrado.");
         const active = await this.db.query("SELECT 1 FROM games WHERE match_id=$1 AND status NOT IN ('Cancelada','Concluída') LIMIT 1", [match.id]);
@@ -254,7 +259,13 @@ export class Network {
         AND starts_at > $1::timestamptz - INTERVAL '2 hours' AND starts_at < $1::timestamptz + INTERVAL '2 hours'
         AND (team_a_id IN ($2,$3) OR team_b_id IN ($2,$3) OR field_id=$4) LIMIT 1`,[start.toISOString(),own.id,other.id,field.id]);
       if (conflict.rows.length) throw new ConflictException("Há conflito de horário entre as equipes ou o local (intervalo de 2 horas).");
-      await this.db.query("INSERT INTO games(id,match_id,team_a_id,team_b_id,proposer_team_id,home_team_id,field_id,starts_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",[randomUUID(),match.id,a,b,own.id,home,field.id,start.toISOString()]);
+      const gameId = randomUUID();
+      await this.db.query("INSERT INTO games(id,match_id,team_a_id,team_b_id,proposer_team_id,home_team_id,field_id,starts_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",[gameId,match.id,a,b,own.id,home,field.id,start.toISOString()]);
+      if (await this.isDemo(other.id)) {
+        await this.db.query("UPDATE games SET status='Aguardando caução',updated_at=CURRENT_TIMESTAMP WHERE id=$1",[gameId]);
+        await this.notify(own.id,`${other.name} aceitou a proposta (resposta automática da demonstração). Falta a caução simulada.`);
+        return "Proposta enviada e aceita automaticamente pela equipe de demonstração. Simule a caução de R$ 50 para confirmar; nenhum valor real será cobrado.";
+      }
       await this.notify(other.id,`Nova proposta de amistoso de ${own.name}. Aceite ou recuse na agenda.`);
       return "Proposta enviada. A outra equipe precisa aceitar antes da caução simulada. O local informado é demonstrativo e não possui reserva externa.";
     }
@@ -279,7 +290,7 @@ export class Network {
       message = "Caução de R$ 50 simulada. Partida confirmada na demonstração. Nenhum valor real foi cobrado.";
     } else if (action.type === "result") {
       if (game.status !== "Confirmada") throw new ConflictException("A partida precisa estar confirmada para registrar resultado.");
-      if (new Date(game.starts_at).getTime() > Date.now()) throw new ConflictException("O resultado só pode ser registrado depois do horário de início do jogo.");
+      if (new Date(game.starts_at).getTime() > Date.now() && !(await this.isDemo(other))) throw new ConflictException("O resultado só pode ser registrado depois do horário de início do jogo.");
       const goal = (v: unknown) => (typeof v === "number" && Number.isInteger(v) && v>=0 && v<=99) || (typeof v === "string" && /^\d{1,2}$/.test(v));
       if (!goal(action.a) || !goal(action.b)) throw new BadRequestException("Informe gols inteiros de 0 a 99 para as duas equipes.");
       const scoreA = own.id === game.team_a_id ? Number(action.a) : Number(action.b);
@@ -322,6 +333,20 @@ export class Network {
     if (status === "Cancelada") await this.db.query("UPDATE game_referees SET status='Cancelado',responded_at=CURRENT_TIMESTAMP WHERE game_id=$1 AND status IN ('Pendente','Aceito')", [id]);
     await this.notify(other,`${own.name}: ${message}`);
     return message;
+  }
+  /** Equipes de demonstração do servidor (seed): conta @desafioaceito.test e nome começando com "[Demo] ". */
+  private async isDemo(team: string): Promise<boolean> {
+    const row = (await this.db.query("SELECT 1 FROM teams t JOIN users u ON u.id=t.organizer_id WHERE t.id=$1 AND t.name LIKE '[Demo] %' AND u.email LIKE '%@desafioaceito.test'", [team])).rows[0];
+    return !!row;
+  }
+  private demoReply(text: string): string {
+    const t = text.toLocaleLowerCase("pt-BR");
+    if (/hor[aá]rio|quando|que horas|(?<!bom )\bdia\b|\bdata\b/.test(t)) return "Qualquer horário no fim de semana serve pra gente. Propõe a data pelo app que a gente aceita.";
+    if (/campo|local|onde|endere[cç]o/.test(t)) return "Pode ser no campo de vocês ou em um campo neutro. Manda a proposta pelo app.";
+    if (/valor|cau[cç][aã]o|pagamento|pagar/.test(t)) return "Sem problema, a caução simulada de R$ 50 é tranquila pra nós.";
+    if (/jogadores|elenco|time completo|quantos/.test(t)) return "Temos o time completo e reservas. Vamos nessa!";
+    if (/\boi\b|ol[aá]|e a[ií]|fala|bom dia|boa tarde|boa noite/.test(t)) return "Fala! Bora marcar esse amistoso?";
+    return "Fechado! Propõe a data pelo app que a gente confirma.";
   }
   private async notify(team: string, text: string) {
     const preference = (await this.db.query("SELECT w.data FROM workspaces w JOIN teams t ON t.organizer_id=w.user_id WHERE t.id=$1", [team])).rows[0];

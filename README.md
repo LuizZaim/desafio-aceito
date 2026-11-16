@@ -11,12 +11,14 @@ Projeto da faculdade de **Ciência da Computação da FECAP**, da empresa fictí
 ![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL%20(Neon)-336791?logo=postgresql&logoColor=white)
 ![Versão](https://img.shields.io/badge/vers%C3%A3o-1.5.3-green)
 
+> 📄 **Documentação técnica completa:** [abrir o PDF](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf) (48 páginas, ABNT). Demais documentos em [Documentação](#-documentação).
+
 ---
 
 ## 📌 Índice
 
 1. [O que é](#-o-que-é)
-2. [Como testar em 2 minutos (avaliador)](#-como-testar-em-2-minutos-avaliador)
+2. [Como testar (avaliador)](#-como-testar-avaliador)
 3. [Funcionalidades](#-funcionalidades)
 4. [Como o sistema é montado](#-como-o-sistema-é-montado)
 5. [Mapa do código](#-mapa-do-código)
@@ -42,9 +44,45 @@ Times de futebol amador têm dificuldade de achar adversário. O **Desafio Aceit
 
 ---
 
-## 🚀 Como testar em 2 minutos (avaliador)
+## 🚀 Como testar (avaliador)
 
-### Opção A: só ler e rodar os testes (sem instalar app)
+### Passo 1: instalar o app no Android
+
+1. Baixe o APK (versão 1.5.3): [desafio-aceito-1.5.3.apk](https://github.com/LuizZaim/desafio-aceito/releases/download/v1.5.3/desafio-aceito-1.5.3.apk) (aba **Releases** do repositório).
+2. Abra o arquivo no celular e permita **instalar de fontes desconhecidas** quando pedido.
+
+### Passo 2: entrar com a conta de teste
+
+Na tela inicial, digite e toque em **Entrar**:
+
+| | |
+|---|---|
+| **E-mail** | `avaliador@desafioaceito.test` |
+| **Senha** | `Avaliador2026` |
+
+A conta já tem a equipe **[Demo] Avaliador FC** e outras 5 equipes **[Demo]** para descobrir. As equipes **[Demo]** reagem sozinhas, para dar para testar tudo com **uma conta e um aparelho**:
+
+| Você faz | A equipe [Demo] responde |
+|---|---|
+| Curte uma equipe na aba **Descobrir** | Curte de volta: **match** na hora |
+| Manda mensagem no **chat** | Responde pelo assunto (horário, campo, valor, elenco, saudação). Mensagens marcadas `[Demonstração]` |
+| Propõe um **amistoso** (data futura, local, mando de campo) | Aceita sozinha |
+| Paga a **caução** (simulada) | Partida confirmada |
+| Registra o **resultado** e **avalia** o adversário | A nota entra no **ranking** |
+
+> ⏳ O servidor gratuito dorme. O **primeiro acesso pode levar cerca de 1 minuto**; o app mostra um aviso de espera e tenta de novo sozinho. Para acordar antes: `curl -m 15 https://desafio-aceito-api.onrender.com/health` (resposta 200 = acordado).
+
+### Outras formas de entrar
+
+| Entrada | Internet? | Descrição |
+|---|---|---|
+| **Explorar demonstração** | Não | Sem cadastro nem senha. Equipes, conversas e partidas fictícias, tudo guardado só no celular. Mostra todos os fluxos, inclusive o de árbitro. |
+| **Cadastre-se** | Sim | Cria uma conta real (e-mail válido; senha com 8+ caracteres, letras e números) e depois o seu time. A conta começa **vazia**: sem adversários, conversas nem partidas. |
+| **Continuar com Google** | Sim | Login real com conta Google. Também cria uma conta vazia. |
+
+Para sair da conta, use o botão no canto superior direito.
+
+### Só ler o código e rodar os testes (sem instalar nada no celular)
 
 ```sh
 git clone https://github.com/LuizZaim/desafio-aceito.git
@@ -53,62 +91,7 @@ npm ci
 npm run typecheck && npm run lint && npm test
 ```
 
-### Opção B: instalar o app no Android (recomendado)
-
-1. **Baixe o APK (versão 1.5.3):** [desafio-aceito-1.5.3.apk](https://github.com/LuizZaim/desafio-aceito/releases/download/v1.5.3/desafio-aceito-1.5.3.apk) (link permanente, aba Releases).
-2. Abra o arquivo no Android e permita **"instalar de fontes desconhecidas"** quando pedido.
-3. Na tela inicial há **quatro formas de entrar**. Todas funcionam:
-
-| Entrada | Internet? | O que é |
-|---|---|---|
-| **Explorar demonstração** (**melhor para testar**) | Não | Sem cadastro nem senha. Já vem com equipes, conversas e partidas **fictícias**, e o adversário "responde" sozinho (mensagens marcadas como `[Demonstração]`). Dá para ver **todos** os fluxos: match, chat, amistoso, caução, resultado, avaliação, ranking e árbitro. |
-| **Entrar** com e-mail e senha | Sim | Login real no servidor. Pode usar a conta de teste abaixo. |
-| **Cadastre-se** | Sim | Cria uma conta real (e-mail válido, senha de 8+ caracteres com letras e números) e depois o **seu time**. Cadastro de conta e de time funcionam. |
-| **Continuar com Google** | Sim | Login real com conta Google. Funciona com contas diferentes (testado). |
-
-**Login, cadastro de conta, cadastro de time e Google estão funcionando.** A diferença é o volume de dados: uma conta real começa **vazia** (sem adversários, conversas nem partidas) e há poucas equipes no servidor. Para ver o app cheio, use a **demonstração**.
-
-> **Conta de teste (e-mail e senha):** `avaliador@desafioaceito.test` / `Avaliador2026`. Já tem a equipe `[Demo] Avaliador FC` e 5 equipes `[Demo]` para descobrir. Essas equipes não respondem (são só vitrine); o fluxo completo de match, chat e jogo está na demonstração.
-
-> O servidor gratuito dorme: o **primeiro acesso pode levar cerca de 1 minuto**, é normal.
-
-#### 🧪 Conta de demonstração × conta real
-
-| | Demonstração | Conta real |
-|---|---|---|
-| Como entrar | Botão **Explorar demonstração** | **Cadastre-se** ou Google |
-| Equipes para dar match | **Várias** (fictícias, ilustrativas) | **Conta do avaliador** com 5 equipes `[Demo]` já no servidor (veja a conta de teste acima), mais quem se cadastrar |
-| Onde ficam os dados | Só no seu celular | No servidor (banco Neon) |
-| Resposta do adversário | Simulada, automática | Só existe se outra pessoa real responder (as equipes `[Demo]` não respondem) |
-| Pagamento/caução | Simulado | Simulado |
-
-
-> Por isso, **para ver o app "cheio" (Descobrir, match, chat, amistoso, resultado, ranking), use a demonstração.** Use a conta real para ver o cadastro, o login e o time salvo no servidor. Para testar match e chat reais, é preciso **duas contas** (dois aparelhos ou duas pessoas).
-
-4. Para sair da conta, use o botão no canto superior direito.
-
-### Opção C: ver no computador (sem APK)
-
-```sh
-npm ci
-npx expo start --web
-```
-
-Abre no navegador. O login com Google **não** funciona na web.
-
-### ⏳ Aviso importante: o servidor "dorme"
-
-A API roda no plano **gratuito** do Render, que adormece após inatividade. **A primeira ação pode levar cerca de 1 minuto.** O app mostra um aviso de espera e tenta de novo sozinho. Para acordar antes:
-
-```sh
-curl -m 15 https://desafio-aceito-api.onrender.com/health
-```
-
-Resposta `200` = servidor acordado. Se der timeout, repita em 30 segundos.
-
----
-
-
+> 💳 Pagamentos, caução e cartões são **sempre simulados**. Não existe cobrança real.
 
 ---
 
@@ -250,7 +233,6 @@ Os testes da API usam PostgreSQL embutido (PGlite). O teste de SMTP exige OpenSS
 ---
 
 
-
 ## 📚 Documentação
 
 - [Requisitos](docs/REQUISITOS.md)
@@ -261,7 +243,7 @@ Os testes da API usam PostgreSQL embutido (PGlite). O teste de SMTP exige OpenSS
 - [Roteiro entre contas](docs/HOMOLOGACAO_ENTRE_CONTAS.md)
 - [Roteiro de demonstração](docs/ROTEIRO_DEMONSTRACAO.md)
 - [Configurar Google e e-mail](docs/CONFIGURAR_GOOGLE_EMAIL.md)
-- [PDF técnico](docs/referencias/Documentacao_Tecnica_Desafio_Aceito.pdf)
+- [**Documento técnico completo (PDF, ABNT)**](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf) e [versão editável (.docx)](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.docx): wireframes, arquitetura, requisitos, diagramas, banco e prints do app (itens 1 a 28 do checklist)
 
 ---
 
