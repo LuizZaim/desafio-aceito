@@ -161,7 +161,7 @@ cp .env.example .env     # só traz a URL pública da API (EXPO_PUBLIC_API_URL)
 npx expo start
 ```
 
-Abra com o Expo Go (SDK 58) na mesma rede, ou pressione `a` para emulador Android, ou `w` para web.
+Abra com o Expo Go (SDK 58) na mesma rede, ou pressione `a` para emulador Android.
 
 **API local, com Docker**
 
@@ -198,14 +198,6 @@ npx eas-cli@latest build --platform android --profile preview
 ```
 
 Também dá para disparar o build pelo site do Expo ("Build from GitHub", perfil `preview`, branch `main`). Suba o `versionCode` em `app.json` antes de cada build; se o Android recusar instalar por cima, desinstale a versão antiga.
-
-**Versão web (opcional).**
-
-```sh
-npx expo export --platform web --output-dir dist-web
-```
-
-Em hospedagem estática, configure fallback para `index.html` (modo SPA).
 
 ---
 
