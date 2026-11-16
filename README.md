@@ -11,7 +11,7 @@ Projeto da faculdade de **Ciência da Computação da FECAP**, da empresa fictí
 ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6?logo=typescript&logoColor=white)
 ![NestJS](https://img.shields.io/badge/API-NestJS-e0234e?logo=nestjs&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL%20(Neon)-336791?logo=postgresql&logoColor=white)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.5.3-green)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.5.4-green)
 
 > 📄 **Documentação técnica completa:** [abrir o PDF](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf) (49 páginas, ABNT). Demais documentos em [Documentação](#-documentação).
 
@@ -50,7 +50,7 @@ Times de futebol amador têm dificuldade de achar adversário. O **Desafio Aceit
 
 **Em 3 passos, no celular Android:**
 
-1. **Instale o app:** baixe o [APK 1.5.3](https://github.com/LuizZaim/desafio-aceito/releases/download/v1.5.3/desafio-aceito-1.5.3.apk), abra o arquivo e permita instalar de fontes desconhecidas.
+1. **Instale o app:** baixe o [APK 1.5.4](https://github.com/LuizZaim/desafio-aceito/releases/download/v1.5.4/desafio-aceito-1.5.4.apk), abra o arquivo e permita instalar de fontes desconhecidas.
 2. **Entre com a conta de teste:**
 
    | E-mail | Senha |
@@ -75,12 +75,12 @@ A conta começa **sem matches e sem conversas**: as 5 equipes [Demo] aparecem em
 
 - **Vídeo da demonstração (2 min):** [assistir no YouTube](https://youtu.be/3KLrm1UGgQQ) (não listado). Mostra o fluxo completo no app: descobrir, match, chat, amistoso, caução simulada e ranking.
 - **Prints de cada tela:** seção 2.4 do [PDF da documentação](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf).
-- **Emulador (opcional):** instale o Android Studio, crie um aparelho virtual em *Device Manager* (Pixel, Android 14), arraste o APK para a janela do emulador, abra o app e entre com a conta de teste acima. Não testado por nós; o login com Google pode não funcionar no emulador.
+- **Emulador (opcional):** instale o Android Studio, crie um aparelho virtual em *Device Manager* (Pixel, Android 14), arraste o APK para a janela do emulador, abra o app e entre com a conta de teste acima. Não testado por nós.
 
 ### Outras formas de entrar
 
 - **Explorar demonstração:** sem cadastro, sem internet. Dados fictícios guardados só no celular; mostra todos os fluxos, inclusive o de árbitro.
-- **Cadastre-se** ou **Continuar com Google:** criam uma conta real, que começa **vazia** (sem adversários, conversas ou partidas).
+- **Cadastre-se** com e-mail e senha: cria uma conta real, que começa **vazia** (sem adversários, conversas ou partidas).
 
 > 💳 Pagamentos, caução e cartões são **sempre simulados**.
 
@@ -116,8 +116,6 @@ npm run typecheck && npm run lint && npm test
 │  App Android │ ─────────► │  API (NestJS)    │ ────────► │  PostgreSQL    │
 │  Expo / RN   │            │  Render (grátis) │           │  Neon (grátis) │
 └──────────────┘            └──────────────────┘           └────────────────┘
-       │  login Google                │ valida o token do Google
-       └──────────────► Google ◄──────┘
 ```
 
 - **App:** React Native + TypeScript, rotas por arquivo (expo-router). Tokens de sessão guardados com `expo-secure-store`.
@@ -138,7 +136,7 @@ npm run typecheck && npm run lint && npm test
 │   └── storage/        Persistência local (SQLite) usada no modo demo
 ├── api/
 │   ├── src/            app.ts (rotas/erros), service.ts (regras), db.ts, passwords.ts,
-│   │                   google-*.ts (login Google), arbitration.ts, mail.ts
+│   │                   arbitration.ts, mail.ts
 │   ├── migrations/     Esquema do banco, 001 a 009, em ordem
 │   └── tests/          Testes da API (usam PGlite, sem precisar de Postgres)
 ├── tests/              Testes do app (node --test)
@@ -194,7 +192,8 @@ Variáveis da API: `api/.env.example`. **Nunca versione o `.env`.**
 
 **API no Render.** O `render.yaml` define o serviço (plano gratuito, região Oregon). Crie um Blueprint a partir do repositório e informe `DATABASE_URL` (Neon) como segredo. Variáveis novas só valem após **Manual Deploy**. O build usa `npm ci --include=dev` e a migração roda no início.
 
-**E-mail (opcional).** SMTP é bloqueado no plano gratuito; use `MAIL_PROVIDER=brevo` com `BREVO_API_KEY` e `MAIL_FROM`. Detalhes em `docs/CONFIGURAR_GOOGLE_EMAIL.md`.
+**E-mail (opcional).** SMTP é bloqueado no plano gratuito; use `MAIL_PROVIDER=brevo` com `BREVO_API_KEY` e `MAIL_FROM`.
+
 
 **Gerar o APK.**
 
@@ -235,7 +234,6 @@ Os testes da API usam PostgreSQL embutido (PGlite). O teste de SMTP exige OpenSS
 - [Guia de leitura do código](docs/GUIA_CODIGO.md)
 - [Roteiro entre contas](docs/HOMOLOGACAO_ENTRE_CONTAS.md)
 - [Roteiro de demonstração](docs/ROTEIRO_DEMONSTRACAO.md)
-- [Configurar Google e e-mail](docs/CONFIGURAR_GOOGLE_EMAIL.md)
 - [**Documento técnico completo (PDF, ABNT)**](documentacao/Documentacao_Tecnica_Desafio_Aceito_Completa.pdf): wireframes, arquitetura, requisitos, diagramas, banco e prints do app
 
 ---
