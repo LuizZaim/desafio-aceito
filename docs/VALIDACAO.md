@@ -1,5 +1,7 @@
 # Evidências de validação
 
+> **Registro histórico.** Este arquivo guarda as evidências de cada etapa, inclusive de quando a API ainda ficava no Railway (versões 1.2.0 a 1.4.0). **Estado atual (versão 1.5.3):** API no Render (plano gratuito) e banco no Neon; veja o resumo em [AUDITORIA.md](AUDITORIA.md) e o [README](../README.md).
+
 ## Preparação 1.5.0 — Render Free, espera e e-mail HTTPS
 
 - `render.yaml` validado contra o JSON Schema oficial; validação estrutural local não é deploy nem validação da conta Render. Workspace ainda precisa ser confirmado. Sem remoto Git ou imagem publicada, não houve criação de serviço.
