@@ -1,6 +1,6 @@
 # Validação contra a auditoria de 11/11/2026
 
-**Preparação 1.5.0:** configuração Render Free, tratamento de espera e envio de e-mail HTTPS adicionados e testados localmente. Ainda não houve migração; a evidência publicada abaixo continua sendo a API 1.4.0 no Railway. Nenhuma versão web será entregue. Publicação Render aguarda confirmação de workspace e repositório autorizado.
+**Estado em 16/11/2026 (versão 1.5.3):** API publicada no Render (Free) com banco Neon, HTTPS obrigatório e migrações 001–009 aplicadas no deploy; APK Android gerado pelo EAS. Carga de teste em `api/scripts/seed-demo.mjs` (conta do avaliador e 5 equipes `[Demo]`). 64 testes do app e 27 da API passam. O app é entregue como APK; a exportação web é opcional e não é publicada. Revisão item a item: `CHECKLIST_FINAL_2026-11-16.md`. As observações abaixo registram a validação histórica de 11/11/2026 (API 1.4.0 no Railway) e podem estar superadas.
 
 Escopo: documento técnico fornecido + código desta entrega mobile. Revisão de implementação 1.4.0. Os itens marcados como atendidos **no PDF** não são evidência de código. A validação abaixo não é uma nota acadêmica ou certificação. A conta Figma foi conectada, mas o arquivo não pôde ser inspecionado por falta de permissão nas operações disponíveis; não há comparação visual autenticada. O [plano de conclusão](PLANO_CONCLUSAO.md) organiza o aceite restante. O PDF original não foi alterado. A instrução atual é não gerar novo APK nesta etapa.
 

@@ -64,7 +64,7 @@ class Errors implements ExceptionFilter {
 class API {
   constructor(@Inject(TOKEN) private readonly app: Service) {}
   @Get("health") health() {
-    return { status: "ok", app: "Desafio Aceito", version: "1.5.0" };
+    return { status: "ok", app: "Desafio Aceito", version: "1.5.3" };
   }
   @Post("auth/register") register(@Body() body: any) {
     return this.app.register(body);

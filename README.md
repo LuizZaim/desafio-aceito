@@ -9,7 +9,7 @@ Projeto da faculdade de **Ciência da Computação da FECAP**, da empresa fictí
 ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6?logo=typescript&logoColor=white)
 ![NestJS](https://img.shields.io/badge/API-NestJS-e0234e?logo=nestjs&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL%20(Neon)-336791?logo=postgresql&logoColor=white)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.5.1-green)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.5.3-green)
 
 ---
 
@@ -72,10 +72,13 @@ npm run typecheck && npm run lint && npm test
 | | Demonstração | Conta real |
 |---|---|---|
 | Como entrar | Botão **Explorar demonstração** | **Cadastre-se** ou Google |
-| Equipes para dar match | **Várias** (fictícias, ilustrativas) | **Apenas 1 time real cadastrado** no momento (mais equipes só se outras pessoas se cadastrarem) |
+| Equipes para dar match | **Várias** (fictícias, ilustrativas) | **Conta do avaliador** com 5 equipes `[Demo]` já no servidor (veja abaixo), mais quem se cadastrar |
 | Onde ficam os dados | Só no seu celular | No servidor (banco Neon) |
-| Resposta do adversário | Simulada, automática | Só existe se outra pessoa real responder |
+| Resposta do adversário | Simulada, automática | Só existe se outra pessoa real responder (as equipes `[Demo]` não respondem) |
 | Pagamento/caução | Simulado | Simulado |
+
+
+**Conta de teste do avaliador (servidor real):** e-mail `avaliador@desafioaceito.test`, senha `Avaliador2026`. Já tem a equipe `[Demo] Avaliador FC` e 5 equipes `[Demo]` para descobrir; 3 delas já demonstraram interesse, então basta curtir de volta para dar match. São dados fictícios, criados por `api/scripts/seed-demo.mjs` (pode ser rodado de novo sem duplicar).
 
 > Por isso, **para ver o app "cheio" (Descobrir, match, chat, amistoso, resultado, ranking), use a demonstração.** Use a conta real para ver o cadastro, o login e o time salvo no servidor. Para testar match e chat reais, é preciso **duas contas** (dois aparelhos ou duas pessoas).
 
