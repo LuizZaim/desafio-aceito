@@ -57,31 +57,31 @@ npm run typecheck && npm run lint && npm test
 
 1. **Baixe o APK (versão 1.5.3):** [desafio-aceito-1.5.3.apk](https://github.com/LuizZaim/desafio-aceito/releases/download/v1.5.3/desafio-aceito-1.5.3.apk) (link permanente, aba Releases).
 2. Abra o arquivo no Android e permita **"instalar de fontes desconhecidas"** quando pedido.
-3. Na tela inicial há **quatro formas de entrar**. Escolha **uma**:
+3. Na tela inicial há **quatro formas de entrar**. Todas funcionam:
 
-| Entrada | Internet? | Para que serve |
+| Entrada | Internet? | O que é |
 |---|---|---|
-| **Entrar** com e-mail e senha (**recomendado ao avaliador**) | Sim | Use a **conta de teste do avaliador** (abaixo). Já vem com equipe e adversários no servidor. |
-| **Explorar demonstração** | Não | Sem cadastro nem senha. Entra direto, com várias equipes, conversas e partidas **fictícias**. O adversário "responde" sozinho (mensagens marcadas como `[Demonstração]`). Forma mais rápida de ver todos os fluxos. |
-| **Cadastre-se** | Sim | Cria a sua própria conta no servidor (e-mail válido, senha de 8+ caracteres com letras e números) e depois o seu time. |
-| **Continuar com Google** | Sim | Login com a conta Google. É a **segunda forma de login real** (além de e-mail e senha). Funciona com contas Google diferentes (testado). Cria uma conta real nova, **vazia** (veja o aviso abaixo). |
+| **Explorar demonstração** (**melhor para testar**) | Não | Sem cadastro nem senha. Já vem com equipes, conversas e partidas **fictícias**, e o adversário "responde" sozinho (mensagens marcadas como `[Demonstração]`). Dá para ver **todos** os fluxos: match, chat, amistoso, caução, resultado, avaliação, ranking e árbitro. |
+| **Entrar** com e-mail e senha | Sim | Login real no servidor. Pode usar a conta de teste abaixo. |
+| **Cadastre-se** | Sim | Cria uma conta real (e-mail válido, senha de 8+ caracteres com letras e números) e depois o **seu time**. Cadastro de conta e de time funcionam. |
+| **Continuar com Google** | Sim | Login real com conta Google. Funciona com contas diferentes (testado). |
 
-> **Conta de teste do avaliador (e-mail e senha):** `avaliador@desafioaceito.test` / `Avaliador2026`. Digite na tela inicial e toque em **Entrar**. O servidor gratuito dorme: o **primeiro acesso pode levar cerca de 1 minuto**, é normal.
+**Login, cadastro de conta, cadastro de time e Google estão funcionando.** A diferença é o volume de dados: uma conta real começa **vazia** (sem adversários, conversas nem partidas) e há poucas equipes no servidor. Para ver o app cheio, use a **demonstração**.
 
-> ⚠️ **Contas reais (Cadastre-se, Google ou qualquer conta nova) começam vazias:** não têm time, adversários, conversas nem partidas. Há poucos times no servidor (as 5 equipes `[Demo]` e quem se cadastrar), e as equipes `[Demo]` não respondem no chat. Por isso, para ver o app cheio sem montar nada, use a **conta do avaliador** (já tem equipe e adversários) ou **Explorar demonstração** (tudo simulado, funciona offline). Para testar match e chat reais entre duas contas, é preciso criar duas contas.
+> **Conta de teste (e-mail e senha):** `avaliador@desafioaceito.test` / `Avaliador2026`. Já tem a equipe `[Demo] Avaliador FC` e 5 equipes `[Demo]` para descobrir. Essas equipes não respondem (são só vitrine); o fluxo completo de match, chat e jogo está na demonstração.
+
+> O servidor gratuito dorme: o **primeiro acesso pode levar cerca de 1 minuto**, é normal.
 
 #### 🧪 Conta de demonstração × conta real
 
 | | Demonstração | Conta real |
 |---|---|---|
 | Como entrar | Botão **Explorar demonstração** | **Cadastre-se** ou Google |
-| Equipes para dar match | **Várias** (fictícias, ilustrativas) | **Conta do avaliador** com 5 equipes `[Demo]` já no servidor (veja abaixo), mais quem se cadastrar |
+| Equipes para dar match | **Várias** (fictícias, ilustrativas) | **Conta do avaliador** com 5 equipes `[Demo]` já no servidor (veja a conta de teste acima), mais quem se cadastrar |
 | Onde ficam os dados | Só no seu celular | No servidor (banco Neon) |
 | Resposta do adversário | Simulada, automática | Só existe se outra pessoa real responder (as equipes `[Demo]` não respondem) |
 | Pagamento/caução | Simulado | Simulado |
 
-
-**Conta de teste do avaliador (servidor real):** e-mail `avaliador@desafioaceito.test`, senha `Avaliador2026`. Já tem a equipe `[Demo] Avaliador FC` e 5 equipes `[Demo]` para descobrir; 3 delas já demonstraram interesse, então basta curtir de volta para dar match. São dados fictícios, criados por `api/scripts/seed-demo.mjs` (pode ser rodado de novo sem duplicar).
 
 > Por isso, **para ver o app "cheio" (Descobrir, match, chat, amistoso, resultado, ranking), use a demonstração.** Use a conta real para ver o cadastro, o login e o time salvo no servidor. Para testar match e chat reais, é preciso **duas contas** (dois aparelhos ou duas pessoas).
 
