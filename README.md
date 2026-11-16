@@ -64,9 +64,11 @@ npm run typecheck && npm run lint && npm test
 | **Entrar** com e-mail e senha (**recomendado ao avaliador**) | Sim | Use a **conta de teste do avaliador** (abaixo). Já vem com equipe e adversários no servidor. |
 | **Explorar demonstração** | Não | Sem cadastro nem senha. Entra direto, com várias equipes, conversas e partidas **fictícias**. O adversário "responde" sozinho (mensagens marcadas como `[Demonstração]`). Forma mais rápida de ver todos os fluxos. |
 | **Cadastre-se** | Sim | Cria a sua própria conta no servidor (e-mail válido, senha de 8+ caracteres com letras e números) e depois o seu time. |
-| **Continuar com Google** | Sim | Login com a conta Google. É a **segunda forma de login real** (além de e-mail e senha). Foi configurado e publicado, mas ainda não foi testado em celular com contas diferentes da do autor; se falhar, use e-mail e senha. |
+| **Continuar com Google** | Sim | Login com a conta Google. É a **segunda forma de login real** (além de e-mail e senha). Funciona com contas Google diferentes (testado). Cria uma conta real nova, **vazia** (veja o aviso abaixo). |
 
 > **Conta de teste do avaliador (e-mail e senha):** `avaliador@desafioaceito.test` / `Avaliador2026`. Digite na tela inicial e toque em **Entrar**. O servidor gratuito dorme: o **primeiro acesso pode levar cerca de 1 minuto**, é normal.
+
+> ⚠️ **Contas reais (Cadastre-se, Google ou qualquer conta nova) começam vazias:** não têm time, adversários, conversas nem partidas. Há poucos times no servidor (as 5 equipes `[Demo]` e quem se cadastrar), e as equipes `[Demo]` não respondem no chat. Por isso, para ver o app cheio sem montar nada, use a **conta do avaliador** (já tem equipe e adversários) ou **Explorar demonstração** (tudo simulado, funciona offline). Para testar match e chat reais entre duas contas, é preciso criar duas contas.
 
 #### 🧪 Conta de demonstração × conta real
 
