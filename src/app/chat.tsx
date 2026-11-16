@@ -156,7 +156,7 @@ export default function Chat() {
           width: "100%",
           maxWidth: 800,
           alignSelf: "center",
-          paddingBottom: Math.max(14, insets.bottom),
+          paddingBottom: keyboard > 0 ? 14 : Math.max(14, insets.bottom),
           borderTopWidth: 1,
           borderColor: c.border,
           backgroundColor: c.panel,

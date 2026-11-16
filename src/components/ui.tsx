@@ -14,7 +14,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useStore } from "../core/store";
 import { type Team } from "../core/domain";
 export const light = {
@@ -336,14 +336,13 @@ export function Section({
 /** Android edge-to-edge does not resize the window for the keyboard, so reserve its height ourselves. */
 export function useKeyboardInset() {
   const [height, setHeight] = React.useState(0);
-  const { bottom } = useSafeAreaInsets();
   React.useEffect(() => {
     if (Platform.OS !== "android") return;
     const show = Keyboard.addListener("keyboardDidShow", (e) => setHeight(e.endCoordinates.height));
     const hide = Keyboard.addListener("keyboardDidHide", () => setHeight(0));
     return () => { show.remove(); hide.remove(); };
   }, []);
-  return Math.max(0, height - bottom);
+  return height > 0 ? height : 0;
 }
 export function Screen({
   children,

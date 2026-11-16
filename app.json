@@ -2,7 +2,7 @@
   "expo": {
     "name": "Desafio Aceito",
     "slug": "desafio-aceito-app",
-    "version": "1.5.2",
+    "version": "1.5.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.futtech.desafioaceito",
-      "versionCode": 8
+      "versionCode": 9
     },
     "web": {
       "bundler": "metro",
